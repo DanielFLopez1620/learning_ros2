@@ -84,7 +84,74 @@ Another interesting feature, is that this allows you to publish/subscribe  (*top
 
 Before we move on, make sure you close (Ctrl+C) all the nodes.
 
+# A node, a world:
 
+TODO: Add image of nodes, topics, services and actions
 
+Nodes are the basic unit and they have the ability to communicate with other nodes, for executing a node, remember that you will need:
 
+    ros2 run <package_name> <executable_name>
 
+But here we do not know the node of the name, just the executable that invokes it, for that you can run:
+
+    ros2 node list
+
+If you run this, maybe there won't be output. So try to run it after having nodes like the executables in *turtlesim* and check the results.
+
+TODO: Add image of ros2 node list
+
+There would be cases where you want to change the name of the node, for that we use **remapping**:
+
+    ros2 run turtlesim turtlesim_node --ros-args --remap __node:=new_turtle
+
+This will generate another turtlesim window, independent from the preovios one. Here you can check the info of the node, for that you can use:
+
+    ros2 node info /new_turtle
+
+After the command you should be able to wath the subscribers, publishers, clients and servers of the custom name *turtlesim* you invoke.
+
+# Exchange messages with topics:
+
+The main basic communication for ROS2, it is based in four parts:
+
+TODO: Add image of topics.
+
+- **Message:** The information you want to share between nodes. It can be a data type or a custom type.
+- **Topic:** The way messages is moved between nodes, it allows the communication of a message like a channel, so it allows one-to-one, one-to-many or many-to-many communication.
+- **Publisher:** The one submitting the information, it can be a sensor, an indicatation...
+- **Subscriber:** The one recieving information, so it can process it and determinate what to do.
+
+For the next, make sure you are running the *turtlesim_node* and the *turtle_teleop_key*, also you will need *rqt*:
+
+    ros2 run turtlesim turtlesim_node # Terminal 1
+    ros2 run turtlesim turtle_teleop_key # Terminal 2
+    rqt_graph # Terminal 3
+
+In the *rqt_graph* window (with the options: Plugin > Introspection > Node graph) you can be able to watch the node communication. And this is the reason you can control the turtle by using the keyboard, because the topic you are using is **/turtle1/cmd_vel**. But this isn't the only topic here, to check more topics just run in a new terminal:
+
+    ros2 topic list
+
+It will enumerate the topics that are currently available, so if you need more details you can type:
+
+    ros2 topic list -t
+
+This flag add the option to get the message type, so you can use it to create a communication. But you can also, check them with *rqt* by unchecking the box *Hide:*.
+
+Now, let's take a look to other important commands of *ros2 topic*:
+
+- **bw**: It allows to see the bandwidth used
+- **delay**: Adds timestamp and display the delay
+- **echo**: Like the one in shell, it displays the ouput of the topic
+- **find**:  List the available topic refered to the type specified.
+- **hz**: Get the publish rate frequency.
+- **info**: Need help to understand a topic? This is the key.
+- **pub**: Publish a single message from terminal.
+- **type**: A good complement of info, to get the topic type.
+
+In some cases, you will need extra help for understanding messages and topics, for example, do you know what is cmd_vel? Well, you can check that answer by knowing the type and then search the definition:
+
+    ros2 interface show geometry_msgs/msg/Twist
+
+To close, this subsection, let's publish a velocity command to the turtle, for this you can use:
+
+    ros2 topic pub --once /turtle1/cmd_vel geometry_msgs/msg/Twist "{linear: {x: 2.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 1.8}}"
