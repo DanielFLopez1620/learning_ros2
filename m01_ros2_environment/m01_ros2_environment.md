@@ -155,3 +155,62 @@ In some cases, you will need extra help for understanding messages and topics, f
 To close, this subsection, let's publish a velocity command to the turtle, for this you can use:
 
     ros2 topic pub --once /turtle1/cmd_vel geometry_msgs/msg/Twist "{linear: {x: 2.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 1.8}}"
+
+# Services, another perspective:
+
+It is a different type of communication based on the roles of the client and the server. Think of it like a shop, someone comes to buy something (he is the **client**) to your shop (so you are the **server**), they are *requesting* you a product and your *response* is the product they are asking for or (in case you don't have it) an indication that you cannot give it to him.
+
+Let's play with our turtle friends to get to know more about services, Make sure you run the *turtlesim* node and the *turtle_teleop_key* node. In this section, we will use the commands of **ros2 service**, first let's list all services available.
+
+    ros2 service list
+
+TODO: Add images of turtle services
+
+Now, you need to understand them, so you can take advantage of them, the services have two parts the **request** (the info you provide to the server) and the **response** (the result of processing the info provided). Also, they have different types, and as you can guess, you can use:
+
+    ros2 service type <service_name>
+    ros2 service list -t # Is another option to get the type
+
+Another option is to search a service by its type, for that the command is:
+
+    ros2 service find <type_service_name>
+
+And if you need more details on the type, you can run the command:
+
+    ros2 interface show <type_service_name>
+
+Here it should display a text divided by "---" which is the indicator/separator between request and response. Finally, you can also play with services in the terminal by calling the corresponding server with the appropiate information, for example, if you want to create another turtle you can use:
+
+    ros2 service call /spawn  turtlesim/srv/Spawn "{x:2, y:5, theta:0.5, name:'Dan'}"
+
+TODO: Image of new turtle
+
+# Parameters for node configurations:
+
+Not everything needs to be configuration, but you will need a way to define some behaviors with the nodes, for that you have the parameters. Once again, let's review this with our turtle friends.
+
+After you have run the turtle nodes, let's check the list of params of this nodes:
+
+    ros2 param list
+
+TODO: Add image of params list.
+
+Know, as in programming a certain languages, you can **get** or **set** this parameters, but you need to know before hand how they work and which values do they use.
+
+    ros2 param get <node_name> <param_name>
+    ros2 param set <node_name> <param_name> <new_value>
+
+The more visible params with *turtlesim* are the colors of the background, as you may know, colors can work with different formats, in case of this background we use RGB (Red, Green, Blue) with a range of 0-255 (integer) for each one. So, try to play with the colors of the turtlesim to get one of your favorite colors, for example:
+
+    ros2 param set /turtlesim background_g 255
+
+But, this is not all, you can save the params and use them later, this process is called **dump** and **load**, the format supported for storing and loading parameters are the **.yaml** files. After you modify some parameters (and make sure everything is still working), you an try:
+
+    ros2 param dump /turtlesim > my_params.yaml
+    # Close all and re-run the nodes
+    ros2 param load my_params.yaml
+
+Another possibility is to load the params in the moment you run the node, for that, you can use:
+
+    ros2 run turtlesim turtlesim_node --ros-args --params-file my_params.yaml
+    
