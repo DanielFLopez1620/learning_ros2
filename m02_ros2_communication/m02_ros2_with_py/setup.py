@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = 'm02_ros_with_py'
+package_name = 'm02_ros2_with_py'
 
 setup(
     name=package_name,
@@ -15,12 +15,13 @@ setup(
     zip_safe=True,
     maintainer='dan1620',
     maintainer_email='dfelipe.lopez@gmail.com',
-    description='TODO: Package description',
-    license='TODO: License declaration',
+    description='A package for learning ROS2 Communication with rclpy',
+    license='BSD-3-Clause',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'hello_node = m02_ros_with_py.hello_node:main'
+            'hello_node = m02_ros2_with_py.hello_node:main',
+            'simple_turtle_mov = m02_ros2_with_py.simple_turtle_mov:main'
         ],
     },
 )
