@@ -21,7 +21,9 @@ setup(
     entry_points={
         'console_scripts': [
             'hello_node = m02_ros2_with_py.hello_node:main',
-            'simple_turtle_mov = m02_ros2_with_py.simple_turtle_mov:main'
+            'simple_turtle_mov = m02_ros2_with_py.simple_turtle_mov:main',
+            'pub_int64 = m02_ros2_with_py.int64_pub:main',
+            'sub_int64 = m02_ros2_with_py.int64_sub:main',
         ],
     },
 )
