@@ -56,11 +56,13 @@ The output in terminal, should mention some options like *draw_square*, *mimic*,
 
 The previous command, should have opened a new window, like this one:
 
-TODO: Add image of turtlesim
+![turtlesim_node](/m01_ros2_environment/resources/the_turtlesim.png)
 
 Say hello to your turtle friend, but if you think he is not a good friend (because it does nothing), you can run another executable:
 
     ros2 run turtlesim turtle_teleop_key # Run it on a new terminal
+
+![turtlesim_teleop](/m01_ros2_environment/resources/turtle_teleop.png)
 
 With this executable you can play with your friend, by using the key arrows. This is one example of communication, and we can make more with this little turtle, just wait until we get to know more about *nodes*, *topics*, *services* and *actions*.
 
@@ -70,17 +72,21 @@ There is a tool that let you see how the communication between nodes works, it i
 
     sudo apt-get install ~nros-humble-rqt*
 
-The '*' at the end of the command means that we want to install all the rqt plugins or related packages. To test it (make sure you have some nodes running, for example, the turtlesim), you can run:
+The '*' at the end of the command means that we want to install all the rqt plugins or related packages. To test it (make sure you have some nodes running, for example, the turtlesim_node and the turtlesim_teleop), you can run:
 
     rqt
 
 The display will look like this: 
 
-TODO: Add image of rqt
+![rqt](/m01_ros2_environment/resources/plain_rqt.png)
 
-To watch something, you need to go to....
+To watch something, you need to go to the plugins and select the one of your interest, for example, topics which are being used by the turtlesim nodes, here you can explore the publisher, check message types or monitore the topics.
+
+![rqt_graph](/m01_ros2_environment/resources/rqt_graph.png)
 
 Another interesting feature, is that this allows you to publish/subscribe  (*topics*) and request/call (*services*) to nodes, for instance, with turtlesim we can spawn more turtles, in the service plugin we select the **/spawn** service, we add the info we want and then call the service. Now we have two turtles.
+
+If you feel lost, do not worry, we will cover more on this later in this module and its implementation in the next modules.
 
 Before we move on, make sure you close (Ctrl+C) all the nodes.
 
