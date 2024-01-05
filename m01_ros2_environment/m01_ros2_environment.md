@@ -92,7 +92,7 @@ Before we move on, make sure you close (Ctrl+C) all the nodes.
 
 # A node, a world:
 
-TODO: Add image of nodes, topics, services and actions
+![spoiler-communication](/m01_ros2_environment/resources/node-topic-service-action.png)
 
 Nodes are the basic unit and they have the ability to communicate with other nodes, for executing a node, remember that you will need:
 
@@ -104,7 +104,7 @@ But here we do not know the node of the name, just the executable that invokes i
 
 If you run this, maybe there won't be output. So try to run it after having nodes like the executables in *turtlesim* and check the results.
 
-TODO: Add image of ros2 node list
+![ros2_node_list](/m01_ros2_environment/resources/ros2_node_list.png)
 
 There would be cases where you want to change the name of the node, for that we use **remapping**:
 
@@ -120,7 +120,7 @@ After the command you should be able to wath the subscribers, publishers, client
 
 The main basic communication for ROS2, it is based in four parts:
 
-TODO: Add image of topics.
+![Topics](/m01_ros2_environment/resources/topics.png)
 
 - **Message:** The information you want to share between nodes. It can be a data type or a custom type.
 - **Topic:** The way messages is moved between nodes, it allows the communication of a message like a channel, so it allows one-to-one, one-to-many or many-to-many communication.
@@ -170,7 +170,7 @@ Let's play with our turtle friends to get to know more about services, Make sure
 
     ros2 service list
 
-TODO: Add images of turtle services
+![Services](/m01_ros2_environment/resources/service.png)
 
 Now, you need to understand them, so you can take advantage of them, the services have two parts the **request** (the info you provide to the server) and the **response** (the result of processing the info provided). Also, they have different types, and as you can guess, you can use:
 
@@ -189,7 +189,7 @@ Here it should display a text divided by "---" which is the indicator/separator 
 
     ros2 service call /spawn  turtlesim/srv/Spawn "{x:2, y:5, theta:0.5, name:'Dan'}"
 
-TODO: Image of new turtle
+![spawn_turtle](/m01_ros2_environment/resources/new_turtle.png)
 
 # Parameters for node configurations:
 
@@ -199,7 +199,7 @@ After you have run the turtle nodes, let's check the list of params of this node
 
     ros2 param list
 
-TODO: Add image of params list.
+![ros2_param_list](/m01_ros2_environment/resources/ros2_param_list.png)
 
 Know, as in programming a certain languages, you can **get** or **set** this parameters, but you need to know before hand how they work and which values do they use.
 
