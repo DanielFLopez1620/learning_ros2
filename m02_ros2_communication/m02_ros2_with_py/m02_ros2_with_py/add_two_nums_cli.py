@@ -4,7 +4,7 @@ import sys
 
 from example_interfaces.srv import AddTwoInts
 import rclpy
-import rclpy.node import Node
+from rclpy.node import Node
 
 
 class SimpleAdderCli(Node):

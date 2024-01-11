@@ -38,3 +38,37 @@ Each time you add/create a package you will need to build them and adds the exec
     cd ~/<your_workspace>
     colcon build
     source install/local_setup.bash
+
+## Packages are the key:
+
+Once you have set up your workspace, you could have asked... it seems boring... and yes... you do not have something to execute there, or even something saved there. But what should be in the workspace? Well, to be more precise, what should be in the *src* directory of our workspace, the answer here is: **Packages**.
+
+A package is a collection of directories and files that defines an organizatio unit for your ROS2 code. It also allows you to share it with others. The packages can work with two different aments, which are *CMake* or *Python*, and this implies different package structures.
+
+On one hand, the case of **CMake**, the minimum required content refers to:
+
+- **CMakeLists.txt**: Which describes how the code will be build (mostly related with C/C++).
+- **include/<package_name>**: Is the directory that contains the headers of the package.
+- **package.xml**: Meta description of the package.
+- **src/**: Directory for source code.
+
+On the other hand, we have **Python**, and the minimum structure refers to:
+
+- **package.xml**: Meta description of the package.
+- **resource/<package_name>**: Marker files for the package
+- **setup.cfg**: Required for setting up executables.
+- **setup.py**: File with instructions to install the package.
+- **<package_name>/**: Containts the __init__.py for finding your package.
+
+The packages in your workspace doesn't need to be of the same ament, and you can have as many as your computer and memory allows it.
+
+Now, let's create one package:
+
+
+
+# Troubleshooting:
+
+- If you get a warn equal or related to: "SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
+  warnings.warn (...)". It means that the package 'setuptools' isn't in the proper version for ros2, you can resolve (according to [ros.answer](https://answers.ros.org/question/396439/setuptoolsdeprecationwarning-setuppy-install-is-deprecated-use-build-and-pip-and-other-standards-based-tools/)) with the next command (only ROS2 Humble):
+
+    pip install setuptools==58.2.0
