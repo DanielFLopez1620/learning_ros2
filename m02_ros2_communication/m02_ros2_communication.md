@@ -117,6 +117,40 @@ But... how can this be implemented? For this we will use client libraries for Py
 
 ## Python and ROS2 Communication:
 
+As you may suppose, we will need a package with **amment_python** set up, we will be working with the package [m02_ros2_with_py](/m02_ros2_communication/m02_ros2_with_py/) and you can make the modifications you want to learn more, or even duplicate files and then edit them to practice, but if you want to create your own package, you can always do it, remember that you can use:
+
+    ros2 pkg create --build-type ament_python --license Apache-2.0 <your_python_package_name>
+
+All the codes that aims to use Python muss import the **rclpy** (ROS Client Library for Python) to be compatible with ROS, with that say, let's move to our first examples.
+
+### Publisher and subscriber with Python:
+
+We will create a simple publisher and subscriber for integers of 64 bits, keep in mind that most of the implementation in ROS2 are OOP (Object Oriented Programming), if you are not familiarized with the topic, check the resources at the bottom.
+
+NOTE: Almost of the basic types you used in all-days programming (stiring, ints, floats...) can be used in ROS for communication, by using the official implementation of them in the **std_msgs** or **standard message**, more details can be found on the official site of documentation for [std_msgs](https://docs.ros2.org/galactic/api/std_msgs/index-msg.html)s
+https://docs.ros2.org/galactic/api/std_msgs/index-msg.html
+The publisher in our case will be the [int64_pub.py](/m02_ros2_communication/m02_ros2_with_py/m02_ros2_with_py/int64_pub.py) file, you can check the comments to understand it better, but the idea for implementing it follows the next items:
+
+1. Import **rclpy** and the node libraries.
+2. Import the message type of your interest (in this case is **Int64** from **std_msgs**).
+3. Create a class that inherates from **Node**
+4. In the constructor, give a name to the node, create an instance of publisher objectwith the type, topic name and queue. Also, you may need a timer.
+5. Create a method of the class as a timer callback that will publish when the time indicates it.
+6. In the main, instance an object of your node and make a **spin** (a loop in ROS to still publishing when done the previous one).
+7. Do not forget to call the destroy and the shutdown functions.
+
+And for the case of the subscriber, in our case the [int64_sub.py](/m02_ros2_communication/m02_ros2_with_py/m02_ros2_with_py/int64_sub.py), the steps are the following:
+
+1. 1. Import **rclpy** and the node libraries.
+2. Import the message type of your interest (in this case is **Int64** from **std_msgs**). Must be the same of the publisher.
+3. Create a class that inheritates from **Node**
+4. In the constructor, give the name to the node, declare an instance of object with a type, topicname, callback function (used for reading and processing the info received) and the queue, do not forget that this should be compatible with the publisher.
+5. Define a method that will act as your subscriber callback function to print/process/save the info received.
+6. In the main, instance an object of your subscriber node and make a spin of it.
+7. Finally, add the destroyer method and shutdown function.
+
+This are the codes to implement this types of communication, but they aren't ready to be executed, first you will need to make sure that your packages has the related dependencies. As we mentined before, the python codes will need **rclpy**, and also they are using msg types that comes with the **std_msgs** pack...
+
 ## C++ and ROS2 Communication:
 
 
