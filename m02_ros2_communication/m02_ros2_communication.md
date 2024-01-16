@@ -149,7 +149,28 @@ And for the case of the subscriber, in our case the [int64_sub.py](/m02_ros2_com
 6. In the main, instance an object of your subscriber node and make a spin of it.
 7. Finally, add the destroyer method and shutdown function.
 
-This are the codes to implement this types of communication, but they aren't ready to be executed, first you will need to make sure that your packages has the related dependencies. As we mentined before, the python codes will need **rclpy**, and also they are using msg types that comes with the **std_msgs** pack...
+This are the codes to implement this types of communication, but they aren't ready to be executed, first you will need to make sure that your packages has the related dependencies. As we mentined before, the python codes will need **rclpy**, and also they are using msg types that comes with the **std_msgs** package, for that we will need to modify the *[package.xml](/m02_ros2_communication/m02_ros2_with_py/package.xml)* file of our package and add the next tags:
+
+    <exec_depend>rclpy<exec_depend>
+    <exec_depend>std_msgs<exec_depend>
+
+**NOTE**: In our package.xml file, the <exec_depend> tag was replaced with <depend> which is also valid. Also, if you add a package (in this case, turtlesim) and it already has the dependency of std_msgs, you do not need to define it again in the tag. 
+
+Then to make sure, you can execute the code, you will need to configure the **entry points** of your *[setup.py](/m02_ros2_communication/m02_ros2_with_py/setup.py)* file, the corresponding structure that is "<exec_name> = <package_name>.<node_name>:main", in the present case would be:
+
+    entry_points={
+            'console_scripts': [
+                    'pub_int64 = m02_ros2_with_py.int64_pub:main',
+                    'sub_int64 = m02_ros2_with_py.int64_sub:main',
+            ],
+    },
+
+Finally, before executing, make sure the the *[setup.cfg](/m02_ros2_communication/m02_ros2_with_py/setup.cfg)* file is propertly populated like this:
+
+    [develop]
+    script_dir=$base/lib/<package_name>
+    [install]
+    install_scripts=$base/lib/<package_name>
 
 ## C++ and ROS2 Communication:
 
