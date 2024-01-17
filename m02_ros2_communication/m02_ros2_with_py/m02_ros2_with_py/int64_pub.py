@@ -5,11 +5,10 @@ import random
 import rclpy
 from rclpy.node import Node
 
-# -------------------- ROS2 Messages ----------------------------------------
+# -------------------- ROS2 Messages -----------------------------------------
 from std_msgs.msg import Int64
 
-
-
+# ------------------- Publisher Class Node ------------------------------
 class MyInt64Publisher(Node):
     """
     Simple publisher of an integer (64 bit) in a specific time range.
@@ -55,6 +54,7 @@ class MyInt64Publisher(Node):
         self.get_logger().info('Publishing integer: %d' % msg.data )
 
 
+# -------------------------- Implementation -----------------------------------
 def main(args=None):
     """
     Simple program to publish an integer with rclpy by implementing a publisher 

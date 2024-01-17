@@ -1,10 +1,13 @@
 # !/usr/bin/env python3
 
+# ---------------------------- ROS2 Dependencies ------------------------------
 import rclpy
 from rclpy.node import Node
 
+# ---------------------------- ROS2 Messages -----------------------------------
 from std_msgs.msg import Int64
 
+# ---------------------------- Subscriber Class Node ---------------------------
 class MyInt64Subscriber(Node):
     """
     Simple subscriber that search for the /num_int64 info and display it.
@@ -41,7 +44,7 @@ class MyInt64Subscriber(Node):
         self.get_logger().info("Recieving the integer: %d" % msg.data)
 
 
-
+# ------------------------------ Implementation -------------------------------
 def main(args=None):
     """
     Simple program to recieving integers by subscribing to the /num_int64 
