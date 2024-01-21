@@ -24,6 +24,8 @@ setup(
             'simple_turtle_mov = m02_ros2_with_py.simple_turtle_mov:main',
             'pub_int64 = m02_ros2_with_py.int64_pub:main',
             'sub_int64 = m02_ros2_with_py.int64_sub:main',
+            'add_nums_cli = m02_ros2_with_py.add_two_nums_cli:main', 
+            'add_nums_srv = m02_ros2_with_py.add_two_nums_srv:main', 
         ],
     },
 )

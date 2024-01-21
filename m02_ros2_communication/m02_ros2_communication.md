@@ -141,7 +141,7 @@ The publisher in our case will be the [int64_pub.py](/m02_ros2_communication/m02
 
 And for the case of the subscriber, in our case the [int64_sub.py](/m02_ros2_communication/m02_ros2_with_py/m02_ros2_with_py/int64_sub.py), the steps are the following:
 
-1. 1. Import **rclpy** and the node libraries.
+1. Import **rclpy** and the node libraries.
 2. Import the message type of your interest (in this case is **Int64** from **std_msgs**). Must be the same of the publisher.
 3. Create a class that inheritates from **Node**
 4. In the constructor, give the name to the node, declare an instance of object with a type, topicname, callback function (used for reading and processing the info received) and the queue, do not forget that this should be compatible with the publisher.
@@ -171,6 +171,70 @@ Finally, before executing, make sure the the *[setup.cfg](/m02_ros2_communicatio
     script_dir=$base/lib/<package_name>
     [install]
     install_scripts=$base/lib/<package_name>
+
+To execute them, you will need to build them and configure your terminal, the commands are:
+    
+    cd ~/<your_workspace>
+    colcon build --packages-select m02_ros2_with_py
+    source install/local_setup.bash
+
+Then, in two terminal, you have two run one of the next to commands:
+
+    ros2 run m02_ros2_with_py pub_int64
+    ros2 run m02_ros2_with_py sub_int64
+
+After running this, you should be able to see that in one terminal, the pub is sending information, and the sub is receiving information, like the following case:
+
+![py_pub_sub_int64](/m02_ros2_communication/resources/rclpy_int64_pub_sub.png)
+****
+If you want to practice and learn more, you can try to change the type of message, for example, send a float instaed of an integer, or go on and discover more **std_msgs**.
+
+### Servers and client with Pyhton:
+
+The basic for using services is that there is a request and a response, the first one is sent by the client and received by the server, which should process it and send a response.
+
+As we already have our package, we will only add the sources code and the related dependencies to run the executables.  In the first place we will use a example interface provided in the ROS2 examples, then we will create a custom **srv** file.
+
+For using the example interfaces (and this apply when using messages or services present in other packages), you will need to add them in the dependencies of your package, most specific in hte *package.xml*, in this case, you need to add:
+
+    <depend>example_interfaces</depend>
+
+The definition that we will focus is *AddTwoInts* which structure is:
+
+    int64 a
+    int64 b
+    ---
+    int64 sum
+
+Remember that the characters **---** indicate the separation of the request and the response of the service. with this said, no it is time to explore the creation of the nodes.
+
+On one hand, we have the service server node ([add_two_nums_srv.py](/m02_ros2_communication/m02_ros2_with_py/m02_ros2_with_py/add_two_nums_srv.py)), the steps for creation are:
+
+1. Add the imports of ROS related with the **rclpy** library
+2. Add the imports related with the service file, in this case, we will use the *example_interfaces* for *AddTwoInts*.
+3. Create a class for the service that inheritates from the Node class.
+4. Define a callback function that will manage the request, in this case, the sum of two numbers.
+5. Define the construct for initialize the node nam and instance a service object, which must include the *srv* description and channel, and the callback.
+6. For the main implementation, initialize **rclpy**, instance a server object and use a spin to allow the server for making more than one connection.
+
+On the other hand, you need a client to make use of the server service, for this check the code [add_two_nums_cli.py](/m02_ros2_communication/m02_ros2_with_py/m02_ros2_with_py/add_two_nums_cli.py) while considering the steps that are listed as follow: 
+
+1. Add the imports of ROS related with the **rclpy** library.
+2. Import the related service file, should be consistent with the ones in the server.
+3. Create a class that inheritastes from the node.
+4. Define a constructor that initialize the node, instance a client object and implement a timeout that wait for the service to be available.
+5. Define a request method that will pass the arguments of the request, call the server and get a response as a return.
+6. In the main implementation initialize **rclpy**, instance a client object, receive or store values for the request, call the request method with the values considered and use the returned value for future processes.
+
+NOTE: If you want you receive parameters from the user with the terminal, you will need an implementation of the *sys* library to manage the inputs in your code, this is shown in the code of the client. But it is not the only way to recieve values for the request.
+
+After you have written/checked your codes, you should remember to add the entrypoints so you can execute them after building your packages, in this case, add the next info to your [setup.py](/m02_ros2_communication/m02_ros2_with_py/setup.py) file:
+
+
+
+
+
+
 
 ## C++ and ROS2 Communication:
 
