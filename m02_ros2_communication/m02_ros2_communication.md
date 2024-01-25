@@ -195,7 +195,7 @@ The basic for using services is that there is a request and a response, the firs
 
 As we already have our package, we will only add the sources code and the related dependencies to run the executables.  In the first place we will use a example interface provided in the ROS2 examples, then we will create a custom **srv** file.
 
-For using the example interfaces (and this apply when using messages or services present in other packages), you will need to add them in the dependencies of your package, most specific in hte *package.xml*, in this case, you need to add:
+For using custom interfaces that are present in other packages (and this apply when using messages or services present in other packages), you will need to add them in the dependencies of your package, most specific in hte *package.xml*, in this case, you need to add:
 
     <depend>example_interfaces</depend>
 
@@ -207,6 +207,8 @@ The definition that we will focus is *AddTwoInts* which structure is:
     int64 sum
 
 Remember that the characters **---** indicate the separation of the request and the response of the service. with this said, no it is time to explore the creation of the nodes.
+
+**NOTE:** For implementing your own custom messages/services you will need to use packages with ament_cmake, this will be covered more ahead in this module when we got to talk about CPP, rclcpp and ament_cmake. 
 
 On one hand, we have the service server node ([add_two_nums_srv.py](/m02_ros2_communication/m02_ros2_with_py/m02_ros2_with_py/add_two_nums_srv.py)), the steps for creation are:
 
@@ -230,9 +232,38 @@ NOTE: If you want you receive parameters from the user with the terminal, you wi
 
 After you have written/checked your codes, you should remember to add the entrypoints so you can execute them after building your packages, in this case, add the next info to your [setup.py](/m02_ros2_communication/m02_ros2_with_py/setup.py) file:
 
+    'add_nums_cli = m02_ros2_with_py.add_two_nums_cli:main', 
+    'add_nums_srv = m02_ros2_with_py.add_two_nums_srv:main', 
 
+Then, you will need to build it, source and finally you can execute them, the commands are listed here
 
+    # Terminal 1
+    cd ~/<your_workspace>
+    colcon build --packages-select m02_ros2_with_py
+    source install/local_setup.bash
+    ros2 run m02_ros2_with_py add_nums_srv
 
+    # Terminal 2 
+    cd ~/<your_workspace>
+    source install/local_setup.bash
+    ros2 run m02_ros2_with_py add_nums_cli 16 20
+
+The arguments passed in the client are mandatory to achieve the sum, if the command is send without them you will get a warn and the node will close itself. In this example, the client will end process after it displays the message, but you can invoke it as many times as you want with all the numbers you can imagine.
+
+Now, let's try to use an official service provided by the packages, in this case, we can explore the **std_srvs** (standard services), if you want to know more about them, you can run:
+
+    ros2 interface list | grep std_srvs
+
+You will obtain a list that contains the *Empty*, *SetBool* and *Trigger* services, if you want to see the service description you can run:
+
+    ros2 interface show std_srvs/srv/SetBool
+
+Which will show you this:
+
+    bool data # e.g. for hardware enabling / disabling
+    ---
+    bool success   # indicate successful run of triggered service
+    string message # informational, e.g. for error message
 
 
 

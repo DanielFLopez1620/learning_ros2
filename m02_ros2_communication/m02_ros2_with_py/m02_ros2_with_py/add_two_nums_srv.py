@@ -43,6 +43,8 @@ class SimpleAdderSrv(Node):
         """
         response.sum = request.a + request.b 
         self.get_logger().info("Request: (%d , %d)" % (request.a, request.b))
+        
+        return response
 
 # ---------------------------- Implementation ---------------------------------
 
