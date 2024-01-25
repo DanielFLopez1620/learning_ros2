@@ -191,9 +191,11 @@ If you want to practice and learn more, you can try to change the type of messag
 
 ### Servers and client with Pyhton:
 
-The basic for using services is that there is a request and a response, the first one is sent by the client and received by the server, which should process it and send a response.
+The basic for using services is that there is a request and a response, the first one is sent by the client and received by the server, which should process it and send a response. As we already have our package, we will only add the sources code and the related dependencies to run the executables.
 
-As we already have our package, we will only add the sources code and the related dependencies to run the executables.  In the first place we will use a example interface provided in the ROS2 examples, then we will create a custom **srv** file.
+Always keep in mind that for using message or services, we need to have an already defined implementation, which can be in another package that we can add to the depedencies of our package. For implementing your own custom messages/services you will need to use packages with ament_cmake and there write the raw implementation for **msg**, **srv** and **act**, this will be covered more ahead in this module when we got to talk about CPP, rclcpp and ament_cmake. For now, we will use two interfaces, one in the package called **example_interfaces** and another one in the **std_srvs**. If **std_msgs** work for you and you made the desktop installation, you may probably have both, but if you do not, you can try installing it with apt, for example:
+
+    sudo apt install ros-humble-example-interfaces
 
 For using custom interfaces that are present in other packages (and this apply when using messages or services present in other packages), you will need to add them in the dependencies of your package, most specific in hte *package.xml*, in this case, you need to add:
 
@@ -207,8 +209,8 @@ The definition that we will focus is *AddTwoInts* which structure is:
     int64 sum
 
 Remember that the characters **---** indicate the separation of the request and the response of the service. with this said, no it is time to explore the creation of the nodes.
-
-**NOTE:** For implementing your own custom messages/services you will need to use packages with ament_cmake, this will be covered more ahead in this module when we got to talk about CPP, rclcpp and ament_cmake. 
+ 
+In the ROS tutorials, there is a simple adder implementation, here we will try the same but with some updates and improvements.
 
 On one hand, we have the service server node ([add_two_nums_srv.py](/m02_ros2_communication/m02_ros2_with_py/m02_ros2_with_py/add_two_nums_srv.py)), the steps for creation are:
 

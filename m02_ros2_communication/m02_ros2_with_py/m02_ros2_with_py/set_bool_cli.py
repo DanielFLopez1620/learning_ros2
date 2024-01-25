@@ -8,7 +8,7 @@ import rclpy
 from rclpy.node import Node
 
 # ------------------ ROS2 Message/Srv Definition -----------------------------
-from example_interfaces.srv import SetBool
+from std_srvs.srv import SetBool
 
 # ------------------ Client Node Class ----------------------------------------
 class BoolSetterCli(Node):
@@ -33,7 +33,7 @@ class BoolSetterCli(Node):
         Constructor that initialize the client node, sets the client for the
         addition of two nums and wait until service is ready.
         """
-        super().__init__("set_bool_cli")
+        super().__init__("bool_setter_cli")
         self.cli = self.create_client(SetBool, 'just_a_boolean')
         while not self.cli.wait_for_service(timeout_sec = 1.0):
             self.get_logger().info('Waiting for server...')
@@ -58,8 +58,8 @@ class BoolSetterCli(Node):
         """
         self.req.data = data
         self.future = self.cli.call_async(self.req)
-        rclpy.spin_until_future_comple(self, self.future)
-        return self.future.succes(), self.future.message()
+        rclpy.spin_until_future_complete(self, self.future)
+        return self.future.result()
 
 # ---------------------------- Implementation --------------------------------
 def main():
@@ -70,10 +70,12 @@ def main():
     cli_setter = BoolSetterCli()
     
     # Get response by waiting to request to be received
-    response = cli_setter.send_request(1 if int(sys.argv[1]) > 0 else 0)
+    response = cli_setter.cli_request(True if int(sys.argv[1]) > 0 else False)
 
-    # Log result obtainer
-    cli_setter.get_logger().info('Result of the addition is: %d', response.sum)
+    # Log result obtained
+    cli_setter.get_logger().info('Process was a %s' %
+                                'success' if response.success else 'failure')
+    cli_setter.get_logger().info('Message received was: %s' % response.message)
 
     # Destroyed of class and shutdown of resources used
     cli_setter.destroy_node()

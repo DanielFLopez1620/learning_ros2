@@ -9,6 +9,7 @@ from std_srvs.srv import SetBool
 
 # --------------------------- Python Dependencies -----------------------------
 from random import seed, randint
+import time
 
 # ---------------------------- Server Class Node ------------------------------
 class BoolSetterSrv(Node):
@@ -47,13 +48,15 @@ class BoolSetterSrv(Node):
         response : Response object
             For updating the value of the sum
         """
-        seed(10)
+        seed(time.time())
         
-        response.success = false if (randint(2,20)%2) == 0 else true
+        response.success = False if (randint(2,20)%2) == 0 else True
         response.message = "OK" if response.success else "Random error spawned"
 
         self.get_logger().info("Request: Set bool to %d" % (1 if response.success 
                                                               else 0))
+
+        return response                                                    
 
 # ---------------------------- Implementation ---------------------------------
 
