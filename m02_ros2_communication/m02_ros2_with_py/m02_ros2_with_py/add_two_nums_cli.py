@@ -69,15 +69,24 @@ def main():
     # Intance adder client object
     cli_adder = SimpleAdderCli()
     
-    # Get response by waiting to request to be received
-    response = cli_adder.cli_request(int(sys.argv[1]), int(sys.argv[2]))
+    # Check if params are valid
+    if len(sys.argv) != 3:
+        # Send warn with the correct usage of the node
+        cli_adder.get_logger().warn(
+            'Usage: ros2 run add_nums_cli <num1> <num2>')
+    else:
+        # Get response by waiting to request to be received
+        response = cli_adder.cli_request(int(sys.argv[1]), int(sys.argv[2]))
 
-    # Log result obtainer
-    cli_adder.get_logger().info('Result of the addition is: %d' % response.sum)
-
+        # Log result obtainer
+        cli_adder.get_logger().info('Result of the addition is: %d' 
+                                    % response.sum)
+        
     # Destroyed of class and shutdown of resources used
     cli_adder.destroy_node()
     rclpy.shutdown()
+
+
 
 if __name__ == '__main__':
     main()

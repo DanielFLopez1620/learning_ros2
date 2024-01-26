@@ -69,17 +69,24 @@ def main():
     # Intance adder client object
     cli_setter = BoolSetterCli()
     
-    # Get response by waiting to request to be received
-    response = cli_setter.cli_request(True if int(sys.argv[1]) > 0 else False)
+    # Check if params were received correctly
+    if len(sys.argv) != 2:
+        cli_setter.get_logger().warn("Usage: ros2 run set_bool_cli <1 or 0>")
+    else:
+        # Get response by waiting to request to be received
+        response = cli_setter.cli_request(True if int(sys.argv[1]) > 0 
+                                          else False)
 
-    # Log result obtained
-    cli_setter.get_logger().info('Process was a %s' %
-                                'success' if response.success else 'failure')
-    cli_setter.get_logger().info('Message received was: %s' % response.message)
+        # Log result obtained
+        cli_setter.get_logger().info('Process was a %s' %
+                                    'success' if response.success 
+                                    else 'failure')
+        cli_setter.get_logger().info('Message received was: %s' 
+                                      % response.message)
 
-    # Destroyed of class and shutdown of resources used
-    cli_setter.destroy_node()
-    rclpy.shutdown()
+        # Destroyed of class and shutdown of resources used
+        cli_setter.destroy_node()
+        rclpy.shutdown()
 
 if __name__ == '__main__':
     main()

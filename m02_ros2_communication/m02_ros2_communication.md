@@ -250,6 +250,8 @@ Then, you will need to build it, source and finally you can execute them, the co
     source install/local_setup.bash
     ros2 run m02_ros2_with_py add_nums_cli 16 20
 
+TODO: Add image of adding two nums.
+
 The arguments passed in the client are mandatory to achieve the sum, if the command is send without them you will get a warn and the node will close itself. In this example, the client will end process after it displays the message, but you can invoke it as many times as you want with all the numbers you can imagine.
 
 Now, let's try to use an official service provided by the packages, in this case, we can explore the **std_srvs** (standard services), if you want to know more about them, you can run:
@@ -267,10 +269,25 @@ Which will show you this:
     bool success   # indicate successful run of triggered service
     string message # informational, e.g. for error message
 
+You can check the implementation for the server in the [set_bool_srv.py](/m02_ros2_communication/m02_ros2_with_py/m02_ros2_with_py/set_bool_srv.py) file, and the client in the [set_bool_cli.py](/m02_ros2_communication/m02_ros2_with_py/m02_ros2_with_py/set_bool_cli.py), keep in mind, that this isn't a serious implementation as it uses random states and it is only a short example. Do not forget to add the *entrypoints* in the [setup.py](/m02_ros2_communication/m02_ros2_with_py/setup.py) file:
 
+    'set_bool_srv = m02_ros2_with_py.set_bool_srv:main',
+    'set_bool_cli = m02_ros2_with_py.set_bool_cli:main',
+
+After building, you should be able to execute them with the next commands:
+
+    ros2 run m02_ros2_with_py set_bool_srv
+    ros2 run m02_ros2_with_py set_bool_cli 1
+
+TODO: Add image of set bool in py
 
 ## C++ and ROS2 Communication:
 
+Now we change of language, then we will need a new package, bu tthis time we will use **amment_cmake** set up, we will be working with the package [m02_ros2_with_cpp](/m02_ros2_communication/m02_ros2_with_cpp/) and you can make the modifications you want to learn more, or even duplicate files and then edit them to practice, but if you want to create your own package from the beginning, you can use:
+
+    ros2 pkg create --build-type ament_cmake --license Apache-2.0 <your_python_package_name>
+
+All the codes that aims to use C++ muss include the **rclcpp** (ROS Client Library for C++) to be compatible with ROS, now, let's explore the same cases studied with Python "traslated" to C++.
 
 
 # Troubleshooting:
