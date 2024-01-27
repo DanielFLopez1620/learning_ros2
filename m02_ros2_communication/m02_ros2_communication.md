@@ -289,6 +289,8 @@ Now we change of language, then we will need a new package, bu tthis time we wil
 
 All the codes that aims to use C++ muss include the **rclcpp** (ROS Client Library for C++) to be compatible with ROS, now, let's explore the same cases studied with Python "traslated" to C++.
 
+Keep in mind that when using **ament_cmake**, you will have two folders by default the *include* directory where you must add you libraries and header files, and the *src* where you add the source code (for future executables). So, let's start our intro to using C++.
+
 
 # Troubleshooting:
 
