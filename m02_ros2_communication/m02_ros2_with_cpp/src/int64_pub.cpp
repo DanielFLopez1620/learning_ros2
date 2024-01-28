@@ -18,12 +18,13 @@
 
 #include <string>     // Management and usage of strings.
 
-#include <cstdlib>
+#include <cstdlib>    // General purpose functions 
 
 // ------------------------ rclcpp headers -----------------------------------
 
 #include "rclcpp/rclcpp.hpp"        // Proper include for using rclcpp 
-#include "std_msgs/msg/int64.hpp"  // Import of standard message for int64
+
+#include "std_msgs/msg/int64.hpp"   // Include of standard message for int64
 
 // ------------------------ Implementations of namespaces --------------------
 using namespace std::chrono_literals;
@@ -44,9 +45,9 @@ class IntPub : public rclcpp::Node
      * instance a publisher object for integers by using the 'num_int64'
      * topic and linking a callback with a timer.
     */
-    IntPub() : Node("minimal_publisher"), count_(0)
+    IntPub() : Node("int64_pub"), count_(0)
     {
-      publisher_ = this->create_publisher<std_msgs::msg::String>("topic", 10);
+      publisher_ = this->create_publisher<std_msgs::msg::Int64>("num_int64", 10);
       timer_ = this->create_wall_timer(
       500ms, std::bind(&IntPub::timer_callback, this));
     }
@@ -69,20 +70,31 @@ class IntPub : public rclcpp::Node
       message.data = rand() % (ul - ll + 1) + ll;
 
       // Log and publish info
-      RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message.data.c_str());
-
+      RCLCPP_INFO(this->get_logger(), "Publishing (%d): %d", count_ ,message.data);
       publisher_->publish(message);
     }
 
+    // Private shared pointer for timer instance
     rclcpp::TimerBase::SharedPtr timer_;
-    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
+
+    // Private shared pointer for publisher instance
+    rclcpp::Publisher<std_msgs::msg::Int64>::SharedPtr publisher_;
+    
+    // Counter
     size_t count_;
 };
 
+
+
 int main(int argc, char * argv[])
 {
+  // ROS Client Library for C++ initialization
   rclcpp::init(argc, argv);
+
+  // Spin the publisher 
   rclcpp::spin(std::make_shared<IntPub>());
+
+  // Closing node
   rclcpp::shutdown();
   return 0;
 }
