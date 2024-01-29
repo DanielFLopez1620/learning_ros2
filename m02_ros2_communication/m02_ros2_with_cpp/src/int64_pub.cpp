@@ -70,8 +70,11 @@ class IntPub : public rclcpp::Node
       message.data = rand() % (ul - ll + 1) + ll;
 
       // Log and publish info
-      RCLCPP_INFO(this->get_logger(), "Publishing (%d): %d", count_ ,message.data);
+      RCLCPP_INFO(this->get_logger(), "Publishing (%ld): %ld", count_ ,message.data);
       publisher_->publish(message);
+
+      this->count_++;
+
     }
 
     // Private shared pointer for timer instance

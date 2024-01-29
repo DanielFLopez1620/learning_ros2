@@ -27,7 +27,7 @@ using std::placeholders::_1;
  * Simple class for a subscriber of integers (64 bits) which inherits from the 
  * Node class
 */
-class MinimalSubscriber : public rclcpp::Node
+class IntSub : public rclcpp::Node
 {
   // Public interface
   public:
@@ -37,25 +37,37 @@ class MinimalSubscriber : public rclcpp::Node
      * and linking a callback for displaying the message received.
      * 
     */
-    MinimalSubscriber()
-    : Node("int64_sub")
+    IntSub() : Node("int64_sub")
     {
-      subscription_ = this->create_subscription<std_msgs::msg::String>(
-      "topic", 10, std::bind(&MinimalSubscriber::topic_callback, this, _1));
+      subscription_ = this->create_subscription<std_msgs::msg::Int64>(
+      "num_int64", 10, std::bind(&IntSub::num_callback, this, _1));
     }
 
+  // Private interface
   private:
-    void topic_callback(const std_msgs::msg::String & msg) const
+    /**
+     * Callback that will print the message received.
+     * 
+     * @param msg Pointer to the message received
+    */
+    void num_callback(const std_msgs::msg::Int64 & msg) const
     {
-      RCLCPP_INFO(this->get_logger(), "I heard: '%s'", msg.data.c_str());
+      RCLCPP_INFO(this->get_logger(), "Message received: '%ld'", msg.data);
     }
-    rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_;
+
+    // Private shared pointer for subscriber instance
+    rclcpp::Subscription<std_msgs::msg::Int64>::SharedPtr subscription_;
 };
 
 int main(int argc, char * argv[])
 {
+  // ROS Client Library for C++ initialization
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<MinimalSubscriber>());
+
+  // Spin until message is sent
+  rclcpp::spin(std::make_shared<IntSub>());
+
+  // Closing node
   rclcpp::shutdown();
   return 0;
 }
