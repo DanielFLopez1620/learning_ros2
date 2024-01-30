@@ -1,20 +1,25 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
+  <!-- _________________________ Adding info of the package __________________-->
   <name>m02_ros2_with_cpp</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="dfelipe.lopez@gmail.com">dan1620</maintainer>
+  <description>A package for learning ROS2 communication with rclcpp</description>
+  <maintainer email="dfelipe.lopez@gmail.com">DanielFLopez1620</maintainer>
   <license>BSD-3-Clause</license>
-
+  
+  <!-- ___________________ Build tool (python or cmake)_______________________-->
   <buildtool_depend>ament_cmake</buildtool_depend>
 
+  <!-- ___________________ Adding general dependencies _______________________-->
   <depend>rclcpp</depend>
   <depend>std_msgs</depend>
   
+  <!-- ___________________ Test related dependencies _________________________-->
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 
+  <!-- __________________ Exports to consider ________________________________-->
   <export>
     <build_type>ament_cmake</build_type>
   </export>
