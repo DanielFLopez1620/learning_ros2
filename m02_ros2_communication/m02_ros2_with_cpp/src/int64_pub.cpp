@@ -7,7 +7,7 @@
 
 // ------------------------- CPP standard Libraries --------------------------
 
-#include <chrono>     // For flexible collection of types that trask time with
+#include <chrono>     // For flexible collection of types that tracks time with
                       // varying degrees of precision.
 
 #include <functional> // Function objects library, related with hash functions,
@@ -87,8 +87,7 @@ class IntPub : public rclcpp::Node
     size_t count_;
 };
 
-
-
+// ----------------------------- MAIN PROGRAM ---------------------------------
 int main(int argc, char * argv[])
 {
   // ROS Client Library for C++ initialization

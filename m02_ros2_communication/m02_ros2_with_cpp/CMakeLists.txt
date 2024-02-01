@@ -31,12 +31,19 @@ ament_target_dependencies(pub_int64 rclcpp std_msgs)
 add_executable(sub_int64 src/int64_sub.cpp)
 ament_target_dependencies(sub_int64 rclcpp std_msgs)
 
+# Adding Two Nums Server
+add_executable(add_nums_srv src/add_two_nums_srv.cpp)
+ament_target_dependencies(add_two_nums_srv rclcpp std_msgs)
+
+# Adding Two Nums Client
+add_executable(add_nums_cli src/add_two_nums_cli.cpp)
+ament_target_dependencies(add_two_nums_cli rclcpp std_msgs)
+
 # Adding targets to the libraries
 install(TARGETS
   pub_int64
   sub_int64
   DESTINATION lib/${PROJECT_NAME})
 
-
-
+# Specify ament
 ament_package()

@@ -23,7 +23,7 @@ void add(const std::shared_ptr<example_interfaces::srv::AddTwoInts::Request>
          std::shared_ptr<example_interfaces::srv::AddTwoInts::Response>
             response);
 
-// ------------------------------- Main Program -------------------------------
+// ------------------------------- MAIN PROGRAM -------------------------------
 int main(int argc, char **argv)
 {
   // ROS CLient Library for C++ initialization
