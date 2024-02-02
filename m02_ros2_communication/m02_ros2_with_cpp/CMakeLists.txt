@@ -14,6 +14,8 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(example_interfaces REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
 
 #  Test specifications
 if(BUILD_TESTING)
@@ -22,6 +24,15 @@ if(BUILD_TESTING)
   set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
+
+# --------------------- Interface generation ----------------------------------
+
+rosidl_generate_interfaces(${PROJECT_NAME}
+  "msg/RarePoint.msg"
+  "srv/Answer.srv"
+  DEPENDENCIES std_msgs
+)
+
 
 # ------------------------- Adding executables --------------------------------
 # Int64 Publisher
@@ -33,16 +44,18 @@ ament_target_dependencies(sub_int64 rclcpp std_msgs)
 
 # Adding Two Nums Server
 add_executable(add_nums_srv src/add_two_nums_srv.cpp)
-ament_target_dependencies(add_two_nums_srv rclcpp std_msgs)
+ament_target_dependencies(add_nums_srv rclcpp example_interfaces)
 
 # Adding Two Nums Client
 add_executable(add_nums_cli src/add_two_nums_cli.cpp)
-ament_target_dependencies(add_two_nums_cli rclcpp std_msgs)
+ament_target_dependencies(add_nums_cli rclcpp example_interfaces)
 
 # Adding targets to the libraries
 install(TARGETS
   pub_int64
   sub_int64
+  add_nums_cli
+  add_nums_srv
   DESTINATION lib/${PROJECT_NAME})
 
 # Specify ament

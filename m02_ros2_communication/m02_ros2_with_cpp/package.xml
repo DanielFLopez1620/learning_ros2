@@ -10,10 +10,16 @@
   
   <!-- ___________________ Build tool (python or cmake)_______________________-->
   <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>rosidl_default_generators</buildtool_depend>
 
   <!-- ___________________ Adding general dependencies _______________________-->
   <depend>rclcpp</depend>
   <depend>std_msgs</depend>
+  <depend>example_interfaces</depend>
+
+  <!-- __________________ Adding execution dependencies_______________________-->
+  <exec_depend>rosidl_default_runtime</exec_depend>
+
   
   <!-- ___________________ Test related dependencies _________________________-->
   <test_depend>ament_lint_auto</test_depend>
