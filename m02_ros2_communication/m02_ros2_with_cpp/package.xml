@@ -8,24 +8,27 @@
   <maintainer email="dfelipe.lopez@gmail.com">DanielFLopez1620</maintainer>
   <license>BSD-3-Clause</license>
   
-  <!-- ___________________ Build tool (python or cmake)_______________________-->
+  <!-- ___________________ Build tool (python or cmake)_____________________-->
   <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>rosidl_default_generators</buildtool_depend>
 
-  <!-- ___________________ Adding general dependencies _______________________-->
+  <!-- ___________________ Adding general dependencies _____________________-->
   <depend>rclcpp</depend>
   <depend>std_msgs</depend>
   <depend>example_interfaces</depend>
 
-  <!-- __________________ Adding execution dependencies_______________________-->
+  <!-- __________________ Adding execution dependencies_____________________-->
   <exec_depend>rosidl_default_runtime</exec_depend>
 
   
-  <!-- ___________________ Test related dependencies _________________________-->
+  <!-- ___________________ Test related dependencies _______________________-->
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 
-  <!-- __________________ Exports to consider ________________________________-->
+  <!--____________________ Add group configurations ________________________-->
+  <member_of_group>rosidl_interface_packages</member_of_group>
+
+  <!-- __________________ Exports to consider ______________________________-->
   <export>
     <build_type>ament_cmake</build_type>
   </export>

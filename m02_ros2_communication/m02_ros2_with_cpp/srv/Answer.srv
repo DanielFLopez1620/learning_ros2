@@ -1,3 +1,5 @@
-Char option
+# Letter of answer for a given question
+char option
 ---
-Bool correct
+# Feedback of the option provided
+bool correct

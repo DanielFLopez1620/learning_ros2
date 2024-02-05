@@ -27,9 +27,20 @@ endif()
 
 # --------------------- Interface generation ----------------------------------
 
-rosidl_generate_interfaces(${PROJECT_NAME}
+set(msg_files
   "msg/RarePoint.msg"
-  "srv/Answer.srv"
+)
+
+set(srv_files
+  "srv/Answer.srv")
+
+rosidl_generate_interfaces(${PROJECT_NAME}
+  # You can manually add your srv and msg file, like this:
+  # "msg/RarePoint.msg"
+  # "srv/Answer.srv"
+  # But it is better to use the sets.
+  ${msg_files}
+  ${srv_files}
   DEPENDENCIES std_msgs
 )
 
@@ -57,6 +68,10 @@ install(TARGETS
   add_nums_cli
   add_nums_srv
   DESTINATION lib/${PROJECT_NAME})
+
+# -------------------------------- Ament final configs------------------------
+# Export dependencies
+ament_export_dependencies(rosidl_default_runtime)
 
 # Specify ament
 ament_package()
