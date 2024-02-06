@@ -44,11 +44,15 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   DEPENDENCIES std_msgs
 )
 
+# Export dependencies
+ament_export_dependencies(rosidl_default_runtime)
+
 
 # ------------------------- Adding executables --------------------------------
 # Int64 Publisher
 add_executable(pub_int64 src/int64_pub.cpp)
 ament_target_dependencies(pub_int64 rclcpp std_msgs)
+
 # Int64 Subscriber
 add_executable(sub_int64 src/int64_sub.cpp)
 ament_target_dependencies(sub_int64 rclcpp std_msgs)
@@ -61,17 +65,26 @@ ament_target_dependencies(add_nums_srv rclcpp example_interfaces)
 add_executable(add_nums_cli src/add_two_nums_cli.cpp)
 ament_target_dependencies(add_nums_cli rclcpp example_interfaces)
 
+# RarePoint Publisher
+add_executable(rand_xy_pub src/rand_xy_pub.cpp)
+ament_target_dependencies(rand_xy_pub rclcpp)
+
+# Usage of own definitions in the same package
+rosidl_get_typesupport_target(cpp_typesupport_target
+  ${PROJECT_NAME} rosidl_typesupport_cpp)
+
+target_link_libraries(rand_xy_pub "${cpp_typesupport_target}")
+
 # Adding targets to the libraries
 install(TARGETS
   pub_int64
   sub_int64
   add_nums_cli
   add_nums_srv
+  rand_xy_pub
   DESTINATION lib/${PROJECT_NAME})
 
 # -------------------------------- Ament final configs------------------------
-# Export dependencies
-ament_export_dependencies(rosidl_default_runtime)
 
 # Specify ament
 ament_package()
