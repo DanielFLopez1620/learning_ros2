@@ -1,8 +1,8 @@
 /**
- * File: int64_pub.cpp
+ * File: rand_xy_pub.cpp
  * 
- * Description: Simple publisher for integer (64 bits) implemented with the 
- * rclcpp implementation for ROS.
+ * Description: Simple publisher for a custom message called RarePoint, which
+ * uses an integer X position and a floating Y position.
 */
 
 // ------------------------- CPP standard Libraries --------------------------

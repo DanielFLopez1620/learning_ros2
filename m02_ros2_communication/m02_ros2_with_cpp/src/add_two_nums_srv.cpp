@@ -55,7 +55,7 @@ int main(int argc, char **argv)
  * proper response and send it.
  * 
  * @param request Pointer to the request provided by client
- * @param response Pointer to response that ig going to be sent to the client.
+ * @param response Pointer to response that is going to be sent to the client.
 */
 void add(const std::shared_ptr<example_interfaces::srv::AddTwoInts::Request> 
            request,
@@ -68,6 +68,6 @@ void add(const std::shared_ptr<example_interfaces::srv::AddTwoInts::Request>
   // Log info of the process
   RCLCPP_INFO(rclcpp::get_logger("rclcpp"),"Request received \na: %ld  b: %ld",
                 request->a, request->b);
-  RCLCPP_INFO(rclcpp::get_logger("rclcpp"),"Sendind response: [%ld]", 
+  RCLCPP_INFO(rclcpp::get_logger("rclcpp"),"Sending response: [%ld]", 
               (long int)response->sum);
 }
