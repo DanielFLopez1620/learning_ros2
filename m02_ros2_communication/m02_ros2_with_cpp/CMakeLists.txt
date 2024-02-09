@@ -69,9 +69,13 @@ ament_target_dependencies(add_nums_cli rclcpp example_interfaces)
 add_executable(rand_xy_pub src/rand_xy_pub.cpp)
 ament_target_dependencies(rand_xy_pub rclcpp)
 
-# Exame Server (for answers)
+# Exam Server (for answers)
 add_executable(exam_srv src/exam_srv.cpp)
 ament_target_dependencies(exam_srv rclcpp)
+
+# Saying Hi Publisher (with params)
+add_executable(saying_hi src/saying_hi.cpp)
+ament_target_dependencies(saying_hi rclcpp)
 
 # Usage of own definitions in the same package
 rosidl_get_typesupport_target(cpp_typesupport_target
@@ -88,6 +92,7 @@ install(TARGETS
   add_nums_srv
   rand_xy_pub
   exam_srv
+  saying_hi
   DESTINATION lib/${PROJECT_NAME})
 
 # -------------------------------- Ament final configs------------------------
