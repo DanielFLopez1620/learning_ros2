@@ -1,4 +1,5 @@
 # !/usr/bin/env python3
+# ------------------ Python Standard Libraries-------------------------------
 import random
 
 # ------------------ ROS2 Depedencies ----------------------------------------
@@ -19,7 +20,7 @@ class MyInt64Publisher(Node):
         Object that will communicate Int64 nums by using the /num_int64 topic
 
     timer - Timer object
-        Time counter that links a callback when the period of time is copleted
+        Time counter that links a callback when the period of time is completed
 
     Methods
     ---

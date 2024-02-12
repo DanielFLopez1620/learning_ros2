@@ -28,6 +28,7 @@ setup(
             'add_nums_srv = m02_ros2_with_py.add_two_nums_srv:main',
             'set_bool_srv = m02_ros2_with_py.set_bool_srv:main',
             'set_bool_cli = m02_ros2_with_py.set_bool_cli:main',
+            'saying_hi = m02_ros2_with_py.saying_hi:main',
         ],
     },
 )
