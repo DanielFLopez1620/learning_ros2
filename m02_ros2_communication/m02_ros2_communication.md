@@ -121,7 +121,42 @@ As you may suppose, we will need a package with **amment_python** set up, we wil
 
     ros2 pkg create --build-type ament_python --license Apache-2.0 <your_python_package_name>
 
-All the codes that aims to use Python muss import the **rclpy** (ROS Client Library for Python) to be compatible with ROS, with that say, let's move to our first examples.
+All the codes that aims to use Python muss import the **rclpy** (ROS Client Library for Python) to be compatible with ROS, but before we move to some examples and explain the communication, you have to understand the basics of a **amen_python** package with the **setup.py**, **setup.cfg** and the **package.xml** files.
+
+### *Ament_python* basics:
+
+For making a *package* you need some files, so *colcon* can understand it is a package. We will explore some of the basics for each file and the commands/keywords needed for each one.
+
+- **setup.py** : It is the file where you specify your package name, the basic set up (for versions, data files, exclusions and install requirements), the package info of the maintainers and devs, the license and the entry points (where you add what will be your executables). Here you can find a template, and there you can see that it is pretty clear what is the idea of each item: 
+
+    from setuptools import find_packages, setup
+
+    package_name = '<name_of_package>'
+
+    setup(
+        name=package_name,
+        version='<version>',
+        packages=find_packages(exclude=['test']),
+        data_files=[
+            ('share/ament_index/resource_index/packages',
+                ['resource/' + package_name]),
+            ('share/' + package_name, ['package.xml']),
+        ],
+        install_requires=['setuptools'],
+        zip_safe=True,
+        maintainer='<your_username>',
+        maintainer_email='<your_email>',
+        description='<a_clear_and_illustrative_description>',
+        license='<license_chose>',
+        tests_require=['pytest'],
+        entry_points={
+            'console_scripts': [
+                '<executble_name> = <package_name>.<node_file>:<main>',
+            ],
+        },
+    )
+
+- **setup.cfg:**
 
 ### Publisher and subscriber with Python:
 
@@ -188,39 +223,6 @@ After running this, you should be able to see that in one terminal, the pub is s
 ![py_pub_sub_int64](/m02_ros2_communication/resources/rclpy_int64_pub_sub.png)
 ****
 If you want to practice and learn more, you can try to change the type of message, for example, send a float instaed of an integer, or go on and discover more **std_msgs**.
-
-Now, let's move our attention to some important commands and instructions for developing nodes with **rclpy**:
-
-- **rclpy.init(args=<args>)** : Command to initialize the rclpy, <args> are related with the *argc* and *argv* equivalent from C and C++.
-
-- **rclpy.spin(<instance>)** : Implementation for making iterations of the <instance> specified, in most cases will be the node object.
-
-- **rclpy.shutdown()** : Last command of the program, closes rclpy dependencies.
-
-Also, let's mention some important commands when making your implementation of publishers and subscribers with **rclpy**:
-
-- **super()__init__(<name>)** : When we have a class that inherits from node, you need to pass to the parent interface a name to initialize the node.
-
-- **<node_self>.publisher_ = <node_self>.create_publisher(<type>, <topic>, <queue>)** : Instance a publisher with name 'publisher_', with a <type> that must have been imported, <topic> a string that will be the name of the channel and the <queue> in order to specify the max size of it.
-
-- **<node_self>.timer = <node_self>.create_timer(<period>, <callback>)** : Instance a timer with name 'timer', that has a <period> in seconds and links a <callback> function that will be called when the period is achieved.
-
-- **<node_self>.publisher_.publish(<msg>)** : Using the publisher called 'publisher_' send (publish) a given <msg> which must be consistent with the definition of the message.
-
-- **<node_self>.get_logger().info(<str>)** : Log from the node, in this case, an info report consisting on the <str>, it can be also used for *warn*, *error*.
-
-- **<node_self>.subscription = <node_self>.create_subscription(<type>, <topic>, <callback>, <queue>)** : Instance a subscriber with the name 'subcription' with a <type> that must have been imported, a <topic> which is a string that provides the name of the channel, and the respective <queue>. It also has a <callback> that will be called when something is received on the <topic> channel.
-
-Another important aspect is related with the servers and clients, for your implementation you should know about:
-
-
-
-If you want to learn more about **rclpy**, you can check the official **[API of rclpy](https://docs.ros2.org/foxy/api/rclpy/api.html)**, where you can find more commands and a better explanation of the arguments that can be used for each function.
-
-
-
-
-
 
 
 ### Servers and client with Pyhton:
@@ -322,6 +324,47 @@ Parameters can be considered node configurations you can change even when the no
 After you have added the entrypoints, and compile the package, you can run it with the next command:
 
     ros2 run m02_ros2_with_py say
+
+### Resume on important **rclpy** commands:
+
+Now, let's move our attention to some important commands and instructions for developing nodes with **rclpy**:
+
+- **rclpy.init(args=<args>)** : Command to initialize the rclpy, <args> are related with the *argc* and *argv* equivalent from C and C++.
+
+- **rclpy.spin(<instance>)** : Implementation for making iterations of the <instance> specified, in most cases will be the node object.
+
+- **rclpy.shutdown()** : Last command of the program, closes rclpy dependencies.
+
+Also, let's mention some important commands when making your implementation of publishers and subscribers with **rclpy**:
+
+- **<node_self>.publisher_ = <node_self>.create_publisher(<type>, <topic>, <queue>)** : Instance a publisher with name 'publisher_', with a <type> that must have been imported, <topic> a string that will be the name of the channel and the <queue> in order to specify the max size of it.
+
+- **<node_self>.publisher_.publish(<msg>)** : Using the publisher called 'publisher_' send (publish) a given <msg> which must be consistent with the definition of the message.
+
+- **<node_self>.subscription = <node_self>.create_subscription(<type>, <topic>, <callback>, <queue>)** : Instance a subscriber with the name 'subcription' with a <type> that must have been imported, a <topic> which is a string that provides the name of the channel, and the respective <queue>. It also has a <callback> that will be called when something is received on the <topic> channel.
+
+Another important aspect is related with the servers and clients, for your implementation you should know about:
+
+- **<node_self>.server = <node_self>.create_service(<type>, <srv>, <callback>)** : Instance a service server with the name 'server' that has a specific service <type> with its own request/response type, that will use the <srv> channel provided and links a <callback> function that will act when a request is received.
+
+**NOTE**: Do not forget that for callbacks functions in services you need to add a request and a response, for taking advantage of the params.
+
+- **<node_self>.cli = <node_self>.create_client(<type>, <srv>)** : Instance a service client whith the name 'cli' that has a specific <type> (imported previously) and a <srv> channel.
+
+- **<node_self>.future = <node_self>.cli.call_async(<req>)** : Make a call with a given request <req> using asynchronous communication, the result will be assigned to the 'future' variable.
+
+- **rclpy.spin_until_futur_complete(<node_self>, <node_self>.future)** : Iterate and wait until response is received in the case of a 'future' refereing to service clients.
+
+Some general commands and interface, are related with logging, timers and other aspects from **rclpy** are also mention as follow:
+
+- **super()__init__(<name>)** : When we have a class that inherits from node, you need to pass to the parent interface a name to initialize the node.
+
+- **<node_self>.get_logger().info(<str>)** : Log from the node, in this case, an info report consisting on the <str>, it can be also used for *warn*, *error*.
+
+- **<node_self>.timer = <node_self>.create_timer(<period>, <callback>)** : Instance a timer with name 'timer', that has a <period> in seconds and links a <callback> function that will be called when the period is achieved.
+
+If you want to learn more about **rclpy**, you can check the official **[API of rclpy](https://docs.ros2.org/foxy/api/rclpy/api.html)**, where you can find more commands and a better explanation of the arguments that can be used for each function.
+
 
 ## C++ and ROS2 Communication:
 
