@@ -156,7 +156,33 @@ For making a *package* you need some files, so *colcon* can understand it is a p
         },
     )
 
-- **setup.cfg:**
+- **setup.cfg:** Used to indicate where are the scripts that will be used as entry points, and where will be installed the libraries. This is a part related with the 'colcon' build process after it ahs added the packages to the build dir, and there locates the executables and libraries.
+
+- **package.xml:** It is known as the package manifiest, here you add the most important info of the package. It is formed by XML tags, so let's explore some of them:
+
+    - <package fomrmat=#3></package>: Tags that contains all of the info of the package, format 3 is relativ to ROS2, at least during Foxy and Humble version.
+
+    - <name></name> Contains the package name.
+
+    - <version></version> Stores the version of the package. Usually with three numbers separeated by points.
+
+    - <description></description> Used to add a short, but illustrative explanation of what you package's purpose is.
+
+    - <maintainer email=""></maintainer> Here you add your name (or ROS User or Github/Gitlab user) and your email, to indicate that you are the one in charge of the package.
+
+    - <license></license> One of the most important related with a license (official name) that indicates limitations that other people have when using your codes.
+
+    - <depend><depend> Add a general dependency (execution, build or other) to your package, the dependencies are other packages that contains msg, srv, interfaces or nodes needed for your packages.
+
+    - <runtime_depend></runtime_depend> Dependency needed only for runtime operations.
+
+    - <test_depend></test_depend> Dependency needed for test about code quality, format or functionlity.
+
+    - <export></export> For exporting info or data of the package.
+
+    - <build_type></build_type> Export needed for specifying the ament_type, in this case, it will be *ament_python*.
+
+After checking this, let's move to our first way to communicate using *Python* and *rclpy*.
 
 ### Publisher and subscriber with Python:
 
@@ -374,7 +400,36 @@ Now we change of language, then we will need a new package, bu tthis time we wil
 
 All the codes that aims to use C++ muss include the **rclcpp** (ROS Client Library for C++) to be compatible with ROS, now, let's explore the same cases studied with Python "traslated" to C++.
 
-Keep in mind that when using **ament_cmake**, you will have two folders by default the *include* directory where you must add you libraries and header files, and the *src* where you add the source code (for future executables). So, let's start our intro to using C++.
+Keep in mind that when using **ament_cmake**, you will have two folders by default the *include* directory where you must add you libraries and header files, and the *src* where you add the source code (for future executables). So, let's start by watching the package configuration.
+
+### *ament_cmake* basics:
+
+You have already checked on **ament_python**, and now we have to focus on **ament_cmake**, yes (not ament_cpp, it is because of the **cmake and make** build tools). Here you share the *package.xml*, but you now have a *CMakeList.txt* file that can be considered an equivalent of the setup.py to set the executables and the dependencies.
+
+- **package.xml** : The main chance is related with the <export></export> tags, where you no longer need the <build_type>ament_python</build_type> but instaed the **<build_type>ament_cmake</build_type>**.
+
+- **CMakeLists.txt** : Cmake isn't a build tool but rather a support to use Make (build tool) in a better way, it serves to indicate the depedencies and how to compile (as we are in C++ and need a compiler) the source code to obtain the executables, so let's mention some important commands:
+
+    - **cmake_minim_required(VERSION <ver>)** : Indicates the version needed.
+
+    - **project(<name>)** : Add the name of your package (project)
+
+    - **find_package(<package> REQUIRED)** : Search for package that is considered to be a dependency.
+
+    - **add_executable(<exec_name> <path>)** : Set an executable with a specified name by using the .cpp file in the provided path.
+
+    - **ament_target_depencies(<exec_name> <libraries>)** : Link the executable with the corresponding dependencies.
+
+    - **intall(TARGETS <exex_name> DESTINATION lib/${PROJECT_NAME})** : Add the executables to the project library to be used then as nodes.
+
+    - **ament_package()** : Final tag that reminds of the ament type used.
+
+With that said, we can explore the communication methods from another point of view, in this case, *rclcpp*, so keep going...
+
+### Publisher and subscriber with C++:
+
+We will replicate the integer of 64 bits case from the previous examples, but in this case using *rcplcpp*, it will also have an OOP implementation 
+
 
 
 # Troubleshooting:
@@ -382,4 +437,10 @@ Keep in mind that when using **ament_cmake**, you will have two folders by defau
 - If you get a warn equal or related to: "SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
   warnings.warn (...)". It means that the package 'setuptools' isn't in the proper version for ros2, you can resolve (according to [ros.answer](https://answers.ros.org/question/396439/setuptoolsdeprecationwarning-setuppy-install-is-deprecated-use-build-and-pip-and-other-standards-based-tools/)) with the next command (only ROS2 Humble):
 
-    pip install setuptools==58.2.0
+    pip install setuptools==58.2.
+    
+# Resources
+
+- OOP Python:
+
+- OOP C++:
