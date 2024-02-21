@@ -428,7 +428,61 @@ With that said, we can explore the communication methods from another point of v
 
 ### Publisher and subscriber with C++:
 
-We will replicate the integer of 64 bits case from the previous examples, but in this case using *rcplcpp*, it will also have an OOP implementation 
+We will replicate the integer of 64 bits case from the previous examples, but in this case using *rcplcpp*, it will also have an OOP implementation. Also, as said in the Python Module, you can implement any basic data type, you can also create your custom types by generating structures of the common data types, we will cover this later.
+
+On one hand, our publisher will be [int64_pub](/m02_ros2_communication/m02_ros2_with_cpp/src/int64_pub.cpp) file, do not forget to check it and consider the comments presented there. The idea for implementing a publisher is:
+
+1. Include needed libraries, you will need *chrono* (for time tracking), *functional* (related with hashes), *memory* (for dynamic memory), *string* (if you want to use strings) and you may need other standard libraries according to your needs like *cstdlib* or *iostream*.
+2. Include ROS2 Libraries, the main one the proper *rclcpp.hpp* header, but also you will need the interface you are goint to comunicate (*int64.hpp* in this case).
+3. Configure the proper namespace for chrono
+4. Create a publisher class that inheritates from Node.
+5. In the public interface, add the constructor that initialize the node by providing a name, initilaize your variables, instance a publisher with the proper type and channel you need, and create a timer that link a callback.
+6. In the private interface, add the timer callback to publish the desired integer and log the info.
+7. In the private interface declare the private publisher and timer as shared pointers of their specific types.
+8. Create the main, initialize rclcpp, spin the instance of the node and finally add a shutdown.
+
+On the other hand, our subscriber will be the [int64_sub.cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/int64_sub.cpp), let's me tell you the steps:
+
+1. Include needed libraries, in this case we will need memory (for dynamic memory) and you can use any other standard library needed to process the data received.
+2. Include ROS2 Libraries, the main one the proper *rclcpp.hpp* header, but also you will need the interface you are goint to comunicate (*int64.hpp* in this case).
+3. Configure a namespace related to the place holders.
+4. Create a publisher class that inheritates from Node.
+5. In the public interface, add the constructor that initialize the node by providing a name, initilaize your variables, instance a subscriber that links a callback for managing incoming data.
+6. In the private interface add the subscriber callback that will process the data received.
+7. In the private interface, declare the private subscriber as a shared pointer related to the type of the msg of interest.
+8. Create the main, initialize rclcpp, spin the instance of the subscriber class and finally add a shutdown.
+
+As you may know, you need to compile the codes and create the executables in order to run cpp codes. For this, we will take advantage of *Make* and *CMake* to build our package, but first... we need to configure our manifiest, the [package.xml](/m02_ros2_communication/m02_ros2_with_cpp/package.xml) file, with:
+
+    <exec_depend>rclpy<exec_depend>
+    <exec_depend>std_msgs<exec_depend>
+
+**NOTE:** If you check the *package.xml* file, you should have noticed we hace changed the <exec_depend> with <depend>, and also, as we have imported *turtlesim*, we ignore the *std_msgs* inclussion as we have already had it in the *turtlesim* package.
+
+Then, we can use the [CMakeLists.txt](/m02_ros2_communication/m02_ros2_with_cpp/CMakeLists.txt) file to add the building configuration, for this case, it will be:
+
+    # Add package dependencies
+    find_package(rclcpp REQUIRED)
+    find_package(std_msgs REQUIRED)
+
+    # Add executables
+    add_executable(pub_int64 src/int64_pub.cpp)
+    add_executable(sub_int64 src/int64_sub.cpp)
+
+    # Link dependencies
+    ament_target_dependencies(pub_int64 rclcpp std_msgs)
+    ament_target_dependencies(sub_int64 rclcpp std_msgs)
+
+    # Obtain/install executables
+    intall(TARGETS
+        pub_int64
+        sub_int64
+        DESTINATION lib/${PROJEC_NAME}
+    )
+
+The previous allow us to make the compilation, link dependencies and locate the executables so after colcon build, we know where they are and call them to run its content.
+
+
 
 
 
