@@ -248,7 +248,7 @@ After running this, you should be able to see that in one terminal, the pub is s
 
 ![py_pub_sub_int64](/m02_ros2_communication/resources/rclpy_int64_pub_sub.png)
 ****
-If you want to practice and learn more, you can try to change the type of message, for example, send a float instaed of an integer, or go on and discover more **std_msgs**.
+If you want to practice and learn more, you can try to change the type of message, for example, send a float instead of an integer, or go on and discover more **std_msgs**.
 
 
 ### Servers and client with Pyhton:
@@ -272,7 +272,7 @@ The definition that we will focus is *AddTwoInts* which structure is:
 
 Remember that the characters **---** indicate the separation of the request and the response of the service. with this said, no it is time to explore the creation of the nodes.
  
-In the ROS tutorials, there is a simple adder implementation, here we will try the same but with some updates and improvements.
+In the ROS2 tutorials, there is a simple adder implementation, here we will try the same but with some updates and improvements.
 
 On one hand, we have the service server node ([add_two_nums_srv.py](/m02_ros2_communication/m02_ros2_with_py/m02_ros2_with_py/add_two_nums_srv.py)), the steps for creation are:
 
@@ -482,7 +482,45 @@ Then, we can use the [CMakeLists.txt](/m02_ros2_communication/m02_ros2_with_cpp/
 
 The previous allow us to make the compilation, link dependencies and locate the executables so after colcon build, we know where they are and call them to run its content.
 
+Before you run, make sure you source your workspace, and then, you can run:
 
+    ros2 run m02_ros2_with_cpp pub_int64 # Terminal 1
+    ros2 run m02_ros2_with_cpp sub_int64 # Terminal 2
+
+TODO: Add images of pending int64 sub / pub
+
+Try to practice creating your own pub/sub with a type of your interest in the *std_msgs* library, and check what can you make.
+
+### Servers and clients with C++:
+
+We will make an implementation of the adding srv that we check previously with Python, the idea is the same, connect a server and a client by using a service which have a request and a response component. If you haven't install the *example_interfaces*, do it with the command:
+
+    sudo apt install ros-humble-example-interfaces
+
+For custom interfaces (made by someone in the community or by you), you need to add the package as a dependency, firstly in your *package.xml*, as we made before in Python:
+
+    <depend>example_interfaces</depend>
+
+The definition we are gonna use is the same, related with *AddTwoInts*, which is presented here:
+
+    # Request
+    int64 a
+    int64 b
+    ---
+    # Response
+    int64 sum
+
+One curious fact, is that it is called due to the objetive (to add nums), but it is a generic definition, that just sends to numbers and ask back for just one. So, you can use this interface to substract, multiply and divide (but returning a integer), keep in mind that a good practice is to follow the convention of the name, but prevent to use specific names to general interfaces, for example, this interface could be called *OperateTwoNums* which could be implemented in different services that make a different operation. Keep this like an idea on how to improve your projects.
+
+But continuing with what call us here, is the implementation of the adder, it is the same of the ROS2 tutorials, but with some additional explanations in code.
+
+On the first hand, we need to stablish a server node that is related with our [add_two_nums_srv.cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/add_two_nums_srv.cpp), the steps to consider are below:
+
+1. Include standard headers, in this case our focus will be *memory* (for managing dynamic memory).
+2. Include ROS hearders, do not forget about *rclcpp* header and the one with the header of your *srv*, in this case *add_two_ints.hpp*.
+3. Declare a callback that will be linked when a request has been received, it must hve to params as shared pointers, the request and the response with the proper types of the service, then include the processing of the data received.
+4. Create a main and initialize rclcpp and instance a object of the node class.
+5. In the main, instance a service, taking advantage of the node, create a log of status ready of the server and spin so you allow the server to stay in function continuously.
 
 
 
