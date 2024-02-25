@@ -520,11 +520,94 @@ On the first hand, we need to stablish a server node that is related with our [a
 2. Include ROS hearders, do not forget about *rclcpp* header and the one with the header of your *srv*, in this case *add_two_ints.hpp*.
 3. Declare a callback that will be linked when a request has been received, it must hve to params as shared pointers, the request and the response with the proper types of the service, then include the processing of the data received.
 4. Create a main and initialize rclcpp and instance a object of the node class.
-5. In the main, instance a service, taking advantage of the node, create a log of status ready of the server and spin so you allow the server to stay in function continuously.
+5. In the main, instance a service with an unique name and link the *srv* definition included, taking advantage of the node, create a log of status ready of the server and spin so you allow the server to stay in function continuously.
 
+On the second hand, we create the client node, check the [add_two_nums_cli.cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/add_two_nums_cli.cpp) file for more info. The steps to cconsider are:
+
+1. Include standard headers, in this case, it is needed to use *chrono* (for time tracking), *memory* (dynamic memory usage) and libraries need for your proper implementation, for example, *cstdlib* (General purpose functions).
+2. Include ROS hearders, do not forget about *rclcpp* header and the one with the header of your *srv*, in this case *add_two_ints.hpp*. Which must be consistent with the server.
+3. Add a namespace for using of chrono.
+4. Create a main and initiliaze rclcpp.
+5. In the main read the arguments passed with the call and check the number is valid and consistent.
+6. In the main instance a node with a unique name, then instance a client with a name and add the corresponding *srv* imported, to make it consistent with the definition of the server.
+7. In the main, stablish the *request* (by considering the args passed) and send it.
+8. Wait for response and determinate an action in case the response was a success, or in case no response were given.
+9. Finally, shutdown the node.
+
+To run this example, make sure you add the corresponding files to the [CMakeList.txt](/m02_ros2_communication/m02_ros2_with_cpp/CMakeLists.txt) to create the executables:
+
+    # Adding Two Nums Server
+    add_executable(add_nums_srv src/add_two_nums_srv.cpp)
+    ament_target_dependencies(add_nums_srv rclcpp example_interfaces)
+
+    # Adding Two Nums Client
+    add_executable(add_nums_cli src/add_two_nums_cli.cpp)
+    ament_target_dependencies(add_nums_cli rclcpp example_interfaces)
+
+    # Obtain/install executables
+    intall(TARGETS
+        add_nums_cli
+        add_nums_srv
+        DESTINATION lib/${PROJEC_NAME}
+    )
+
+After you have used colcon to build the packages, and sourced the setup file, you can run:
+
+    ros2 run  m02_ros2_with_cpp add_nums_srv # Terminal 1
+    ros2 run  m02_ros2_with_cpp add_nums_cli 16 20 # Terminal 2
+
+You have now explored, in both Python and C++, the communication needed for your robots with ROS2, but... what if you need a custom msg or service? Well, you can do it, let's explore it in the next header.
+
+### Using custom interfaces with *ament_cmake*:
+
+No matter it is the case where you need to define a custom *msg* for a specific work, or you just want to test your own *srv* implementations, you will need to have those descriptions in a separated packages.
+
+For this, you will need a package with *ament_cmake* in order to configure the interface, export it or even use it in the same package. We will start by creating to important directories, **msg** and **srv** dirs:
+
+    cd <path_to_your_package>
+    mkdir srv msg
+
+After that, you can create your own interface for msg or srv, in this case, we created both, the [RarePoint.msg](/m02_ros2_communication/m02_ros2_with_cpp/msg/RarePoint.msg) and the [Answer.srv](/m02_ros2_communication/m02_ros2_with_cpp/srv/Answer.srv) interfaces, that you can check there. Remember to follow the structure of the message (using valid types) and the service (request/response structure).
+
+The next step is to make available, the structure, for that, on the [CMakeLists.txt] file, make sure you add:
+
+    set(msg_files
+        "msg/RarePoint.msg"
+    )
+
+    set(srv_files
+        "srv/Answer.srv"
+    )
+
+    rosidl_generate_interfaces(${PROJECT_NAME}
+        ${msg_files}
+        ${srv_files}
+        DEPENDENCIES std_msgs
+    )
+
+If you want to use the same definition on the package, you will need to configure the type support target in the CMakeLists.txt:
+
+    rosidl_get_typesupport_target(cpp_typesupport_target
+        ${PROJECT_NAME} rosidl_typesupport_cpp)
+    
+    target_link_libraries(<executable> ${cpp_typesupport_target})
+
+For testing this interface, I added two source codes, one publisher and one server, they are the [rand_xy_pub.cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/rand_xy_pub.cpp) file and the [exam_srv.cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/exam_srv.cpp) file, after you have added the executables, and link the custom interface, let's try them:
+
+    ros2 run m02_ros2_with_cpp rand_xy_pub # Terminal 1
+    ros2 topic echo /rare_point # Terminal 2
+
+    ros2 run m02_ros2_with_cpp exam_srv
+    ros2 topic call 
 
 
 # Troubleshooting:
+
+- If you aren't able to autocomplete (a package), make sure you have succesfully build (using colcon build and the corresponding flags), and also, make sure you have added and sourced the *local_setup.bash* or the *setup.bash* file.
+
+    cd <your_ws>
+    colcon build
+    source install/local_setup.bash
 
 - If you get a warn equal or related to: "SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
   warnings.warn (...)". It means that the package 'setuptools' isn't in the proper version for ros2, you can resolve (according to [ros.answer](https://answers.ros.org/question/396439/setuptoolsdeprecationwarning-setuppy-install-is-deprecated-use-build-and-pip-and-other-standards-based-tools/)) with the next command (only ROS2 Humble):
