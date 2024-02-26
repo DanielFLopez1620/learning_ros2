@@ -42,9 +42,9 @@ int main(int argc, char **argv)
   // Log that service is ready to attend
   RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Ready to evaluate...\n");
   RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "What distro are we using?\n");
-  RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "a) Noetic\n");
-  RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "b) Foxy\n");
-  RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "c) Humble\n");
+  RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "1) Noetic\n");
+  RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "2) Foxy\n");
+  RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "3) Humble\n");
 
   // Spin node to manage multiple requests
   rclcpp::spin(node);
@@ -67,12 +67,12 @@ void check(const std::shared_ptr<m02_ros2_with_cpp::srv::Answer::Request>
          std::shared_ptr<m02_ros2_with_cpp::srv::Answer::Response>
             response)
 {
-  auto correct_ans = 'c';
+  auto correct_ans = 3;
   // Update response by making the operation
   response->correct = (correct_ans == request->option) ? true : false;
 
   // Log info of the process
-  RCLCPP_INFO(rclcpp::get_logger("rclcpp"),"Answer received: %c", 
+  RCLCPP_INFO(rclcpp::get_logger("rclcpp"),"Answer received: %d", 
               request->option);
   RCLCPP_INFO(rclcpp::get_logger("rclcpp"),"Sending feeback: [%s]", 
               (response->correct) ? "Correct" : "Wrong");

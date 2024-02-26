@@ -598,7 +598,31 @@ For testing this interface, I added two source codes, one publisher and one serv
     ros2 topic echo /rare_point # Terminal 2
 
     ros2 run m02_ros2_with_cpp exam_srv
-    ros2 topic call 
+    ros2 service call /exam_channel m02_ros2_with_cpp/srv/Answer "{option: 3}"
+
+Now that you have discovered how to create your own interfaces, try to create the codes of the csubscriber for the *rand_xy_publisher* node, and a client for the *exam_srv*, you can even try it with Python. Just remember to add the corresponding dependencies.
+
+### Parameters with cpp:
+
+Let's also mention *ROS2 Parameters* which are used for configurations or set up processes inside the nodes. This parameters can be set on the terminal, but as you will discover soon, you can also use *launch* files.
+
+For this purpose, we will use the code [saying_hi.cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/saying_hi.cpp), which allow us to configure a simple parameter, and then it go back to the original.
+
+Let's mention the idea of the code:
+
+1. Include needed standard libraries, in this case *chrono* (time management), *functional* (related with funtion implmentation) and other needed for you main process, for example, *string*.
+2. Include ROS2 related headers, do not forget about *rclcpp*.
+3. Creata a class that inheritates from Node.
+4. In the public interface, create the constructor, initialize the name of the node, declare a parameter and create a timer that will be linked to a callback.
+5. In the public interface, define a method which will act as a callback of the timer.
+6. In the private interface, do not forget to add the timer definition.
+7. Create a main, initialize rclcpp, spin the instance of the object that will be used to manage the param and add a final shutdown.
+
+You do not need extra tags or configs in CMake to make this node work, you only have to add the executable, link the dependencies and install the target as you have done before in the *CMakeLists.txt* of the package. You can execute it here with:
+
+    ros2 run m02_ros2_with_cpp saying_hi               # Terminal 1
+    ros2 param list                                    # Terminal 2
+    ros2 param set /saying_your_name your_name dan     # Terminal 2
 
 
 # Troubleshooting:
