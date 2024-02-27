@@ -349,7 +349,16 @@ Parameters can be considered node configurations you can change even when the no
 
 After you have added the entrypoints, and compile the package, you can run it with the next command:
 
-    ros2 run m02_ros2_with_py say
+    ros2 run m02_ros2_with_py saying_hi             # Terminal 1
+    ros2 param set /saying_your_name your_name dan  # Termianl 2
+
+The idea for implementing a parameter with rclpy is:
+
+1. Import ROS2 headers as *rclpy*, *rclpy_node* and *Parameter_Descriptor*.
+2. Create a class that inheritates from Node.
+3. In the constructor initialize (with the parent constructor) the name of the node, then define a parameter descritor, the declaration of the parameter and for testing you can use a timer linked to a callback.
+4. Create a method taht will act as a callback, where you update the value and set it back to the original after specified time.
+5. In the main, initialize rclpy, instance a node, spin the node and do noto forget the destruction and shutdown.
 
 ### Resume on important **rclpy** commands:
 
@@ -388,6 +397,10 @@ Some general commands and interface, are related with logging, timers and other 
 - **<node_self>.get_logger().info(<str>)** : Log from the node, in this case, an info report consisting on the <str>, it can be also used for *warn*, *error*.
 
 - **<node_self>.timer = <node_self>.create_timer(<period>, <callback>)** : Instance a timer with name 'timer', that has a <period> in seconds and links a <callback> function that will be called when the period is achieved.
+
+- **<param_desc> = ParameterDescriptor(descritipon = "<str>")** : Add a parameter descriptiron that can be used to explain the declaration of a ROS2 Parameter.
+
+- **<node_self>.declare_paremeter(<name>, <defaul_value>, <param_desc>)** : Declare a ROS2 paramaeter with a given <name> and a <default_value>, you can also add a parameter descriptor <param_desc>.
 
 If you want to learn more about **rclpy**, you can check the official **[API of rclpy](https://docs.ros2.org/foxy/api/rclpy/api.html)**, where you can find more commands and a better explanation of the arguments that can be used for each function.
 
@@ -624,6 +637,10 @@ You do not need extra tags or configs in CMake to make this node work, you only 
     ros2 param list                                    # Terminal 2
     ros2 param set /saying_your_name your_name dan     # Terminal 2
 
+### Resume of important *rclcpp* commands:
+
+
+
 
 # Troubleshooting:
 
@@ -640,6 +657,9 @@ You do not need extra tags or configs in CMake to make this node work, you only 
     
 # Resources
 
-- OOP Python:
+- OOP Python: [RealPython](https://realpython.com/python3-object-oriented-programming/), [W3School](https://www.w3schools.com/python/python_classes.asp). 
 
-- OOP C++:
+- OOP C++: [W3Schools](https://www.w3schools.com/cpp/cpp_oop.asp), [Geeks for Geeks](https://www.w3schools.com/cpp/cpp_oop.asp)
+
+- ROS2 Client Libraries Tutorials: [Humble](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries.html)
+
