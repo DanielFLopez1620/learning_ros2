@@ -639,7 +639,35 @@ You do not need extra tags or configs in CMake to make this node work, you only 
 
 ### Resume of important *rclcpp* commands:
 
+Now, let's mention some important commands that you should keep in mind, as the order we previously managed, we will start with publishers and subscribers:
 
+- **rclcpp::Publisher< <msg_type> >::SharedPtr <publisher>;** : Base declaration of a publisher.
+
+- **<publisher> = <node_obj>->create_publisher< <msg_type> >(<topic>, <queue>);** : Instance a publisher with a specified <msg_type> that will use the topic called <topic> and have a defined <queue>.
+
+- **<publisher>.publish(<msg_content>);** : Publish a valid message (according publisher definition) and sends the <msg_content>.
+
+- **rclcpp::Subscription< <msg_type> >::SharedPtr <subscriber>;** : Base declaration for a subscriber.
+
+- **<subscriber> = <node_obj>->create_subscription< <msg_type> >(<topic>, <queue>, <callback>);** : Instance a subscriber with the corresponding <msg_type>, related with the publisher. It should consider the same <topic> and <queue>.
+
+Finally, do not forget about general commands when using *rclcpp*:
+
+- **class <NameClass> : public rclcpp::Node** : Create a class that inheritates from Node class.
+
+- **Node (<str>)** : Initialize Node object with a name <str>, it can be used when inheritate is used.
+
+- **rclcpp::init(<argc>, <argv>);** : Initialize rclpp with the corresponding args from the terminal call.
+
+- **rclcpp::spin(<instance>);** : Spin can be considered as an alike loop implementation for a given <instance>.
+
+- **rclcpp::shutdown();** : Do not forget to add it at the end of your main.
+
+- **RCLCPP_INFO(<node_obj>->get_logger(), <str>);** : Log <str> to display status, info or related, its structure is similiar to the ones with warns and errors.
+
+- **rclcpp:TimerBase::SharedPtr <timer>;** : Base declaration of a timer.
+
+- **<timer> = <node_obj>->create_wall_timer(<milliseconds>, <bind_callback>)** : Instance a timer that will have a time of given <milliseconds> and everytime is completed, will call the <bind_callback> function.
 
 
 # Troubleshooting:
