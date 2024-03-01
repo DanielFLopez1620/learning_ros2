@@ -651,6 +651,18 @@ Now, let's mention some important commands that you should keep in mind, as the 
 
 - **<subscriber> = <node_obj>->create_subscription< <msg_type> >(<topic>, <queue>, <callback>);** : Instance a subscriber with the corresponding <msg_type>, related with the publisher. It should consider the same <topic> and <queue>.
 
+We also, need to talk about important commands when implementing our own service clients and serves, here we have:
+
+- **rclcpp::Service< <srv_type> >::SharedPtr <server>;** : Base declaration of a service server.
+
+- **<server> = <node_obj>->create_service< <srv_type> >(<service>, <callback>);** : Instance a service server with a specified <srv_type> that contains the request and response structure, set the configuration to use the given <service> channel and link a <callback> for incoming responses.
+
+- **rclcpp::Client< <srv_type> >::SharedPtr <client>;** : Base declaration of a service client.
+
+- **<client> = <node_obj>->create_client< <srv_type> >(<service>);** : Instance a service client with a specified <srv_type>, compatible with the one of the server, and pass the <service> channel that will be used.
+
+- **auto <request> = std::make_shared< <srv_type>::Request>();** : Declare a request that will be used by a client.
+
 Finally, do not forget about general commands when using *rclcpp*:
 
 - **class <NameClass> : public rclcpp::Node** : Create a class that inheritates from Node class.
@@ -690,4 +702,8 @@ Finally, do not forget about general commands when using *rclcpp*:
 - OOP C++: [W3Schools](https://www.w3schools.com/cpp/cpp_oop.asp), [Geeks for Geeks](https://www.w3schools.com/cpp/cpp_oop.asp)
 
 - ROS2 Client Libraries Tutorials: [Humble](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries.html)
+
+- ROS2 rclpy API: [Foxy](https://docs.ros2.org/foxy/api/rclpy/)
+
+- ROS2 rclcpp API: [Foxy](https://docs.ros2.org/foxy/api/rclcpp/)
 
