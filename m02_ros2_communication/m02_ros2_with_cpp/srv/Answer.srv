@@ -1,0 +1,5 @@
+# Letter of answer for a given question
+int32 option
+---
+# Feedback of the option provided
+bool correct
