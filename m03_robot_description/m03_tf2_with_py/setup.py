@@ -13,13 +13,15 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='dan1620',
+    maintainer='DanielFLopez1620',
     maintainer_email='dfelipe.lopez@gmail.com',
-    description='TODO: Package description',
-    license='TODO: License declaration',
+    description=
+        'A simple package that search to serve as an example of the tf2 topic with Python.',
+    license='BSD 3-Clause License',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'static_broad = m03_tf2_with_py.static_broadcaster:main',
         ],
     },
 )

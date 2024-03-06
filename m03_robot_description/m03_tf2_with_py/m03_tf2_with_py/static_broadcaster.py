@@ -17,6 +17,25 @@ from tf2_ros.static_transform_broadcaster import StaticTransformBroadcaster
 
 
 def quaternion_from_euler(ai, aj, ak):
+    """
+    Mathematic function that calculates the equivalent quaternion by
+    considering raw, pitch and yaw.
+    
+    Params
+    ---
+    ai : float
+        Raw angle or the rotation considering unit i vector.
+    aj : float
+        Pitch angle or the rotation considering unit j vector.
+    ak : float
+        Yaw angle or the rotation considering unit k vector.
+    
+    Returns
+    ---
+    q : float array
+        Quaternion as an array of four components (x, y, z, w).
+    """
+    # Component extraction and consideration
     ai /= 2.0
     aj /= 2.0
     ak /= 2.0
@@ -30,13 +49,13 @@ def quaternion_from_euler(ai, aj, ak):
     cs = ci*sk
     sc = si*ck
     ss = si*sk
-
+    
+    # Quaternion definition
     q = np.empty((4, ))
     q[0] = cj*sc - sj*cs
     q[1] = cj*ss + sj*cc
     q[2] = cj*cs - sj*sc
     q[3] = cj*cc + sj*ss
-
     return q
 
 
@@ -85,18 +104,18 @@ class StaticFramePublisher(Node):
         # Instance transform
         t = TransformStamped()
 
-        # Consider time stamp
+        # Consider time stamp (current time)
         t.header.stamp = self.get_clock().now().to_msg()
         t.header.frame_id = 'world'
-        t.child_frame_id = transformation[1]
+        t.child_frame_id = str(transformation[0])
 
         # Add the proper information of the transform (it includes a change
         # from rpy to quaternion)
-        t.transform.translation.x = float(transformation[2])
-        t.transform.translation.y = float(transformation[3])
-        t.transform.translation.z = float(transformation[4])
+        t.transform.translation.x = float(transformation[1])
+        t.transform.translation.y = float(transformation[2])
+        t.transform.translation.z = float(transformation[3])
         quat = quaternion_from_euler(
-            float(transformation[5]), float(transformation[6]), float(transformation[7]))
+            float(transformation[4]), float(transformation[5]), float(transformation[6]))
         t.transform.rotation.x = quat[0]
         t.transform.rotation.y = quat[1]
         t.transform.rotation.z = quat[2]
@@ -121,22 +140,20 @@ def main():
         sys.exit(2)
 
     transform_data = []
-    transform_data.append(sys.argv[1])
-    
+    transform_data.append(str(sys.argv[1]))
+
     # Random number generation 
     random.seed(int(time.time()))
-    random_int = random.randrange(0, 10)
     for i in range(3):
-        transform_data.append(random_int)
-    random_float = random.uniform(0, math.pi)
+        transform_data.append(random.randrange(0, 10))
     for j in range(3):
-        transform_data.append(random_float)
+        transform_data.append(random.uniform(0, math.pi))
     
     # Initialize ROS Client Library for Python
     rclpy.init()
     
     # Instance node and then spin until Keyboard Interrupt
-    node = StaticFramePublisher(sys.argv)
+    node = StaticFramePublisher(transform_data)
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
