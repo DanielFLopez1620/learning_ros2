@@ -58,10 +58,14 @@ def quaternion_from_euler(ai, aj, ak):
     q[3] = cj*cc + sj*ss
     return q
 
-
+# -------- Base class of the program for tf2 static  broadcaster --------------
 class StaticFramePublisher(Node):
     """
     Broadcast transforms that never change, because it is static
+    Attributes
+    ---
+    tf_static_broadcaster : tf2 transform broadcaster
+        Broadcaster that will be used to send static transforms
     
     Methods
     ---
@@ -126,19 +130,29 @@ class StaticFramePublisher(Node):
 
 
 def main():
+    # Initialize ROS Client Library for Python
+    rclpy.init()
+    
+    # Create a logger for displaying info
     logger = rclpy.logging.get_logger('logger')
-
-    # obtain parameters from command line arguments
+    logger.info("Static transform broadcaster has been initialized")
+    
+    # Obtain parameters from command line arguments, only name of child tf
+    # is neeed in this example, as the other componentes will be results of
+    # pseudo random generations.
     if len(sys.argv) != 2:
         logger.info('Invalid number of parameters. Usage: \n'
                     '$ ros2 run learning_tf2_py static_turtle_tf2_broadcaster'
                     'child_frame_name')
         sys.exit(1)
 
+    # 'world' cannot be used as it is the base from the transforms and it
+    # already exists. Transforms names must be unique.
     if sys.argv[1] == 'world':
         logger.info('Your static turtle name cannot be "world"')
         sys.exit(2)
 
+    # Adding child tf name
     transform_data = []
     transform_data.append(str(sys.argv[1]))
 
@@ -149,15 +163,14 @@ def main():
     for j in range(3):
         transform_data.append(random.uniform(0, math.pi))
     
-    # Initialize ROS Client Library for Python
-    rclpy.init()
     
-    # Instance node and then spin until Keyboard Interrupt
+    # Instance node and then spin until Keyboard Interrupt is recieved
     node = StaticFramePublisher(transform_data)
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
         pass
     
-    # 
+    # Closing program
+    logger.info("Static transform broadcaster is going to be shutdown")
     rclpy.shutdown()

@@ -18,6 +18,8 @@
   <exec_depend>rclpy</exec_depend>
   <exec_depend>tf2_ros_py</exec_depend>
   <exec_depend>turtlesim</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
 
   <!--________Adding test related dependencies (quality/functionality)________-->
   <test_depend>ament_copyright</test_depend>
