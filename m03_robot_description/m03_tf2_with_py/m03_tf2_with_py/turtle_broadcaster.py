@@ -57,8 +57,27 @@ def quaternion_from_euler(ai, aj, ak):
     return q
 
 # --------------- Base class of the program for tf2 broadcaster ---------------
-class FramePublisher(Node):
-
+class TurtlePoseBroad(Node):
+    """
+    Class oriented to boradcasting the pose (as a tf) of a turtle in turtlesim.
+    
+    Attributes
+    ---
+    turtlename : ros2 parameter
+        String param that refers to the name of the turtle to follow.
+        
+    tf_broadcaster : Transform broadcaster
+        The broadcaster that will be used to transmit the tf of the turtle.
+        
+    subscription : subscriber
+        Subscribe to turtlesim pose of the turtle with the given turtlename
+        
+    Methods
+    ---
+    handle_turtle_pose(msg)
+        Callback of the subscription that will boradcast the pose of the
+        given turtle (tf).
+    """
     def __init__(self):
         """ 
         Constructor that initialize a node with the name 
@@ -114,10 +133,10 @@ def main():
     
     # Create a logger for displaying info
     logger = rclpy.logging.get_logger('logger')
-    logger.info("Initialization broadcaster of turtles")
+    logger.info("Initialized: Broadcaster of turtles tfs.")
     
     # Instance a node 
-    node = FramePublisher()
+    node = TurtlePoseBroad()
     
     # Spin the node until Keyboard Interrupt is received
     try:
@@ -126,5 +145,5 @@ def main():
         pass
 
     # Shutdown and close
-    logger.info("Closing broadcaster of turtles")
+    logger.info("Closing: Broadcaster of turtles tfs")
     rclpy.shutdown()
