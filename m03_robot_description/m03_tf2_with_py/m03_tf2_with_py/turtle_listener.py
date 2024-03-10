@@ -79,6 +79,11 @@ class FrameListener(Node):
         self.timer = self.create_timer(1.0, self.on_timer)
 
     def on_timer(self):
+        """
+        When the timer calls, it wil send velocity commands to chase the
+        desired turtle with another turtle. If the chase turtle hasn't
+        been created, then it will spawn one turtle.
+        """
         # Store frame names, then they will be computed
         from_frame_rel = self.target_frame
         to_frame_rel = 'turtle2'

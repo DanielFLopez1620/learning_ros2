@@ -27,6 +27,7 @@ setup(
             'static_broad = m03_tf2_with_py.static_broadcaster:main',
             'turtle_broad = m03_tf2_with_py.turtle_broadcaster:main',
             'turtle_listen = m03_tf2_with_py.turtle_listener:main',
+            'lettuce_frame = m03_tf2_with_py.lettuce_frame:main',
         ],
     },
     
