@@ -41,7 +41,7 @@ class LettuceFrameBroadcaster(Node):
         self.tf_broadcaster = TransformBroadcaster(self)
         
         # Create timer and link update callback
-        self.timer = self.create_timer(0.1, self.broadcast_timer_callback)
+        self.timer = self.create_timer(0.25, self.broadcast_timer_callback)
 
     def broadcast_timer_callback(self):
         """
@@ -71,6 +71,10 @@ class LettuceFrameBroadcaster(Node):
 
 
 def main():
+    """
+    Program oriented to create a static tranform to be followed. In this case
+    it will be a simple fixed spaced frame for the turtle called 'lettuce'
+    """
     # Initialize ROS Client Library for Python
     rclpy.init()
     
