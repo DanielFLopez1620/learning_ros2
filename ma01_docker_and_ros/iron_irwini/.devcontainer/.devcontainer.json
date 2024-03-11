@@ -1,0 +1,30 @@
+{
+    "name": "ROS 2 Iron Irwini Container",
+    "privileged": true,
+    "remoteUser": "learner",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "args": {
+            "USERNAME": "learner"
+        }
+    },
+    "workspaceFolder": "/home/learner/ws",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/home/learner/ws,type=bind",
+    "containerEnv": {
+        "DISPLAY": "unix:0",
+        "ROS_LOCALHOST_ONLY": "1",
+        "ROS_DOMAIN_ID": "42"
+    },
+    "runArgs": [
+        "--network", "host",
+        "-e", "DISPLAY=${env:DISPLAY}",
+        "--group-add", "audio",
+        "--device", "/dev/snd"
+    ],
+    "mounts": [
+        "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached",
+        "source=/dev/dri,target=/dev/dri,type=bind,consistency=cached",
+        "source=/dev/snd,target=/dev/snd,type=bind,consistency=cached"
+    ],
+    "postCreateCommand": "rosdep update && rosdep install --from-paths src --ignore-src -y"
+}
