@@ -4,8 +4,23 @@ Here we are going to explore the aspects needed to generate a robot description 
 
 # TF2
 
-A transform....
+A transform is the basics of understating the system of a robot, it gives you the option to calculate the relations of the different parts of your robot. It can be a mobile robot, like turtlebot3, or a industrial robot, like Universal Robots Manipulators. 
 
+You can understand a transform like an origin with its own axis and rotations. Let's illustrate this, you have two mobile robots exploring a room, we will call them 'mob1' and 'mob2', during the exploration 'mob1' found something interesting and want to tell 'mob2' to come, but... how does he tell the position of the objective?
+
+TODO: Add image of two mobile robots exploring.
+
+You can say the position relateve a common origin, but it can get messy if the position of 'mob1' is too complex. Another option is to make the origin at 'mob1', but it get difficult to pass the position and consider 'mob2'.
+
+TODO: Add image of origin and robot origin
+
+The final option is related with using transforms... what if we create two origins and consider the transform, so we keep track of the info since the origin to the robot (and even further).
+
+TODO: Add image of tf consideration
+
+A transform is a consideration of the steps needed to go from one origin to another (frame to frame) that consider linear and angular movements, the linear components are expressed by the x, y and z axis, while the angular components are considered as [quaternions]().
+
+This can also be applied to defined a robotic arm and its joints, and also for explorations. Our focus in TF will search with the **turtlesim**, so then we can move on to describe robots with the context gaining and by using additional technologies.
 
 Some general dependencies you will need are related with the proper *tf2* packages, you can run the command:
 
@@ -15,7 +30,14 @@ Now, let's move to the practice part, we will begin with Python, this practice i
 
     sudo apt-get install ros2-humble-turtle-tf2-py
 
+The practice with turtlesim will make on making frames and tfs with both Python and C++ on ROS2, the objective program will be to create a turtle chaser in different cases.
+
 ## TF2 with Python:
+
+Let's start creating a new package for Python:
 
     ros2 pkg create --build-type ament_python m03_tf_with_py
 
+The dependencies you will need for this exercise are:
+
+    - **geometry_msgs: ** For geometric interfaces, in this case pose and transforms.
