@@ -40,4 +40,36 @@ Let's start creating a new package for Python:
 
 The dependencies you will need for this exercise are:
 
-    - **geometry_msgs: ** For geometric interfaces, in this case pose and transforms.
+- **geometry_msgs:** For geometric interfaces, in this case pose and transforms.
+- **python3-numpy:** For matrix usage and operations.
+- **rclpy:** Do not forget about what we learnt in the previous module.
+- **tf2_ros_py:** Tf2 package for Python.
+- **turtlesim:** Our turtle friends will guide us.
+- **launch:** For making multiple node runs and configure params/args.
+- **launch_ros:** Package related with the .launch.py files.
+
+Our focus will be guiding the journey of the **tf2** in Python, then, we will only explain certain parts of the code as we play with the nodes that interact with the **turtlesim**.
+
+### Using a static broadcaster: 
+
+As we mentioned before, transforms express the relation between different parts of a robot, when we use static transforms we are will describe the relation between the base of the robot and a fixed sensor on the robot, so we can interpretate the data of the sensor in terms of the robot position. 
+
+For creating a transform in Python, first we need to import the dependencies that are **TransformStamped** from **geometry_msgs** and the **StaticTransformBroadcaster**. Some key commands are:
+
+- **<static_broad> = StaticTransformBroadcaster(<node>)** : Intance a static transform broadcaster.
+- **<tf> = TransformStamped()** : Intance a tranform stamped, which contains transform info in terms of traslation, rotation, but also the stamped info related with the parent, child frames and the time.
+- **<tf>.transform.traslation.x = <value>** : Update the traslation x value in a transform.
+- **<tf>.transform.rotation.w = <value>** : Udpate the rotation w value in a trnasform (remember, use quaternion components.)
+- **<tf>.header_stamp = <node>.get_colck().now().to_msg()** : Add time stamp with the node interface.
+- **<tf>.header_frame_id = <parent_frame>** : Link to frame (as a parent.)
+- **<tf>.child_frame_id = <child_frame>** : Specify the name of the child frame.
+- **<static_broad>.sendTransform(<tf>)** : Publish (broadcast) transform created.
+
+In this case, we will use the code [static_broadcaster.py](/m03_robot_description/m03_tf2_with_py/m03_tf2_with_py/static_broadcaster.py) to generate a static frame that create a pseudo-random transform (using random in Python), and check the corresponding transforms, it will need an argument with the name of the child frame, so do not forget to check the code and compile, you can run it with:
+
+    ros2 run m03_tf2_with_py static_broad my_turtle
+
+For checking if it is working, on another terminal you can run: 
+
+    ros2 topic echo /tf_static
+    
