@@ -72,4 +72,53 @@ In this case, we will use the code [static_broadcaster.py](/m03_robot_descriptio
 For checking if it is working, on another terminal you can run: 
 
     ros2 topic echo /tf_static
-    
+
+TODO: Add image of the transform node running.
+
+## Using a broadcaster:
+
+Well, a static frame doesn't seems to be interesting, as it doesn't move, but what if we broadcast the transform of the turtle (respective to the world), then we can track its movements, and we can achieve that with a pretty similar focus as the static broadcaster.
+
+In this case, we will use the code [turtle_broadcaster.py](/m03_robot_description/m03_tf2_with_py/m03_tf2_with_py/turtle_broadcaster.py), where we are going to subscribe to the **Pose** of the **turtle1** from *turtlesim* (if you do not remember subscriptions, go and check the [Module 2](/m02_ros2_communication/m02_ros2_communication.md) info). Some key concepts of the code are mentioned here:
+
+- **<param> = <node>.declare_parameter(<name>)** : Declare a ROS2 parameter that can be accessed for different nodes.
+- 
+- **<param>.get_parameter_value()** : Get the value of a ROS2 parameter available in the network or ambient.
+- 
+- **<subscription> = <node>.create_subscription(<msg_type>, <topic>, <callback>)** : Create a subscriber that receives msgs of type <msg_type> broadcasted in <topic> and links a <callback> for managing it back. In this case the message type is **Pose** from **turtlesim.msg**, and topic is **turtle1/pose** and you can check the callback on the code.
+
+- **<tf>.transformation.traslation.x = <msg>.x** : Remember that you can use the messages received to update this value, in this case for updating linear position of the transform.
+
+- Remember that orientations need to be provided as a quaternion, then as the turtlesim has rpy system, you will need to create a converter for making this process with your different tf.
+
+Now, as what follows is a group demostration as we move on, we will start creating a launch for managing the nodes, in this first part we are going to use the *turtlesim* node and the recent node we created, do not forget to add the proper entrypoint in the [setup.py](/m03_robot_description/m03_tf2_with_py/setup.py):
+
+    'turtle_broad = m03_tf2_with_py.turtle_broadcaster:main',
+
+Our launch file will be [tf2_demo.launch.py](/m03_robot_description/m03_tf2_with_py/launch/tf2_demo.launch.py), and the first two nodes we mentioned were goint to be the next ones:
+
+    from launch_ros.actions import Node
+    from launch.substitutions import LaunchConfiguration
+
+    def generate_launch_description():
+        return LaunchDescription([
+            Node(
+                package='turtlesim',
+                executable='turtlesim_node',
+                name='sim'
+            ),
+            Node(
+                package='m03_tf2_with_py',
+                executable='turtle_broad',
+                name='broadcaster1',
+                parameters=[
+                    {'turtlename': 'turtle1'}
+                ]
+            ),    
+        ])
+
+
+After you have save changes, and compile with *colcon* (and also source the directories), you can run the example with:
+
+    ros2 launch m03_tf2_with_py tf2_demo.launch.py
+
