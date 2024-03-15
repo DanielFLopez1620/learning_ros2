@@ -364,43 +364,43 @@ The idea for implementing a parameter with rclpy is:
 
 Now, let's move our attention to some important commands and instructions for developing nodes with **rclpy**:
 
-- **rclpy.init(args=<args>)** : Command to initialize the rclpy, <args> are related with the *argc* and *argv* equivalent from C and C++.
+- **```rclpy.init(args=<args>)```** : Command to initialize the rclpy, <args> are related with the *argc* and *argv* equivalent from C and C++.
 
-- **rclpy.spin(<instance>)** : Implementation for making iterations of the <instance> specified, in most cases will be the node object.
+- **```rclpy.spin(<instance>)```** : Implementation for making iterations of the <instance> specified, in most cases will be the node object.
 
-- **rclpy.shutdown()** : Last command of the program, closes rclpy dependencies.
+- **```rclpy.shutdown()```** : Last command of the program, closes rclpy dependencies.
 
 Also, let's mention some important commands when making your implementation of publishers and subscribers with **rclpy**:
 
-- **<node_self>.publisher_ = <node_self>.create_publisher(<type>, <topic>, <queue>)** : Instance a publisher with name 'publisher_', with a <type> that must have been imported, <topic> a string that will be the name of the channel and the <queue> in order to specify the max size of it.
+- **```<node_self>.publisher_ = <node_self>.create_publisher(<type>, <topic>, <queue>)```** : Instance a publisher with name 'publisher_', with a <type> that must have been imported, <topic> a string that will be the name of the channel and the <queue> in order to specify the max size of it.
 
-- **<node_self>.publisher_.publish(<msg>)** : Using the publisher called 'publisher_' send (publish) a given <msg> which must be consistent with the definition of the message.
+- **```<node_self>.publisher_.publish(<msg>)```** : Using the publisher called 'publisher_' send (publish) a given <msg> which must be consistent with the definition of the message.
 
-- **<node_self>.subscription = <node_self>.create_subscription(<type>, <topic>, <callback>, <queue>)** : Instance a subscriber with the name 'subcription' with a <type> that must have been imported, a <topic> which is a string that provides the name of the channel, and the respective <queue>. It also has a <callback> that will be called when something is received on the <topic> channel.
+- **```<node_self>.subscription = <node_self>.create_subscription(<type>, <topic>, <callback>, <queue>)```** : Instance a subscriber with the name 'subcription' with a <type> that must have been imported, a <topic> which is a string that provides the name of the channel, and the respective <queue>. It also has a <callback> that will be called when something is received on the <topic> channel.
 
 Another important aspect is related with the servers and clients, for your implementation you should know about:
 
-- **<node_self>.server = <node_self>.create_service(<type>, <srv>, <callback>)** : Instance a service server with the name 'server' that has a specific service <type> with its own request/response type, that will use the <srv> channel provided and links a <callback> function that will act when a request is received.
+- **```<node_self>.server = <node_self>.create_service(<type>, <srv>, <callback>)```** : Instance a service server with the name 'server' that has a specific service <type> with its own request/response type, that will use the <srv> channel provided and links a <callback> function that will act when a request is received.
 
 **NOTE**: Do not forget that for callbacks functions in services you need to add a request and a response, for taking advantage of the params.
 
-- **<node_self>.cli = <node_self>.create_client(<type>, <srv>)** : Instance a service client whith the name 'cli' that has a specific <type> (imported previously) and a <srv> channel.
+- **```<node_self>.cli = <node_self>.create_client(<type>, <srv>)```** : Instance a service client whith the name 'cli' that has a specific <type> (imported previously) and a <srv> channel.
 
-- **<node_self>.future = <node_self>.cli.call_async(<req>)** : Make a call with a given request <req> using asynchronous communication, the result will be assigned to the 'future' variable.
+- **```<node_self>.future = <node_self>.cli.call_async(<req>)```** : Make a call with a given request <req> using asynchronous communication, the result will be assigned to the 'future' variable.
 
-- **rclpy.spin_until_futur_complete(<node_self>, <node_self>.future)** : Iterate and wait until response is received in the case of a 'future' refereing to service clients.
+- **```rclpy.spin_until_futur_complete(<node_self>, <node_self>.future)```** : Iterate and wait until response is received in the case of a 'future' refereing to service clients.
 
 Some general commands and interface, are related with logging, timers and other aspects from **rclpy** are also mention as follow:
 
-- **super()__init__(<name>)** : When we have a class that inherits from node, you need to pass to the parent interface a name to initialize the node.
+- **```super()__init__(<name>)```** : When we have a class that inherits from node, you need to pass to the parent interface a name to initialize the node.
 
-- **<node_self>.get_logger().info(<str>)** : Log from the node, in this case, an info report consisting on the <str>, it can be also used for *warn*, *error*.
+- **```<node_self>.get_logger().info(<str>)```** : Log from the node, in this case, an info report consisting on the <str>, it can be also used for *warn*, *error*.
 
-- **<node_self>.timer = <node_self>.create_timer(<period>, <callback>)** : Instance a timer with name 'timer', that has a <period> in seconds and links a <callback> function that will be called when the period is achieved.
+- **```<node_self>.timer = <node_self>.create_timer(<period>, <callback>)```** : Instance a timer with name 'timer', that has a <period> in seconds and links a <callback> function that will be called when the period is achieved.
 
-- **<param_desc> = ParameterDescriptor(descritipon = "<str>")** : Add a parameter descriptiron that can be used to explain the declaration of a ROS2 Parameter.
+- **```<param_desc> = ParameterDescriptor(descritipon = "<str>")```** : Add a parameter descriptiron that can be used to explain the declaration of a ROS2 Parameter.
 
-- **<node_self>.declare_paremeter(<name>, <defaul_value>, <param_desc>)** : Declare a ROS2 paramaeter with a given <name> and a <default_value>, you can also add a parameter descriptor <param_desc>.
+- **```<node_self>.declare_paremeter(<name>, <defaul_value>, <param_desc>)```** : Declare a ROS2 paramaeter with a given <name> and a <default_value>, you can also add a parameter descriptor <param_desc>.
 
 If you want to learn more about **rclpy**, you can check the official **[API of rclpy](https://docs.ros2.org/foxy/api/rclpy/api.html)**, where you can find more commands and a better explanation of the arguments that can be used for each function.
 
@@ -641,45 +641,45 @@ You do not need extra tags or configs in CMake to make this node work, you only 
 
 Now, let's mention some important commands that you should keep in mind, as the order we previously managed, we will start with publishers and subscribers:
 
-- **rclcpp::Publisher< <msg_type> >::SharedPtr <publisher>;** : Base declaration of a publisher.
+- **```rclcpp::Publisher< <msg_type> >::SharedPtr <publisher>;```** : Base declaration of a publisher.
 
-- **<publisher> = <node_obj>->create_publisher< <msg_type> >(<topic>, <queue>);** : Instance a publisher with a specified <msg_type> that will use the topic called <topic> and have a defined <queue>.
+- **```<publisher> = <node_obj>->create_publisher< <msg_type> >(<topic>, <queue>);```** : Instance a publisher with a specified <msg_type> that will use the topic called <topic> and have a defined <queue>.
 
-- **<publisher>.publish(<msg_content>);** : Publish a valid message (according publisher definition) and sends the <msg_content>.
+- **```<publisher>.publish(<msg_content>);```** : Publish a valid message (according publisher definition) and sends the <msg_content>.
 
-- **rclcpp::Subscription< <msg_type> >::SharedPtr <subscriber>;** : Base declaration for a subscriber.
+- **```rclcpp::Subscription< <msg_type> >::SharedPtr <subscriber>;```** : Base declaration for a subscriber.
 
-- **<subscriber> = <node_obj>->create_subscription< <msg_type> >(<topic>, <queue>, <callback>);** : Instance a subscriber with the corresponding <msg_type>, related with the publisher. It should consider the same <topic> and <queue>.
+- **```<subscriber> = <node_obj>->create_subscription< <msg_type> >(<topic>, <queue>, <callback>);```** : Instance a subscriber with the corresponding <msg_type>, related with the publisher. It should consider the same <topic> and <queue>.
 
 We also, need to talk about important commands when implementing our own service clients and serves, here we have:
 
-- **rclcpp::Service< <srv_type> >::SharedPtr <server>;** : Base declaration of a service server.
+- **```rclcpp::Service< <srv_type> >::SharedPtr <server>;```** : Base declaration of a service server.
 
-- **<server> = <node_obj>->create_service< <srv_type> >(<service>, <callback>);** : Instance a service server with a specified <srv_type> that contains the request and response structure, set the configuration to use the given <service> channel and link a <callback> for incoming responses.
+- **```<server> = <node_obj>->create_service< <srv_type> >(<service>, <callback>);```** : Instance a service server with a specified <srv_type> that contains the request and response structure, set the configuration to use the given <service> channel and link a <callback> for incoming responses.
 
-- **rclcpp::Client< <srv_type> >::SharedPtr <client>;** : Base declaration of a service client.
+- **```rclcpp::Client< <srv_type> >::SharedPtr <client>;```** : Base declaration of a service client.
 
-- **<client> = <node_obj>->create_client< <srv_type> >(<service>);** : Instance a service client with a specified <srv_type>, compatible with the one of the server, and pass the <service> channel that will be used.
+- **```<client> = <node_obj>->create_client< <srv_type> >(<service>);```** : Instance a service client with a specified <srv_type>, compatible with the one of the server, and pass the <service> channel that will be used.
 
-- **auto <request> = std::make_shared< <srv_type>::Request>();** : Declare a request that will be used by a client.
+- **```auto <request> = std::make_shared< <srv_type>::Request>();```** : Declare a request that will be used by a client.
 
 Finally, do not forget about general commands when using *rclcpp*:
 
-- **class <NameClass> : public rclcpp::Node** : Create a class that inheritates from Node class.
+- **```class <NameClass> : public rclcpp::Node```** : Create a class that inheritates from Node class.
 
-- **Node (<str>)** : Initialize Node object with a name <str>, it can be used when inheritate is used.
+- **```Node (<str>)```** : Initialize Node object with a name <str>, it can be used when inheritate is used.
 
-- **rclcpp::init(<argc>, <argv>);** : Initialize rclpp with the corresponding args from the terminal call.
+- **```rclcpp::init(<argc>, <argv>);```** : Initialize rclpp with the corresponding args from the terminal call.
 
-- **rclcpp::spin(<instance>);** : Spin can be considered as an alike loop implementation for a given <instance>.
+- **```rclcpp::spin(<instance>);```** : Spin can be considered as an alike loop implementation for a given <instance>.
 
-- **rclcpp::shutdown();** : Do not forget to add it at the end of your main.
+- **```rclcpp::shutdown();```** : Do not forget to add it at the end of your main.
 
-- **RCLCPP_INFO(<node_obj>->get_logger(), <str>);** : Log <str> to display status, info or related, its structure is similiar to the ones with warns and errors.
+- **```RCLCPP_INFO(<node_obj>->get_logger(), <str>);```** : Log <str> to display status, info or related, its structure is similiar to the ones with warns and errors.
 
-- **rclcpp:TimerBase::SharedPtr <timer>;** : Base declaration of a timer.
+- **```rclcpp:TimerBase::SharedPtr <timer>;```** : Base declaration of a timer.
 
-- **<timer> = <node_obj>->create_wall_timer(<milliseconds>, <bind_callback>)** : Instance a timer that will have a time of given <milliseconds> and everytime is completed, will call the <bind_callback> function.
+- **```<timer> = <node_obj>->create_wall_timer(<milliseconds>, <bind_callback>)```** : Instance a timer that will have a time of given <milliseconds> and everytime is completed, will call the <bind_callback> function.
 
 
 # Troubleshooting:
