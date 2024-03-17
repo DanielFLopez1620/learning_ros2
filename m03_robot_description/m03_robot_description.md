@@ -8,17 +8,19 @@ A transform is the basics of understating the system of a robot, it gives you th
 
 You can understand a transform like an origin with its own axis and rotations. Let's illustrate this, you have two mobile robots exploring a room, we will call them 'mob1' and 'mob2', during the exploration 'mob1' found something interesting and want to tell 'mob2' to come, but... how does he tell the position of the objective?
 
-TODO: Add image of two mobile robots exploring.
+![robot_exploring](/m03_robot_description/resources/robot_exploring.png)
 
-You can say the position relateve a common origin, but it can get messy if the position of 'mob1' is too complex. Another option is to make the origin at 'mob1', but it get difficult to pass the position and consider 'mob2'.
+You can say the position relative to a common origin, but it can get messy if the position of 'mob1' is too complex. Another option is to make the origin at 'mob1', but it get difficult to pass the position and consider 'mob2'.
 
-TODO: Add image of origin and robot origin
+![random_origin](/m03_robot_description/resources/random_origin.png)
+
+![robot_origin](/m03_robot_description/resources/bot_origin.png)
 
 The final option is related with using transforms... what if we create two origins and consider the transform, so we keep track of the info since the origin to the robot (and even further).
 
-TODO: Add image of tf consideration
+![tf_system](/m03_robot_description/resources/tf_system.png)
 
-A transform is a consideration of the steps needed to go from one origin to another (frame to frame) that consider linear and angular movements, the linear components are expressed by the x, y and z axis, while the angular components are considered as [quaternions]().
+A transform is a consideration of the steps needed to go from one origin to another (frame to frame) that consider linear and angular movements, the linear components are expressed by the x, y and z axis, while the angular components are considered as [quaternions from AllAboutCircuits](https://www.allaboutcircuits.com/technical-articles/dont-get-lost-in-deep-space-understanding-quaternions/).
 
 This can also be applied to defined a robotic arm and its joints, and also for explorations. Our focus in TF will search with the **turtlesim**, so then we can move on to describe robots with the context gaining and by using additional technologies.
 
@@ -73,7 +75,7 @@ For checking if it is working, on another terminal you can run:
 
     ros2 topic echo /tf_static
 
-TODO: Add image of the transform node running.
+![static_py_broad](/m03_robot_description/resources/static_py_broad.png)
 
 ## Using a tf broadcaster:
 
@@ -122,7 +124,14 @@ After you have save changes, and compile with *colcon* (and also source the dire
 
     ros2 launch m03_tf2_with_py tf2_demo.launch.py
 
-TODO: Add image of broadcaster turtle and add explanation on what is happening.
+Then you can use the turtle teleoperation node, and check the info of the transforms
+
+    ros2 run turtlesim turtle_teleop_key  # Terminal 1
+    ros2 topic echo /tf  # Terminal 2
+
+You can obtain the results below:
+
+![turtle_py_broad](/m03_robot_description/resources/turtle_py_broad.png)
 
 ## Using a tf listener:
 
@@ -169,4 +178,4 @@ After you have built it, you can run it with:
 
     ros2 launch m03_tf2_with_py tf2_demo.launch.py
 
-TODO: Add image of listner turtle and add explanation.
+![static_py_list](/m03_robot_description/resources/turtle_py_listener.png)
