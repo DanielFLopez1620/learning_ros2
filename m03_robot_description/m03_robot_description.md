@@ -174,8 +174,110 @@ And let's modify the launch, at the previous definition of the launch in this .m
         ]
     ),
 
-After you have built it, you can run it with: 
+After you have built it, you can run it with the command below, then you you can use turtle teleop to move the turtle, and you will see that a second turtle is chasing your orginal turtle.
 
     ros2 launch m03_tf2_with_py tf2_demo.launch.py
 
 ![static_py_list](/m03_robot_description/resources/turtle_py_listener.png)
+
+## Adding a frame
+
+Sometimes you will need addition frames to make possible some functions of the program, and they can be fixed or dynamic (as the broadcaster cases that were presented before). As you add more frames, will add complexity to the transformation tree, so you will need to consider proper implementations of your frames. If you remember, at the end of the module, we presented you a form to check the tranform tree with:
+
+    TODO: Command for transform tree
+
+If you do it, while running the last launch we made, you can discover that the transforms are:
+
+    TODO: Add image of tf2_demo.launch.py tf tree
+
+Technically, implementing a new frame is implementing a new broadcaster, and it can be static or dynamic, some key commands to keep in mind are:
+
+- **```<node>.<tf_broadcaster> = TrnasformBroadcast(<node>)```** : You will need to implement again a broadcaster that you are going to use at some point to use the **sendTransform( **< tf >** )** function.
+
+- **```<tf>.header.frame_id = <parent_name>```** : Here you should add a proper parent frame to indicate a valid relation in the tf tree.
+
+- **```<tf>.child_frame_id = <child_name>```** : This is going to be your new frame with the name <child_name>
+
+It is simple,  and the implementation was proposed on the code [lettuce_frame.py](/m03_robot_description/m03_tf2_with_py/m03_tf2_with_py/lettuce_frame.py) as an analogy of having the turtle following some food attached to his body (think of it like having a pig following a carrot in Minecraft). Do not forget to add the entrypoint to the **setup.py** file:
+
+    'lettuce_frame = m03_tf2_with_py.lettuce_frame:main',
+
+And now, we will have another launch, where we are going to call our previous file, but also, add the static frame we just mentioned. The file is [lettuce_fix_fram.launch.py](/m03_robot_description/m03_tf2_with_py/launch/lettuce_fix_frame.launch.py) and the content is:
+
+    
+    import os
+
+    from ament_index_python.packages import get_package_share_directory
+
+    from launch import LaunchDescription
+    from launch.actions import IncludeLaunchDescription
+    from launch.launch_description_sources import PythonLaunchDescriptionSource
+
+    from launch_ros.actions import Node
+
+
+    def generate_launch_description():
+        demo_nodes = IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([os.path.join(
+                get_package_share_directory('m03_tf2_with_py'), 'launch'),
+                '/tf2_demo.launch.py']),
+            )
+        
+        return LaunchDescription([
+            demo_nodes,
+            Node(
+                package='m03_tf2_with_py',
+                executable='lettuce_frame',
+                name='fixed_broadcaster',
+            ),
+        ])
+
+Do not forget to build and source, so you can run the next commands:
+
+    ros2 launch m03_tf2_with_py lettuce_fix_frame.launch.py
+    TODO: Add tf_tree command
+
+TODO: Add image turtle and lettuce fixed launch
+
+
+You can also add a dynamic frame, that for examples, move randomly, or follows a custom frame trajectory. The implementation is almost the same, but you will need some variable (like time) that add a dynamic change to the system, in our case, we will use the broadcast in the [lettuce_stick_frame](/m03_robot_description/m03_tf2_with_py/m03_tf2_with_py/lettuce_stick_frame.py) code, that follows the analogy of a lettuce on a stick and a row, making random moves. Now, let's add the entrypoint, compile and run:
+
+    'lettuce_stick_frame = m03_tf2_with_py.lettuce_stick_frame:main',
+
+But, before running, let's create another launch called [lettuce_dyn_frame.launch.py](/m03_robot_description/m03_tf2_with_py/launch/lettuce_dyn_frame.launch.py) so the two cases (dynamic and static) are separete, the content is: 
+
+
+    import os
+
+    from ament_index_python.packages import get_package_share_directory
+
+    from launch import LaunchDescription
+    from launch.actions import IncludeLaunchDescription
+    from launch.launch_description_sources import PythonLaunchDescriptionSource
+
+    from launch_ros.actions import Node
+
+
+    def generate_launch_description():
+        demo_nodes = IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([os.path.join(
+                get_package_share_directory('m03_tf2_with_py'), 'launch'),
+                '/tf2_demo.launch.py']),
+            launch_arguments={'target_frame': 'lettuce'}.items(),
+            )
+
+        return LaunchDescription([
+            demo_nodes,
+            Node(
+                package='m03_tf2_with_py',
+                executable='lettuce_stick_frame',
+                name='dynamic_broadcaster',
+            ),
+        ])
+
+After this, we are ready to test it:
+
+    ros2 launch m03_tf2_with_py lettuce_dyn_frame.launch
+    TODO: Add tf tree command
+
+TODO: Add image of the dynamic frame
