@@ -281,3 +281,217 @@ After this, we are ready to test it:
     TODO: Add tf tree command
 
 TODO: Add image of the dynamic frame
+
+
+# Using URDF for robot modeling:
+
+It is an useful tool for visual representation of a robot, and for adding collisions, kinematic and dynamic descriptions. The *.urdf* must be located in the *urdf* directory and its files are composed of a series of tags based on XML, let's examine the most commonly used:
+
+* **link:** It represents a specific part of a robot, for example, the upper arm. Inside this tag you can define the shape (cylinder, box, shpere, or mesh), size (according to the shape params), material (color and texture), collision, physcial properties or even use meshes to define the part.
+
+        <link name="<name_link>">
+            <visual>
+                <!-- Visual shape / mesh -->
+            <visual>
+            <collision>
+                <!-- Collision shape -->
+            </collision>
+            <inertial> ......... </inertial>
+            <material ...... />
+        </link>
+
+ㅤㅤㅤㅤ![link_and_joint](/m03_robot_description/resources/joint_and_link.png)
+
+* **joint:** An implementation of a connection, that can be fixed (static or attached to other part), continuous, prismatic, floating, planar and revolute. Inside this tags, you can define the parent/child relationship, physical limits, dynamic effects, origin (rpy for rotation or xyz for cartesian position), among others.
+
+        <joint name="<joint_name>" type = ">joint_category>">
+            <parent link = "parent_name" />
+            <child link = "child_name" />
+
+            <origin ....... />
+            <!-- axis depending on the type --/>
+            <!-- limit effort depending on the type -->
+
+            <calibration ...... />
+            <dynamics damping .... />
+        </joint>
+
+ㅤㅤㅤㅤ![related_links](/m03_robot_description/resources/parent_and_child.png)
+
+* **robot:** Encapsulation of a group of joints and links that conform a robot, inside a robot tag you cannot implment multiple joints or links with the same name.
+
+        <robot name = "<my_robot>">
+            <link> .... </link>
+            <link> .... </link>
+            <joint> .... </joint>
+        </robot>
+
+* **gazebo:** For simulation in gazebo, you must specify additional params for plugins, materials and other.
+
+        <gazebo reference="<link>">
+            <material> Gazebo/White </material>
+        </gazebo>
+
+## Visualization of a URDF file:
+
+For using URDF in a package, you should include *tf2*, *geometry_msgs*, *urdf*, *rviz* (for visualization), *xacro* (for macros that will be covered in the next section).
+
+Maybe, in your ROS installation, the *xacro* and *urdf* package are missing, you can install them with:
+
+    sudo apt-get install ros-noetic-urdf*
+    sudo apt-get install ros-humble-xacro
+    sudo apt-get install liburdfdom-tools 
+
+Also, when creating a package for a *robot_description*, you should add some new folders and dirs:
+
+* **/launch** For files that will be used to run multiple nodes, configure params like worlds and models, and taking advantage of rviz configurations.
+
+* **/urdf** The source folder for XML descriptions and implementation of robots for visualization, simulation and configuration.
+
+* **/meshes** Here is the place to add the 3D CAD models to use with the URDF descriptions.
+
+Now, let's see some models, in this module you can find descriptions for an R2-D2 version for ROS, you can launch the configuration with the next command:
+
+    # TODO: add package of r2d2 and launch
+
+I encourage you to watch the code, explore the tags, modify and experiment for better understanding the usage of URDF. Also, you can explore them in a different way, that include checking the urdf and watching a graphic of them, this can be achieved using the next commands:
+
+    check_urdf <your_urdf>.urdf
+    urdf_to_graphiz <your_urdf>.urdf  #Generates a .pdf and a .gv files
+    evince <your_urdf>.pdf
+
+Now, lets explain the launch for visualization, it must (at least contain) the following:
+
+* The specification of the robot description, for example, a URDF file:
+
+        <param name="robot_description" textfile="$(find <package>)/urdf/<your_urdf>.urdf> />
+
+* The visualization app or framework, which will be RVIZ, where you can also import a configuration:
+
+        <node name="rviz" pkg="rviz" type="rviz" args="-d $(find <package>)/<path_to_config>/<config>.rviz />
+
+* The GUI for the joint_state_publisher, if you want to test or experiment with the specified joints for the publisher.
+
+        <node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type = "joint_state_publisher_gui" />
+
+* The visualizer of the state and transforms for the robot, which implicates the usage of robot_state_publisher
+
+        <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+
+## Adding properties to the URDF Model
+
+For obtaining a better description, you should include physical properties to the model, these includes collision, mass, inertia and others:
+
+* **collision:** Where you define contacts and limits for the model, wheter it follows the visual or not.
+
+        <collision>
+            <geometry> ... </geometry>
+            <origin ... />
+        </collision>
+
+* **inertial:** It includes params related to the movement and reaction to forces based on the inertia and the mass.
+
+        <inertial>
+            <mass value="<kg>">
+            <!-- Matrix of inertia according the figure -->
+             <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+        <inertial/>
+
+* **transmision:** Used to describe the relationship between actuator and joint, then it should include a `<joint>` and a `<actuator>` tags, for example:
+
+        <transmission name="simple_trans">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="foo_joint">
+          <hardwareInterface>EffortJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="foo_motor">
+          <mechanicalReduction>50</mechanicalReduction>
+          <hardwareInterface>EffortJointInterface</hardwareInterface>
+        </actuator>
+        </transmission>
+
+* **limit:** Used for the boundaries of a joint, according to its type, it contains the effort, the lower and upper limit and the velocity.
+
+        <limit effort="<max_effort>" lower="<min_value>" upper="<max_value>" velocity="<vel>" />
+    
+* **safety_controller:** Another joint option, that relates with k_position (relation between pos and vel limits), k_velocity (relation between effort and velocity limits), and soft_poser/upper_limits.
+
+        <safety_controller k_position="<k_p>" k_velocity="<k_v>" soft_lower_limit="<lower_value>" soft_upper_limit="<upper_value>"/> 
+
+
+
+# Xacro to improve your URDF descriptions:
+
+Againt the lack of reusability, simplicity and programmability of URDF, you can use macros with Xacro to make it more user-friendly. Now, you will be able to use variables, constants, math, conditional statments, among others.
+
+The root for working with xacro is:
+
+    <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="<your_robot>"> 
+
+## Using properties:
+
+It is used for the declaration of constants, for creating one you use:
+
+    <xacro:property name="<cte_name"> value="<value>" />
+
+And for invoke them, you will need to use an expression, for example, `${<cte_name>}`.
+
+## Including equations:
+
+For making math relations between the constants and the model, or improving the definition of mobile parts, for these you can use math operators inside the expresion `${}`. Let's see some examples:
+
+    <xacro:property name="<relation>" value="<cte_name>*3" />
+
+    <sphere radius="${cte_name}-2" />
+
+Also,you can include some functions and constants from the python math modele, like `radians(<degree>)`
+
+## Using conditional:
+
+Another useful tool, here you can compare properties or evaluate expresions, the basic usage relates with:
+
+    <xacro:if value="<expression>">
+        <!-- XML code or URDF description>
+    </xacro:if>
+
+    <xacro:if value="${expression}"/>
+
+## Using macros:
+
+Which is oriented to reduce the amount of code, to make it more simply and reusable, first you will need to define the macro, then you just need to invoke it with the correct params, for example.
+
+    <xacro:macro name="<macro_name>" params="<param1> <param2> ...">
+        <joint name="joint_${<param1>}>
+            <!-- joint info--->
+        </joint>
+    </xacro:macro>
+
+    <xacro:<macro_name> <param_1>="<my_param1>" ... />
+
+Another interesting feature, is to include/import other xacro files, for this you can use:
+
+    <xacro:include filename="$(find <package>)/path_to_urdf/<file>.xacro />
+
+## From xacro to URDF:
+
+When needed, you can convert your xacro file, into a URDF description, you just need to run the command:
+
+    # TODO: Seach command to parse Xacro to URDF ROS2
+
+Which can be used as a *robot_description*.
+
+## Experimentation:
+
+Now, you know the basics for modeling your robot with URDF, Xacro and tf. I encourage you to explore the URDF and Xacro files in the */urdf* directory. There you will find an R2D2 in URDF and Xacro, a robotic arm and even a car. Enjoy and play for yourself, you can view the models with the launches created for it, as:
+
+    roslaunch learning_ros1 m03_display_r2d2.launch
+    roslaunch learning_ros1 m03_display_r2d2_xacro.launch
+
+ㅤㅤㅤㅤ![R2_D2_Xacro](/m03_robot_description/resources/r2d2_dan_version.png)
+
+
+## Resources:
+* [TF2 Tutorials](https://docs.ros.org/en/humble/Tutorials/Intermediate/Tf2/Tf2-Main.html)
+* [URDF Tutorials](https://docs.ros.org/en/humble/Tutorials/Intermediate/URDF/URDF-Main.html)
+* [URDF/XML | ROS1 Guide](http://wiki.ros.org/urdf/XML)
+* [Xacro | ROS1 Guide](http://wiki.ros.org/xacro)
