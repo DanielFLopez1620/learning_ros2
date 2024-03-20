@@ -1,0 +1,605 @@
+<?xml version="1.0"?>
+<robot name="r2d2_urdf_mod">
+
+<!-- _______________ MATERIAL DEFINITIONS __________________ -->
+<material name="blue">
+    <color rgba="0 0 0.8 1"/>
+</material>
+<material name="black">
+    <color rgba="0 0 0 1"/>
+</material>
+<material name="white">
+    <color rgba="1 1 1 1"/>
+</material>
+<material name="semi_white">
+    <color rgba="0.8 0.8 0.8 1"/>
+</material>
+<material name="red">
+<color rgba="0.9 0.0 0.0 1.0"/>
+</material>
+<material name="gray">
+<color rgba="0.5 0.5 0.5 1.0"/>
+</material>
+
+<!-- ______________________ BODY __________________________ -->
+<link name="base_link">
+    <visual>
+    <geometry>
+        <cylinder length="0.6" radius="0.2"/>
+    </geometry>
+    <material name="white"/>
+    </visual>
+</link>
+
+<link name="vent_plat">
+    <visual>
+    <geometry>
+        <box size="0.1 0.1 0.25"/>
+    </geometry>
+    <material name="blue"/>
+    </visual>
+</link>
+<joint name="base_to_vent" type="fixed">
+    <parent link="base_link"/>
+    <child link="vent_plat"/>
+    <origin xyz="0.152 0.0 0.05"/>  
+</joint>
+
+<link name="vent_upper">
+    <visual>
+    <origin rpy="0 1.57075 0" xyz="0 0 0"/>
+    <geometry>
+        <cylinder radius="0.045" length="0.1"/>
+    </geometry>
+    <material name="gray"/>
+    </visual>
+</link>
+<joint name="to_vent_upper" type="fixed">
+    <parent link="vent_plat"/>
+    <child link="vent_upper"/>
+    <origin xyz="0.02 0.0 0.070"/>  
+</joint>
+
+<link name="vent_lower">
+    <visual>
+    <origin rpy="0 1.57075 0" xyz="0 0 0"/>
+    <geometry>
+        <cylinder radius="0.045" length="0.1"/>
+    </geometry>
+    <material name="gray"/>
+    </visual>
+</link>
+<joint name="to_vent_lower" type="fixed">
+    <parent link="vent_plat"/>
+    <child link="vent_lower"/>
+    <origin xyz="0.02 0.0 -0.07"/>  
+</joint>
+
+<link name="base_down">
+    <visual>
+    <geometry>
+        <cylinder length="0.08" radius="0.16"/>
+    </geometry>
+    <material name="white"/>
+    </visual>
+</link>
+<joint name="base_to_down" type="fixed">
+    <parent link="base_link"/>
+    <child link="base_down"/>
+    <origin xyz="0.0 0.0 -0.3"/>
+</joint>
+
+<link name="left_door">
+    <visual>
+    <geometry>
+        <box size="0.1 0.05 0.25"/>
+    </geometry>
+    <material name="semi_white"/>
+    </visual>
+</link>
+<joint name="base_to_left_door" type="fixed">
+    <parent link="base_link"/>
+    <child link="left_door"/>
+    <origin xyz="0.145 0.105 0.05"/>  
+</joint>
+
+<link name="righ_door">
+    <visual>
+    <geometry>
+        <box size="0.1 0.05 0.25"/>
+    </geometry>
+    <material name="semi_white"/>
+    </visual>
+</link>
+<joint name="base_to_righ_door" type="fixed">
+    <parent link="base_link"/>
+    <child link="righ_door"/>
+    <origin xyz="0.145 -0.105 0.05"/>  
+</joint>
+
+<link name="blue1_door">
+    <visual>
+    <geometry>
+        <box size="0.1 0.25 0.035"/>
+    </geometry>
+    <material name="blue"/>
+    </visual>
+</link>
+<joint name="base_to_blue1_door" type="fixed">
+    <parent link="base_link"/>
+    <child link="blue1_door"/>
+    <origin xyz="0.155 0 0.25"/>  
+</joint>
+
+<link name="blue2_door">
+    <visual>
+    <geometry>
+        <box size="0.1 0.25 0.035"/>
+    </geometry>
+    <material name="blue"/>
+    </visual>
+</link>
+<joint name="base_to_blue2_door" type="fixed">
+    <parent link="base_link"/>
+    <child link="blue2_door"/>
+    <origin xyz="0.155 0 0.20"/>  
+</joint>
+
+
+
+<!-- __________________ RIGHT LEG _______________________ -->
+<link name="right_leg">
+    <visual>
+    <geometry>
+        <box size="0.6 0.1 0.2"/>
+    </geometry>
+    <origin rpy="0 1.57075 0" xyz="0 0 -0.3"/>
+    <material name="white"/>
+    </visual>
+</link>
+
+<link name="right_shoulder">
+    <visual>
+    <geometry>
+        <sphere radius="0.12"/> 
+    </geometry>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <material name="white"/>
+    </visual>
+</link>
+<joint name="base_to_right_shoulder" type="revolute">
+    <axis xyz="0 1 0"/>
+    <limit effort="1000.0" lower="-0.3" upper="0.3" velocity="0.5"/>
+    <parent link="base_link"/>
+    <child link="right_shoulder"/>
+    <origin xyz="0 -0.20 0.20"/>
+</joint>
+<joint name="shoulder_to_right_leg" type="fixed">
+    <parent link="right_shoulder"/>
+    <child link="right_leg"/>
+    <origin xyz="0 -0.02 0"/>
+</joint>
+
+<link name="right_protection">
+    <visual>
+    <geometry>
+        <sphere radius="0.098"/> 
+    </geometry>
+    <origin xyz="0 0 0.035"/>
+    <material name="white"/>
+    </visual>
+</link>
+<joint name="protection_to_right_shoulder" type="fixed">
+    <parent link="right_shoulder"/>
+    <child link="right_protection"/>
+</joint>
+
+<link name="right_piston">
+    <visual>
+    <geometry>
+        <cylinder length="0.5" radius="0.05"/>
+    </geometry>
+    <origin rpy="0 0 0" xyz="0 -0.05 -0.3"/>
+    <material name="blue"/>
+    </visual>  
+</link>
+<joint name="piston_to_right_leg" type="fixed">
+    <parent link="right_leg"/>
+    <child link="right_piston"/>
+    <origin xyz="0 0 0.05"/>
+</joint>
+
+<link name="right_base">
+    <visual>
+    <geometry>
+        <box size="0.4 0.1 0.1"/>
+    </geometry>
+    <material name="white"/>
+    </visual>
+</link>
+<joint name="right_base_joint" type="fixed">
+    <parent link="right_leg"/>
+    <child link="right_base"/>
+    <origin xyz="0 0 -0.6"/>
+</joint>
+
+<link name="right_front_wheel">
+    <visual>
+    <origin rpy="1.57075 0 0" xyz="0 0 0"/>
+    <geometry>
+        <cylinder length="0.1" radius="0.035"/>
+    </geometry>
+    <material name="black"/>
+    </visual>
+</link>
+<joint name="right_front_wheel_joint" type="continuous">
+    <axis rpy="0 0 0" xyz="0 1 0"/>
+    <parent link="right_base"/>
+    <child link="right_front_wheel"/>
+    <origin rpy="0 0 0" xyz="0.133333333333 0 -0.085"/>
+</joint>
+
+<link name="right_back_wheel">
+    <visual>
+    <origin rpy="1.57075 0 0" xyz="0 0 0"/>
+    <geometry>
+        <cylinder length="0.1" radius="0.035"/>
+    </geometry>
+    <material name="black"/>
+    </visual>
+</link>
+<joint name="right_back_wheel_joint" type="continuous">
+    <axis rpy="0 0 0" xyz="0 1 0"/>
+    <parent link="right_base"/>
+    <child link="right_back_wheel"/>
+    <origin rpy="0 0 0" xyz="-0.133333333333 0 -0.085"/>
+</joint>
+
+<!-- _________________ LEFT LEG ____________________ -->
+<link name="left_leg">
+    <visual>
+    <geometry>
+        <box size="0.6 0.1 0.2"/>
+    </geometry>
+    <origin rpy="0 1.57075 0" xyz="0 0 -0.3"/>
+    <material name="white"/>
+    </visual>
+</link>
+
+<link name="left_shoulder">
+    <visual>
+    <geometry>
+        <sphere radius="0.12"/> 
+    </geometry>
+    <material name="white"/>
+    </visual>
+</link>
+<joint name="base_to_left_shoulder" type="revolute">
+    <axis xyz="0 1 0"/>
+    <limit effort="1000.0" lower="-0.3" upper="0.3" velocity="0.5"/>
+    <parent link="base_link"/>
+    <child link="left_shoulder"/>
+    <origin xyz="0 0.20 0.20"/>
+</joint>
+
+<link name="left_protection">
+    <visual>
+    <geometry>
+        <sphere radius="0.098"/> 
+    </geometry>
+    <origin xyz="0 0 0.035"/>
+    <material name="white"/>
+    </visual>
+</link>
+<joint name="protection_to_left_shoulder" type="fixed">
+    <parent link="left_shoulder"/>
+    <child link="left_protection"/>
+</joint>
+
+<joint name="shoulder_to_left_leg" type="fixed">
+    <parent link="left_shoulder"/>
+    <child link="left_leg"/>
+    <origin xyz="0 0.02 0"/>
+</joint>
+
+    <link name="left_piston">
+    <visual>
+    <geometry>
+        <cylinder length="0.5" radius="0.05"/>
+    </geometry>
+    <origin rpy="0 0 0" xyz="0 0.05 -0.3"/>
+    <material name="blue"/>
+    </visual>  
+</link>
+<joint name="piston_to_left_leg" type="fixed">
+    <parent link="left_leg"/>
+    <child link="left_piston"/>
+    <origin xyz="0 0 0.05"/>
+</joint>
+
+<link name="left_base">
+    <visual>
+    <geometry>
+        <box size="0.4 0.1 0.1"/>
+    </geometry>
+    <material name="white"/>
+    </visual>
+</link>
+<joint name="left_base_joint" type="fixed">
+    <parent link="left_leg"/>
+    <child link="left_base"/>
+    <origin xyz="0 0 -0.6"/>
+</joint>
+
+<link name="left_front_wheel">
+    <visual>
+    <origin rpy="1.57075 0 0" xyz="0 0 0"/>
+    <geometry>
+        <cylinder length="0.1" radius="0.035"/>
+    </geometry>
+    <material name="black"/>
+    </visual>
+</link>
+<joint name="left_front_wheel_joint" type="continuous">
+    <axis rpy="0 0 0" xyz="0 1 0"/>
+    <parent link="left_base"/>
+    <child link="left_front_wheel"/>
+    <origin rpy="0 0 0" xyz="0.133333333333 0 -0.085"/>
+</joint>
+
+<link name="left_back_wheel">
+    <visual>
+    <origin rpy="1.57075 0 0" xyz="0 0 0"/>
+    <geometry>
+        <cylinder length="0.1" radius="0.035"/>
+    </geometry>
+    <material name="black"/>
+    </visual>
+</link>
+<joint name="left_back_wheel_joint" type="continuous">
+    <axis rpy="0 0 0" xyz="0 1 0"/>
+    <parent link="left_base"/>
+    <child link="left_back_wheel"/>
+    <origin rpy="0 0 0" xyz="-0.133333333333 0 -0.085"/>
+</joint>
+
+<!-- __________________ GRIPPER _____________________ -->
+
+<joint name="gripper_extension" type="prismatic">
+    <parent link="base_link"/>
+    <child link="gripper_pole"/>
+    <limit effort="1000.0" lower="-0.38" upper="0" velocity="0.5"/>
+    <origin rpy="0 0 0" xyz="0.19 0.1 +0.05"/>
+</joint>
+
+<link name="gripper_pole">
+    <visual>
+    <geometry>
+        <cylinder length="0.2" radius="0.01"/>
+    </geometry>
+    <origin rpy="0 1.57075 0 " xyz="0.1 0 0"/>
+    </visual>
+</link>
+<joint name="left_gripper_joint" type="revolute">
+    <axis xyz="0 0 1"/>
+    <limit effort="1000.0" lower="0.0" upper="0.548" velocity="0.5"/>
+    <origin rpy="0 0 0" xyz="0.2 0.01 0"/>
+    <parent link="gripper_pole"/>
+    <child link="left_gripper"/>
+</joint>
+
+<link name="left_gripper">
+    <visual>
+    <origin rpy="0.0 0 0" xyz="0 0 0"/>
+    <geometry>
+        <mesh filename="package://urdf_tutorial/meshes/l_finger.dae"/>
+    </geometry>
+    </visual>
+</link>
+<joint name="left_tip_joint" type="fixed">
+    <parent link="left_gripper"/>
+    <child link="left_tip"/>
+</joint>
+
+<link name="left_tip">
+    <visual>
+    <origin rpy="0.0 0 0" xyz="0.09137 0.00495 0"/>
+    <geometry>
+        <mesh filename="package://urdf_tutorial/meshes/l_finger_tip.dae"/>
+    </geometry>
+    </visual>
+</link>
+<joint name="right_gripper_joint" type="revolute">
+    <axis xyz="0 0 -1"/>
+    <limit effort="1000.0" lower="0.0" upper="0.548" velocity="0.5"/>
+    <origin rpy="0 0 0" xyz="0.2 -0.01 0"/>
+    <parent link="gripper_pole"/>
+    <child link="right_gripper"/>
+</joint>
+
+<link name="right_gripper">
+    <visual>
+    <origin rpy="-3.1415 0 0" xyz="0 0 0"/>
+    <geometry>
+        <mesh filename="package://urdf_tutorial/meshes/l_finger.dae"/>
+    </geometry>
+    </visual>
+</link>
+<joint name="right_tip_joint" type="fixed">
+    <parent link="right_gripper"/>
+    <child link="right_tip"/>
+</joint>
+
+<link name="right_tip">
+    <visual>
+    <origin rpy="-3.1415 0 0" xyz="0.09137 0.00495 0"/>
+    <geometry>
+        <mesh filename="package://urdf_tutorial/meshes/l_finger_tip.dae"/>
+    </geometry>
+    </visual>
+</link>
+
+<!-- _______________ HEAD  __________________ -->
+<link name="head">
+    <visual>
+    <geometry>
+        <sphere radius="0.2"/>
+    </geometry>
+    <material name="white"/>
+    </visual>
+</link>
+<link name="neck">
+    <visual>
+    <geometry>
+        <sphere radius="0.2"/>
+    </geometry>
+    <material name="blue"/>
+    </visual>
+</link>
+<joint name="head_swivel" type="continuous">
+    <parent link="base_link"/>
+    <child link="head"/>
+    <axis xyz="0 0 1"/>
+    <origin xyz="0 0 0.33"/>
+</joint>
+<joint name="neck_to_head" type="fixed">
+    <parent link="head"/>
+    <child link="neck"/>
+    <origin xyz="0 0 -0.03"/>
+</joint>
+
+<link name="eye">
+    <visual>
+    <geometry>
+        <box size="0.08 0.08 0.08"/>
+    </geometry>
+    <material name="blue"/>
+    </visual>
+</link>
+
+<joint name="toeye" type="fixed">
+    <parent link="head"/>
+    <child link="eye"/>
+    <origin xyz="0.1414 0 0.1214"/>
+</joint>
+
+<link name="pupil">
+    <visual>
+    <geometry>
+        <sphere radius="0.03"/>
+    </geometry>
+    <material name="black"/>
+    </visual>
+</link>
+<joint name="pupil_eye" type="fixed">
+    <parent link="eye"/>
+    <child link="pupil"/>
+    <origin xyz="0.03 0 0.001"/>
+</joint>
+
+<link name="base_light">
+    <visual>
+    <origin rpy="0 0 0.23"/>
+    <geometry>
+        <box size="0.06 0.08 0.06"/>
+    </geometry>
+    <material name="blue"/>
+    </visual>
+</link>
+<joint name="tobase_light" type="fixed">
+    <parent link="head"/>
+    <child link="base_light"/>
+    <origin xyz="0.18 0.02 0.045 "/>
+</joint>
+
+<link name="red_light">
+    <visual>
+    <origin rpy="0 1.57075 0.23"/>
+    <geometry>
+        <cylinder radius="0.018" length="0.03"/>
+    </geometry>
+    <material name="red"/>
+    </visual>
+</link>
+<joint name="tored_light" type="fixed">
+    <parent link="base_light"/>
+    <child link="red_light"/>
+    <origin xyz="0.03 0 0.001"/>
+</joint>
+
+<link name="base_camera">
+    <visual>
+    <origin rpy="0 1.57075 0.4"/>
+    <geometry>
+        <cylinder radius="0.025" length="0.04"/>
+    </geometry>
+    <material name="gray"/>
+    </visual>
+</link>
+<joint name="tobase_camera" type="fixed">
+    <parent link="head"/>
+    <child link="base_camera"/>
+    <origin xyz="0.16 0.1 0.046 "/>
+</joint>
+
+<link name="camera">
+    <visual>
+    <origin rpy="0 1.57075 0.4"/>
+    <geometry>
+        <cylinder radius="0.015" length="0.035"/>
+    </geometry>
+    <material name="gray"/>
+    </visual>
+</link>
+<joint name="tocamera" type="fixed">
+    <parent link="base_camera"/>
+    <child link="camera"/>
+    <origin xyz="0.03 0.01 0 "/>
+</joint>
+
+<link name="dec_1">
+    <visual>
+    <origin rpy="0 0 -0.23"/>
+    <geometry>
+        <box size="0.06 0.035 0.06"/>
+    </geometry>
+    <material name="blue"/>
+    </visual>
+</link>
+<joint name="to_dec1" type="fixed">
+    <parent link="head"/>
+    <child link="dec_1"/>
+    <origin xyz="0.17 -0.055 0.045 "/>
+</joint>
+
+<link name="dec_2">
+    <visual>
+    <origin rpy="0 0 -0.60"/>
+    <geometry>
+        <box size="0.06 0.045 0.06"/>
+    </geometry>
+    <material name="blue"/>
+    </visual>
+</link>
+<joint name="to_dec2" type="fixed">
+    <parent link="head"/>
+    <child link="dec_2"/>
+    <origin xyz="0.135 -0.1105 0.045 "/>
+</joint>
+
+<link name="antena">
+    <visual>
+    <origin rpy="-0.3 0.2 0.3"/>
+    <geometry>
+        <cylinder radius="0.017" length="0.04"/>
+    </geometry>
+    <material name="gray"/>
+    </visual>
+</link>
+<joint name="toantena" type="fixed">
+    <parent link="head"/>
+    <child link="antena"/>
+    <origin xyz="0.06 0.1 0.17 "/>
+</joint>
+
+</robot>

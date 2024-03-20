@@ -1,0 +1,407 @@
+<?xml version="1.0"?>
+<robot name="r2d2_xacro_mod" xmlns:xacro="http://ros.org/wiki/xacro">
+
+<!-- _____________________ XACRO PROPERTIES ___________________________-->
+<xacro:property name="width" value="0.2" />
+<xacro:property name="leglen" value="0.6" />
+<xacro:property name="polelen" value="0.2" />
+<xacro:property name="bodylen" value="0.6" />
+<xacro:property name="baselen" value="0.4" />
+<xacro:property name="wheeldiam" value="0.07" />
+<xacro:property name="pi" value="3.1415" />
+<xacro:property name="shoulder" value="0.12"/>
+<xacro:property name="box" value="0.05"/>
+<xacro:property name="dec" value="0.02"/>
+<xacro:property name="ori" value="0.1"/>
+<xacro:macro name="default_inertial" params="mass">
+    <inertial>
+    <mass value="${mass}" />
+    <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0" />
+    </inertial>
+</xacro:macro>
+
+<!-- _____________________ MATERIALS AND COLORS ______________________ -->
+<material name="blue">
+    <color rgba="0 0 0.8 1"/>
+</material>
+
+<material name="black">
+    <color rgba="0 0 0 1"/>
+</material>
+
+<material name="white">
+    <color rgba="1 1 1 1"/>
+</material>
+
+<material name="semi_white">
+    <color rgba="0.8 0.8 0.8 1"/>
+</material>
+
+<material name="red">
+    <color rgba="0.9 0.0 0.0 1.0"/>
+</material>
+
+<material name="gray">
+    <color rgba="0.5 0.5 0.5 1.0"/>
+</material>
+
+<!-- ____________________ BASE LINK IMPLEMENTATION ____________________-->
+<link name="base_link">
+    <visual>
+    <geometry>
+        <cylinder radius="${width}" length="${bodylen}"/>
+    </geometry>
+    <material name="white"/>
+    </visual>
+    <collision>
+    <geometry>
+        <cylinder radius="${width}" length="${bodylen}"/>
+    </geometry>
+    </collision>
+    <xacro:default_inertial mass="10"/>
+</link>
+<!-- _____________________ XACRO MACROS DESCRIPTIONS ________________-->
+<!-- Xacro for wheel implementation-->
+<xacro:macro name="wheel" params="prefix suffix reflect">
+    <link name="${prefix}_${suffix}_wheel">
+    <visual>
+        <origin xyz="0 0 0" rpy="${pi/2} 0 0" />
+        <geometry>
+        <cylinder radius="${wheeldiam/2}" length="0.1"/>
+        </geometry>
+        <material name="black"/>
+    </visual>
+    <collision>
+        <origin xyz="0 0 0" rpy="${pi/2} 0 0" />
+        <geometry>
+        <cylinder radius="${wheeldiam/2}" length="0.1"/>
+        </geometry>
+    </collision>
+    <xacro:default_inertial mass="1"/>
+    </link>
+    <joint name="${prefix}_${suffix}_wheel_joint" type="continuous">
+    <axis xyz="0 1 0" rpy="0 0 0" />
+    <parent link="${prefix}_base"/>
+    <child link="${prefix}_${suffix}_wheel"/>
+    <origin xyz="${baselen*reflect/3} 0 -${wheeldiam/2+.05}" rpy="0 0 0"/>
+    </joint>
+</xacro:macro>
+
+<!-- Xacro for leg implementation-->
+<xacro:macro name="leg" params="prefix reflect">
+    <link name="${prefix}_shoulder">
+    <visual>
+        <geometry>
+        <sphere radius="${shoulder}"/> 
+        </geometry>
+        <material name="white"/>
+    </visual>
+    <collision>
+        <geometry>
+        <sphere radius="${shoulder}"/> 
+        </geometry>
+    </collision>
+    <xacro:default_inertial mass="5"/>
+    </link>
+    <joint name="base_to_${prefix}_shoulder" type="revolute">
+    <axis xyz="0 1 0"/>
+    <limit effort="1000.0" lower="-0.3" upper="0.3" velocity="0.5"/>
+    <parent link="base_link"/>
+    <child link="${prefix}_shoulder"/>
+    <origin xyz="0 ${reflect*0.20} 0.20"/>
+    </joint>
+
+    <link name="${prefix}_protection">
+    <visual>
+        <geometry>
+        <sphere radius="${shoulder*0.82}"/> 
+        </geometry>
+        <origin xyz="0 0 ${shoulder*0.3}"/>
+        <material name="white"/>
+    </visual>
+    <collision>
+        <geometry>
+        <sphere radius="${shoulder*0.82}"/> 
+        </geometry>
+    </collision>
+    </link>
+    <joint name="protection_to_${prefix}_shoulder" type="fixed">
+    <parent link="${prefix}_shoulder"/>
+    <child link="${prefix}_protection"/>
+    </joint>
+    
+
+    <link name="${prefix}_leg">
+    <visual>
+        <geometry>
+        <box size="${leglen} 0.1 0.2"/>
+        </geometry>
+        <origin xyz="0 0 -${leglen/2}" rpy="0 ${pi/2} 0"/>
+        <material name="white"/>
+    </visual>
+    <collision>
+        <geometry>
+        <box size="${leglen} 0.1 0.2"/>
+        </geometry>
+        <origin xyz="0 0 -${leglen/2}" rpy="0 ${pi/2} 0"/>
+    </collision>
+    <xacro:default_inertial mass="10"/>
+    </link>
+    <joint name="shoulder_to_${prefix}_leg" type="fixed">
+    <parent link="${prefix}_shoulder"/>
+    <child link="${prefix}_leg"/>
+    <origin xyz="0 ${reflect*0.02} 0" />
+    </joint>
+
+    <link name="${prefix}_piston">
+    <visual>
+    <geometry>
+        <cylinder length="0.5" radius="0.05"/>
+    </geometry>
+    <origin xyz="0 ${reflect*0.05} -0.3"/>
+    <material name="blue"/>
+    </visual> 
+    <collision>
+    <geometry>
+        <cylinder length="0.5" radius="0.05"/>
+    </geometry>
+    <origin xyz="0 ${reflect*0.05} -0.3"/>
+    </collision>
+</link>
+<joint name="piston_to_${prefix}_leg" type="fixed">
+    <parent link="${prefix}_leg"/>
+    <child link="${prefix}_piston"/>
+    <origin xyz="0 0 0.05"/>
+</joint>
+
+    <link name="${prefix}_base">
+    <visual>
+        <geometry>
+        <box size="${baselen} 0.1 0.1"/>
+        </geometry>
+        <material name="white"/>
+    </visual>
+    <collision>
+        <geometry>
+        <box size="${baselen} 0.1 0.1"/>
+        </geometry>
+    </collision>
+    <xacro:default_inertial mass="10"/>
+    </link>
+
+    <joint name="${prefix}_base_joint" type="fixed">
+    <parent link="${prefix}_leg"/>
+    <child link="${prefix}_base"/>
+    <origin xyz="0 0 ${-leglen}" />
+    </joint>
+    <xacro:wheel prefix="${prefix}" suffix="front" reflect="1"/>
+    <xacro:wheel prefix="${prefix}" suffix="back" reflect="-1"/>
+</xacro:macro>
+
+<!-- Xacro for gripper implementation-->
+<xacro:macro name="gripper" params="prefix reflect">
+    <joint name="${prefix}_gripper_joint" type="revolute">
+    <axis xyz="0 0 ${reflect}"/>
+    <limit effort="1000.0" lower="0.0" upper="0.548" velocity="0.5"/>
+    <origin rpy="0 0 0" xyz="${polelen} ${reflect*0.01} 0"/>
+    <parent link="gripper_pole"/>
+    <child link="${prefix}_gripper"/>
+    </joint>
+    <link name="${prefix}_gripper">
+    <visual>
+        <origin rpy="${(reflect-1)/2*pi} 0 0" xyz="0 0 0"/>
+        <geometry>
+        <mesh filename="package://urdf_tutorial/meshes/l_finger.dae"/>
+        </geometry>
+    </visual>
+    <collision>
+        <geometry>
+        <mesh filename="package://urdf_tutorial/meshes/l_finger.dae"/>
+        </geometry>
+        <origin rpy="${(reflect-1)/2*pi} 0 0" xyz="0 0 0"/>
+    </collision>
+    <xacro:default_inertial mass="0.05"/>
+    </link>
+
+    <joint name="${prefix}_tip_joint" type="fixed">
+    <parent link="${prefix}_gripper"/>
+    <child link="${prefix}_tip"/>
+    </joint>
+    <link name="${prefix}_tip">
+    <visual>
+        <origin rpy="${(reflect-1)/2*pi} 0 0" xyz="0.09137 0.00495 0"/>
+        <geometry>
+        <mesh filename="package://urdf_tutorial/meshes/l_finger_tip.dae"/>
+        </geometry>
+    </visual>
+    <collision>
+        <geometry>
+        <mesh filename="package://urdf_tutorial/meshes/l_finger_tip.dae"/>
+        </geometry>
+        <origin rpy="${(reflect-1)/2*pi} 0 0" xyz="0.09137 0.00495 0"/>
+    </collision>
+    <xacro:default_inertial mass="0.05"/>
+    </link>
+</xacro:macro>
+<!-- Xacro for doors and rectangles-->
+<xacro:macro name="rectangles" params="size_x size_y size_z x y z name material">
+    <link name="${name}">
+    <visual>
+        <geometry>
+        <box size="${size_x} ${size_y} ${size_z}"/>
+        </geometry>
+        <material name="${material}"/>
+    </visual>
+    </link>
+    <joint name="base_to_${name}" type="fixed">
+    <parent link="base_link"/>
+    <child link="${name}"/>
+    <origin xyz="${x} ${y} ${z}"/>  
+    </joint>
+</xacro:macro>
+
+<!-- Xacro for head/neck implementation-->
+<xacro:macro name="head_sphere" params="material name type father z">
+    <link name="${name}">
+    <visual>
+        <geometry>
+        <sphere radius="${width}"/>
+        </geometry>
+        <material name="${material}"/>
+    </visual>
+    <collision>
+        <geometry>
+        <sphere radius="${width}"/>
+        </geometry>
+    </collision>
+    <xacro:default_inertial mass="2"/>
+    </link>
+    <joint name="${name}_swivel" type="${type}">
+    <parent link="${father}"/>
+    <child link="${name}"/>
+    <axis xyz="0 0 1"/>
+    <origin xyz="0 0 ${z}"/>
+    </joint>
+</xacro:macro>
+
+<xacro:macro name="head_rec_decoration" params="name material height width x y z orientation">
+    <link name="${name}">
+    <visual>
+    <origin rpy="0 0 ${orientation}"/>
+    <geometry>
+        <box size="${height} ${width} ${height}"/>
+    </geometry>
+    <material name="${material}"/>
+    </visual>
+    <collision>
+    <origin rpy="0 0 ${orientation}"/>
+    <geometry>
+        <box size="${height} ${width} ${height}"/>
+    </geometry>
+    </collision>
+</link>
+<joint name="to_${name}" type="fixed">
+    <parent link="head"/>
+    <child link="${name}"/>
+    <origin xyz="${x} ${y} ${z}"/>
+</joint>
+</xacro:macro>
+
+<xacro:macro name="head_cyl_decoration" params="name material height rad x y z raw pitch yaw parent">
+    <link name="${name}">
+    <visual>
+        <origin rpy="${raw} ${pitch} ${yaw}"/>
+        <geometry>
+        <cylinder radius="${rad}" length="${height}"/>
+        </geometry>
+        <material name="${material}"/>
+    </visual>
+    <collision>
+        <origin rpy="0 ${pitch} ${yaw}"/>
+        <geometry>
+        <cylinder radius="${rad}" length="${height}"/>
+        </geometry>
+    </collision>
+    </link>
+    <joint name="to_${name}" type="fixed">
+    <parent link="${parent}"/>
+    <child link="${name}"/>
+    <origin xyz="${x} ${y} ${z}"/>
+    </joint>
+</xacro:macro>
+
+<xacro:macro name="sphere_button" params="name material rad x y z parent">
+    <link name="${name}">
+    <visual>
+    <geometry>
+        <sphere radius="${rad}"/>
+    </geometry>
+    <material name="${material}"/>
+    </visual>
+    <collision>
+    <geometry>
+        <sphere radius="${rad}"/>
+    </geometry>
+    </collision>
+</link>
+<joint name="${name}_${parent}" type="fixed">
+    <parent link="${parent}"/>
+    <child link="${name}"/>
+    <origin xyz="${x} ${y} ${z}"/>
+</joint>
+</xacro:macro>
+<!-- ______________________ XACRO CALLS AND USAGE______________________-->
+<!-- Calling macro for leg-->
+<xacro:leg prefix="right" reflect="-1" />
+<xacro:leg prefix="left" reflect="1" />
+
+<!-- Calling macro for gripper-->
+<xacro:gripper prefix="left" reflect="1" />
+<xacro:gripper prefix="right" reflect="-1" />
+
+<!--Calling macro for vent-->
+<xacro:rectangles size_x="${width/2}" size_y="${width/2}" size_z="${box*5}" x="${box*3+0.02}" y="0.0" z="${box}" name="vent_plat" material="blue"/>
+
+<!--Calling macro for doors-->
+<xacro:rectangles size_x="${width/2}" size_y="${width/4}" size_z="${width*1.25}" x="${box*2.9}" y="${box*2.1}" z="${box}" name="left_door" material="semi_white"/>
+<xacro:rectangles size_x="${width/2}" size_y="${width/4}" size_z="${width*1.25}" x="${box*2.9}" y="${box*-2.1}" z="${box}" name="right_door" material="semi_white"/>
+<xacro:rectangles size_x="${width/2}" size_y="${width*1.25}" size_z="${width*0.175}" x="${box*3.05}" y="0.0" z="${box*5}" name="blue1_door" material="blue"/>
+<xacro:rectangles size_x="${width/2}" size_y="${width*1.25}" size_z="${width*0.175}" x="${box*3.05}" y="0.0" z="${box*4}" name="blue2_door" material="blue"/>
+
+<!-- Calling macro for head-->
+<xacro:head_sphere material="white" name="head" father="base_link" type="continuous" z="${bodylen/1.9}"/>
+<xacro:head_sphere material="blue" name="neck" father="head" type="fixed" z="${-bodylen*0.02}"/>
+<xacro:head_rec_decoration material="blue" name="dec_1" height="${dec*3}" width="${dec*1.75}" x="${width*0.85}" y="${-width*0.275}" z="${width*0.225}" orientation="${-ori*2.3}"/>
+<xacro:head_rec_decoration material="blue" name="dec_2" height="${dec*3}" width="${dec*1.75}" x="${width*0.675}" y="${-width*0.5525}" z="${width*0.225}" orientation="${-ori*6}"/>
+<xacro:head_rec_decoration material="blue" name="base_light" height="${dec*3}" width="${dec*4}" x="${width*0.9}" y="${width*0.1}" z="${width*0.225}" orientation="${ori*2.3}"/>
+<xacro:head_rec_decoration material="blue" name="eye" height="${dec*4}" width="${dec*4}" x="${width*0.707}" y="0.0" z="${width*0.607}" orientation="0.0"/>
+<xacro:head_cyl_decoration material="gray" name="base_camera" height="${dec*2}" rad="${dec*1.25}" x="${width*0.8}" y="${width*0.5}" z="${width*0.23}" raw="0" pitch="${ori*15.7075}" yaw="${ori*4}" parent="head"/>
+<xacro:head_cyl_decoration material="gray" name="camera" height="${dec*1.75}" rad="${dec*0.75}" x="${width*0.15}" y="${width*0.05}" z="0.0" raw="0" pitch="${ori*15.7075}" yaw="${ori*4}" parent="base_camera"/>
+<xacro:head_cyl_decoration material="red" name="red_light" height="${dec*1.5}" rad="${dec*0.9}" x="${width*0.15}" y="0.0" z="${width*0.005}" raw="0" pitch="${ori*15.7075}" yaw="${ori*2.3}" parent="base_light"/>
+<xacro:head_cyl_decoration material="gray" name="antena" height="${dec*2}" rad="${dec*0.85}" x="${width*0.3}" y="${width*0.5}" z="${width*0.85}" raw="${ori*-3}" pitch="${ori*2}" yaw="${ori*3}" parent="head"/>
+<xacro:sphere_button material="black" name="pupil" rad="${dec*1.5}" x="${width*0.15}" y="0.0" z="${width*0.005}" parent="eye"/>
+<!-- _______________________ OTHER DEFINITIONS ________________________-->  
+<joint name="gripper_extension" type="prismatic">
+    <parent link="base_link"/>
+    <child link="gripper_pole"/>
+    <limit effort="1000.0" lower="-${width*2-.02}" upper="0" velocity="0.5"/>
+    <origin rpy="0 0 0" xyz="${width-.01} 0.1 0.05"/>
+</joint>
+
+<link name="gripper_pole">
+    <visual>
+    <geometry>
+        <cylinder length="${polelen}" radius="0.01"/>
+    </geometry>
+    <origin xyz="${polelen/2} 0 0" rpy="0 ${pi/2} 0 "/>
+    </visual>
+    <collision>
+    <geometry>
+        <cylinder length="${polelen}" radius="0.01"/>
+    </geometry>
+    <origin xyz="${polelen/2} 0 0" rpy="0 ${pi/2} 0 "/>
+    </collision>
+    <xacro:default_inertial mass="0.05"/>
+</link>
+
+</robot>
