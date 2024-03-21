@@ -338,7 +338,7 @@ For using URDF in a package, you should include *tf2*, *geometry_msgs*, *urdf*, 
 
 Maybe, in your ROS installation, the *xacro* and *urdf* package are missing, you can install them with:
 
-    sudo apt-get install ros-noetic-urdf*
+    sudo apt-get install ros-humble-urdf*
     sudo apt-get install ros-humble-xacro
     sudo apt-get install liburdfdom-tools 
 

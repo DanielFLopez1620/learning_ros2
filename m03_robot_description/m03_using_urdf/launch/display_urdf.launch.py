@@ -7,9 +7,9 @@ from launch_ros.substitutions import FindPackageShare
 def generate_launch_description():
     ld = LaunchDescription()
 
-    urdf_tutorial_path = FindPackageShare('m03_using_urd')
+    urdf_tutorial_path = FindPackageShare('m03_using_urdf')
     default_model_path = PathJoinSubstitution(['urdf', 'r2d2_model.urdf'])
-    default_rviz_config_path = PathJoinSubstitution([urdf_tutorial_path, 'rviz', 'urdf.rviz'])
+    default_rviz_config_path = PathJoinSubstitution([urdf_tutorial_path, 'rviz', 'robot_model.rviz'])
 
     # These parameters are maintained for backwards compatibility
     gui_arg = DeclareLaunchArgument(name='gui', default_value='true', choices=['true', 'false'],
@@ -26,7 +26,7 @@ def generate_launch_description():
     ld.add_action(IncludeLaunchDescription(
         PathJoinSubstitution([FindPackageShare('urdf_launch'), 'launch', 'display.launch.py']),
         launch_arguments={
-            'urdf_package': 'm03_using_urd',
+            'urdf_package': 'm03_using_urdf',
             'urdf_package_path': LaunchConfiguration('model'),
             'rviz_config': LaunchConfiguration('rvizconfig'),
             'jsp_gui': LaunchConfiguration('gui')}.items()

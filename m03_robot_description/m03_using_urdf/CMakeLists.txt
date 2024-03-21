@@ -4,7 +4,7 @@ project(m03_using_urdf)
 find_package(ament_cmake REQUIRED)
 
 install(
-  DIRECTORY images launch meshes rviz urdf
+  DIRECTORY launch meshes urdf
   DESTINATION share/${PROJECT_NAME}
 )
 

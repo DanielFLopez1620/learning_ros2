@@ -8,7 +8,8 @@
 <xacro:property name="bodylen" value="0.6" />
 <xacro:property name="baselen" value="0.4" />
 <xacro:property name="wheeldiam" value="0.07" />
-<xacro:property name="pi" value="3.1415" />
+<!-- PI is already defined in Python, which takes care of the calcs -->
+<!--xacro:property name="pi" value="3.1416" /-->
 <xacro:property name="shoulder" value="0.12"/>
 <xacro:property name="box" value="0.05"/>
 <xacro:property name="dec" value="0.02"/>
@@ -211,12 +212,12 @@
     <visual>
         <origin rpy="${(reflect-1)/2*pi} 0 0" xyz="0 0 0"/>
         <geometry>
-        <mesh filename="package://urdf_tutorial/meshes/l_finger.dae"/>
+        <mesh filename="package://m03_using_urdf/meshes/l_finger.dae"/>
         </geometry>
     </visual>
     <collision>
         <geometry>
-        <mesh filename="package://urdf_tutorial/meshes/l_finger.dae"/>
+        <mesh filename="package://m03_using_urdf/meshes/l_finger.dae"/>
         </geometry>
         <origin rpy="${(reflect-1)/2*pi} 0 0" xyz="0 0 0"/>
     </collision>
@@ -231,12 +232,12 @@
     <visual>
         <origin rpy="${(reflect-1)/2*pi} 0 0" xyz="0.09137 0.00495 0"/>
         <geometry>
-        <mesh filename="package://urdf_tutorial/meshes/l_finger_tip.dae"/>
+        <mesh filename="package://m03_using_urdf/meshes/l_finger_tip.dae"/>
         </geometry>
     </visual>
     <collision>
         <geometry>
-        <mesh filename="package://urdf_tutorial/meshes/l_finger_tip.dae"/>
+        <mesh filename="package://m03_using_urdf/meshes/l_finger_tip.dae"/>
         </geometry>
         <origin rpy="${(reflect-1)/2*pi} 0 0" xyz="0.09137 0.00495 0"/>
     </collision>
