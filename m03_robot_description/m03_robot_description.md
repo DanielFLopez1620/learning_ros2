@@ -302,7 +302,22 @@ It is an useful tool for visual representation of a robot, and for adding collis
 
 ㅤㅤㅤㅤ![link_and_joint](/m03_robot_description/resources/joint_and_link.png)
 
-* **joint:** An implementation of a connection, that can be fixed (static or attached to other part), continuous, prismatic, floating, planar and revolute. Inside this tags, you can define the parent/child relationship, physical limits, dynamic effects, origin (rpy for rotation or xyz for cartesian position), among others.
+* **visual/collision:** For representing the geometry of the visual and the collision of a link, it relates closely with the next commands, it is recommended to only use one figure or mesh per link, down below you can check the four possible figures you can use, but keep in mind the comment mentioned before, and the collision doesnt have to be the same as the visual, but it must be congruent with your robot model and task.
+
+        <visual>
+            <cylinder length="0.6" radius="0.2"/>
+            <box size="0.6 0.1 0.2"/>
+            <sphere radius="0.2"/>
+            <mesh filename="package://my_package/meshes/patr.dae"/>
+        </visual>
+        <collision>
+            <cylinder length="0.6" radius="0.2"/>
+            <box size="0.6 0.1 0.2"/>
+            <sphere radius="0.2"/>
+            <mesh filename="package://my_package/meshes/patr.dae"/>
+        </collision>
+
+* **joint:** An implementation of a connection, that can be fixed (static or attached to other part), continuous (like a wheel), prismatic (like a piston), floating, planar and revolute (like a non-continious servo). Inside this tags, you can define the parent/child relationship, physical limits, dynamic effects, origin (rpy for rotation or xyz for cartesian position), among others.
 
         <joint name="<joint_name>" type = ">joint_category>">
             <parent link = "parent_name" />
@@ -317,6 +332,10 @@ It is an useful tool for visual representation of a robot, and for adding collis
         </joint>
 
 ㅤㅤㅤㅤ![related_links](/m03_robot_description/resources/parent_and_child.png)
+
+* **origin:** For represeting the relative origin of the link and the joints, it has a linear part related with *x*, *y* and *z*, and also a rotational part related with *roll*, *pitch* and *yaw*. 
+
+        <origin xyz="0 0 0" rpy="0 0 0"/>
 
 * **robot:** Encapsulation of a group of joints and links that conform a robot, inside a robot tag you cannot implment multiple joints or links with the same name.
 
@@ -342,7 +361,7 @@ Maybe, in your ROS installation, the *xacro* and *urdf* package are missing, you
     sudo apt-get install ros-humble-xacro
     sudo apt-get install liburdfdom-tools 
 
-Also, when creating a package for a *robot_description*, you should add some new folders and dirs:
+Also, when creating a package for a *robot_description*, you should add some new dirs:
 
 * **/launch** For files that will be used to run multiple nodes, configure params like worlds and models, and taking advantage of rviz configurations.
 
@@ -352,31 +371,66 @@ Also, when creating a package for a *robot_description*, you should add some new
 
 Now, let's see some models, in this module you can find descriptions for an R2-D2 version for ROS, you can launch the configuration with the next command:
 
-    # TODO: add package of r2d2 and launch
+    ros2 launch m03_using_urdf display_urdf.launch.py
 
-I encourage you to watch the code, explore the tags, modify and experiment for better understanding the usage of URDF. Also, you can explore them in a different way, that include checking the urdf and watching a graphic of them, this can be achieved using the next commands:
+I encourage you to watch the code, explore the tags, modify and experiment for better understanding the usage of URDF, the file is [](/m03_robot_description/m03_using_urdf/urdf/r2d2_model.urdf). Also, you can explore them in a different way, that include checking the urdf and watching a graphic of them, this can be achieved using the next commands:
 
     check_urdf <your_urdf>.urdf
     urdf_to_graphiz <your_urdf>.urdf  #Generates a .pdf and a .gv files
     evince <your_urdf>.pdf
 
-Now, lets explain the launch for visualization, it must (at least contain) the following:
+Now, lets explain the launch for visualization, it must (at least contain) the following python structure:
 
-* The specification of the robot description, for example, a URDF file:
+1. The imports from **launch** in this case the **LaunchDescriptions** (as it is the base for any *launch.py* description), **actions.DeclareLaunchArguments** (to use arguments for nodes in the launch), **actions.IncludeLaunchDescription** (to include other launch files), **substitutions.LaunchConfiguration** (related to the configuration of an argument), **substituions.PathJoinSubstitution** (for adding file with a relative path to the same package or other packages) and **substitutions.FindPackageShare** (for including other packages paths), as show as follow:
 
-        <param name="robot_description" textfile="$(find <package>)/urdf/<your_urdf>.urdf> />
+    from launch import LaunchDescription
+    from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+    from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
+    from launch_ros.substitutions import FindPackageShare
 
-* The visualization app or framework, which will be RVIZ, where you can also import a configuration:
+2. Now generate the function to creat the description, and instance the launch description.
 
-        <node name="rviz" pkg="rviz" type="rviz" args="-d $(find <package>)/<path_to_config>/<config>.rviz />
+    def generate_launch_description():
+        ld = LaunchDescription()
 
-* The GUI for the joint_state_publisher, if you want to test or experiment with the specified joints for the publisher.
+3. We will start the lanch description, by considering the patch to the package, the model (*urdf*) and the rviz2 config.
 
-        <node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type = "joint_state_publisher_gui" />
+        urdf_tutorial_path = FindPackageShare('m03_using_urdf')
+        default_model_path = PathJoinSubstitution(['urdf', 'r2d2_model.urdf'])
+        default_rviz_config_path = PathJoinSubstitution([urdf_tutorial_path, 'rviz', 'robot_model.rviz'])
 
-* The visualizer of the state and transforms for the robot, which implicates the usage of robot_state_publisher
+4. Then, we will declare the arguments, in this case, related with the gui and config file for rviz2, and link them with a proper action in the launch description.
 
-        <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+        gui_arg = DeclareLaunchArgument(name='gui', default_value='true', choices=['true', 'false'],
+                                        description='Flag to enable joint_state_publisher_gui')
+        ld.add_action(gui_arg)
+        rviz_arg = DeclareLaunchArgument(name='rvizconfig', default_value=default_rviz_config_path,
+                                        description='Absolute path to rviz config file')
+        ld.add_action(rviz_arg)
+
+5. After that, we will use an argument to inlcude the urdf description by also considering the path defined previously
+
+        ld.add_action(DeclareLaunchArgument(name='model', default_value=default_model_path,
+                                            description='Path to robot urdf file relative to m03_using_urd package'))
+
+6. Finally, we include an action that links a launch present in other package, called **urdf_launch**, and we pass the arguments we defined through this steps:
+
+        ld.add_action(IncludeLaunchDescription(
+            PathJoinSubstitution([FindPackageShare('urdf_launch'), 'launch', 'display.launch.py']),
+            launch_arguments={
+                'urdf_package': 'm03_using_urdf',
+                'urdf_package_path': LaunchConfiguration('model'),
+                'rviz_config': LaunchConfiguration('rvizconfig'),
+                'jsp_gui': LaunchConfiguration('gui')}.items()
+        ))
+
+        return ld
+
+You can check an explore the original launch, present in the **urdf_launch**'s launch directory, you can do it by using:
+
+    ros2 pkg prefix urdf-launch
+    cd <path_provided>
+    code . # If you have VS Code, and chekc the launch
 
 ## Adding properties to the URDF Model
 
@@ -484,8 +538,7 @@ Which can be used as a *robot_description*.
 
 Now, you know the basics for modeling your robot with URDF, Xacro and tf. I encourage you to explore the URDF and Xacro files in the */urdf* directory. There you will find an R2D2 in URDF and Xacro, a robotic arm and even a car. Enjoy and play for yourself, you can view the models with the launches created for it, as:
 
-    roslaunch learning_ros1 m03_display_r2d2.launch
-    roslaunch learning_ros1 m03_display_r2d2_xacro.launch
+    ros2 launch m03_using_urdf display_xacro.launch.py
 
 ㅤㅤㅤㅤ![R2_D2_Xacro](/m03_robot_description/resources/r2d2_dan_version.png)
 
