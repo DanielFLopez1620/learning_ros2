@@ -282,8 +282,11 @@ After this, we are ready to test it:
 
 TODO: Add image of the dynamic frame
 
+# URDF: Unified Robot Description.
 
-# Using URDF for robot modeling:
+URDF is the tool that relates with transforms in order to describe our robot_model that can be used for visualization (status of motors, sensors info, position in the world, and more) and simulation (for those cases when you do not have a robot or want to test it with different environments). 
+
+## Using URDF for robot modeling:
 
 It is an useful tool for visual representation of a robot, and for adding collisions, kinematic and dynamic descriptions. The *.urdf* must be located in the *urdf* directory and its files are composed of a series of tags based on XML, let's examine the most commonly used:
 
@@ -379,7 +382,7 @@ I encourage you to watch the code, explore the tags, modify and experiment for b
     urdf_to_graphiz <your_urdf>.urdf  #Generates a .pdf and a .gv files
     evince <your_urdf>.pdf
 
-Now, lets explain the launch for visualization, it must (at least contain) the following python structure:
+Now, lets explain the launch we are going to use for visualization, it must (at least contain) the following python structure:
 
 1. The imports from **launch** in this case the **LaunchDescriptions** (as it is the base for any *launch.py* description), **actions.DeclareLaunchArguments** (to use arguments for nodes in the launch), **actions.IncludeLaunchDescription** (to include other launch files), **substitutions.LaunchConfiguration** (related to the configuration of an argument), **substituions.PathJoinSubstitution** (for adding file with a relative path to the same package or other packages) and **substitutions.FindPackageShare** (for including other packages paths), as show as follow:
 
@@ -474,7 +477,7 @@ For obtaining a better description, you should include physical properties to th
 
 
 
-# Xacro to improve your URDF descriptions:
+## Xacro to improve your URDF descriptions:
 
 Againt the lack of reusability, simplicity and programmability of URDF, you can use macros with Xacro to make it more user-friendly. Now, you will be able to use variables, constants, math, conditional statments, among others.
 
@@ -482,7 +485,7 @@ The root for working with xacro is:
 
     <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="<your_robot>"> 
 
-## Using properties:
+### Using properties:
 
 It is used for the declaration of constants, for creating one you use:
 
@@ -490,7 +493,7 @@ It is used for the declaration of constants, for creating one you use:
 
 And for invoke them, you will need to use an expression, for example, `${<cte_name>}`.
 
-## Including equations:
+### Including equations:
 
 For making math relations between the constants and the model, or improving the definition of mobile parts, for these you can use math operators inside the expresion `${}`. Let's see some examples:
 
@@ -500,7 +503,7 @@ For making math relations between the constants and the model, or improving the 
 
 Also,you can include some functions and constants from the python math modele, like `radians(<degree>)`
 
-## Using conditional:
+### Using conditional:
 
 Another useful tool, here you can compare properties or evaluate expresions, the basic usage relates with:
 
@@ -510,7 +513,7 @@ Another useful tool, here you can compare properties or evaluate expresions, the
 
     <xacro:if value="${expression}"/>
 
-## Using macros:
+### Using macros:
 
 Which is oriented to reduce the amount of code, to make it more simply and reusable, first you will need to define the macro, then you just need to invoke it with the correct params, for example.
 
@@ -530,9 +533,22 @@ Another interesting feature, is to include/import other xacro files, for this yo
 
 When needed, you can convert your xacro file, into a URDF description, you just need to run the command:
 
-    # TODO: Seach command to parse Xacro to URDF ROS2
+    ros2 run xacro xacro -o r2d2.urdf r2d2_model.urdf.xacro 
 
-Which can be used as a *robot_description*.
+Which can be used as a *robot_description* too, in fact, you can create another launch for running your model with xacro directly, instead fo converting it manually, the *launch.py* structure is presented in the file [display_xacro.launch.py](/m03_robot_description/m03_using_urdf/launch/display_xacro.launch.py), focus your attention on the usage of **Command**, for executing the xacro traslation:
+
+    pkg_share = FindPackageShare(package='m03_using_urdf').find('m03_using_urdf')
+
+    default_urdf_model_path = os.path.join(pkg_share, 'urdf/r2d2_model.urdf.xacro')
+
+    start_robot_state_publisher_cmd = Node(
+        condition=IfCondition(use_robot_state_pub),
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        parameters=[{'use_sim_time': use_sim_time, 
+        'robot_description': Command(['xacro ', urdf_model])}],
+        arguments=[default_urdf_model_path])
+
 
 ## Experimentation:
 
