@@ -558,6 +558,24 @@ Now, you know the basics for modeling your robot with URDF, Xacro and tf. I enco
 
 ㅤㅤㅤㅤ![R2_D2_Xacro](/m03_robot_description/resources/r2d2_dan_version.png)
 
+You can now try to create your own URDF, you can imagine a new robot or create one model of a robot you already have. But... what if the geometry of the robot is complex? The answer is simple, you can create the parts in CAD software like Solidworks, FreeCad, Blender, or others, and then add it to the mesh folder of your package, and import it as it was mentioned before, then start playing with the origins and transforms of your URDF.
+
+But there is one additional option, you can use tools present in some CADs software to create your robot and export it in URDF. Most of these tools aren't available for ROS2, as they worked for ROS1, but you can obtain the *.urdf* file and the *mesh* dir, and then create your own launch and configure your package to consider the files present in the dir mentioned. Some options are:
+
+- **[PTCE Creo to URDF:](https://github.com/icub-tech-iit/cad-libraries/wiki/Prepare-PTC-Creo-Mechanism-for-URDF):** Tool that works for Matlab <= R2017b and Creo, that allows URDF.
+ 
+- **[SolidWorks URDF Exporter](http://wiki.ros.org/sw_urdf_exporter):** Exporter that works for solidworks assemblies and give you the option to set joints, origins and links in a easy way. Designed for Solidworks 2021, but still works for some recent versions. It exports directly with a ROS1 package, that can be easily converted to ROS2.
+
+- **[Fusion2urdf](https://github.com/syuntoku14/fusion2urdf):** Unmantained for the last four years, but still works for Fusion 360 to export URDF of your models.
+
+- **[OnShape to robot](https://onshape-to-robot.readthedocs.io/en/latest/)** : The more recent one, need full access to your OnShpae account by linking your API, it can generate a SDF or URDF file with the meshes.
+
+- **[Phobos | Blender](https://github.com/dfki-ric/phobos):** The first free and open option to build your model that can be used in ROS, ROSCK, MARS or Gazebo, as it allows URDF, SDF and SMURF.
+
+- **[CROSS | FreeCAD](https://github.com/galou/freecad.cross):** The most recent one, presented in ROSCon2023, and the second free and open option. It is still n development, but you can try it to generate your URDF.
+
+My personal experience for creating URDFs is using Solidworks or FreeCad to create the meshes, then using the **solid2urdf** (Solidworks exporter to URDF), I create the ROS1 package that I will modify to make it work on ROS2 (only if I have checked that the URDF seems ok, the tfs and joints are correct and the meshes load correctly).
+
 
 ## Resources:
 * [TF2 Tutorials](https://docs.ros.org/en/humble/Tutorials/Intermediate/Tf2/Tf2-Main.html)
