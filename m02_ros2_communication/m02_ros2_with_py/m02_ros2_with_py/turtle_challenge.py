@@ -1,7 +1,7 @@
 # !/usr/bin/env python3
 
 # ------------------ Python Standard Libraries-------------------------------
-import random
+import math
 
 # ------------------ ROS2 Depedencies ----------------------------------------
 import rclpy
@@ -68,7 +68,7 @@ class PlayfulTurtle(Node):
         rclpy.spin_until_future_complete(self, self.res)
         return True
     
-    def teleport_abs_turtle(self, v_x, v_theta, name):
+    def teleport_rel_turtle(self, v_x, v_theta, name):
         self.cli = self.create_client(TeleportRelative, "/" + name + "/teleport_relative")
         while not self.cli.wait_for_service(timeout_sec=1.0):
             self.get_logger("Waiting turtlesim for action: Teleport (Rel) " + 
@@ -94,13 +94,30 @@ class PlayfulTurtle(Node):
         rclpy.spin_until_future_complete(self, self.res)
         return True
         
+    def get_pose_turtle(self, name):
+        self.sub = self.create_subscription(Pose, "/" + name + "/pose", save_pos_turtle, 10)
+        
     def save_pos_turtle(self, msg):
         self.pose = msg
     
-    def get_pose_turtle(self, name):
-        self.sub = self.create_subscription(Pose, "/" + name + "/pose", save_pos_turtle)
-        
+def main():
+    rclpy.init()
+    
+    name1 = "dan_turtle"
+    my_turtle = PlayfulTurtle()
+    my_turtle.clear_board()
+    my_turtle.spawn_turtle(3, 3, 0, name1)
+    my_turtle.teleport_abs_turtle(7, 3, 3*math.pi()/2, name1)
+    my_turtle.set_pen_turtle(255, 0, 0, 2, name1)
+    my_turtle.teleport_abs_turtle(7, 7, -math.pi(), name1)
+    my_turtle.set_pen_turtle(0, 255, 0, 1, name1)
+    my_turtle.teleport_abs_turtle(3, 7, math.pi()/2, name1)
+    my_turtle.set_pen_turtle(0, 0, 255, 2, name1)
+    my_turtle.teleport_abs_turtle(3, 3, math.pi()/2, name1)
+    
+    my_turtle.destroy_node()
+    rclpy.shutdown()
     
     
 if __name__ == "__main__":
-    pass
+    main()
