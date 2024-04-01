@@ -13,9 +13,9 @@ from turtlesim.srv import Spawn, SetPen, Kill
 from turtlesim.srv import TeleportAbsolute, TeleportRelative
 from std_srvs.srv import Empty
 
-class PlayfulTurtle(Node):
+class PlaygroundTurtle(Node):
     def __init__(self):
-        super().__init__('playful_turtle_py')
+        super().__init__('playground_turtle_py')
         self.cli = None
         self.req = None
         self.res = None
@@ -104,7 +104,7 @@ def main():
     rclpy.init()
     
     name1 = "dan_turtle"
-    my_turtle = PlayfulTurtle()
+    my_turtle = PlaygroundTurtle()
     my_turtle.clear_board()
     my_turtle.spawn_turtle(3, 3, 0, name1)
     my_turtle.teleport_abs_turtle(7, 3, 3*math.pi()/2, name1)
