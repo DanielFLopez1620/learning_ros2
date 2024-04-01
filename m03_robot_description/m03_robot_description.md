@@ -184,11 +184,13 @@ After you have built it, you can run it with the command below, then you you can
 
 Sometimes you will need addition frames to make possible some functions of the program, and they can be fixed or dynamic (as the broadcaster cases that were presented before). As you add more frames, will add complexity to the transformation tree, so you will need to consider proper implementations of your frames. If you remember, at the end of the module, we presented you a form to check the tranform tree with:
 
-    TODO: Command for transform tree
+    ros2 run tf2_tools view_frames
 
 If you do it, while running the last launch we made, you can discover that the transforms are:
 
-    TODO: Add image of tf2_demo.launch.py tf tree
+    ros2 launch m03_tf2_with_py tf2_demo.launch.py
+
+You can check the results of the tf2 tree in the file: [frames_tf2_demo.pdf](/m03_robot_description/frames_tf2_demo.pdf).
 
 Technically, implementing a new frame is implementing a new broadcaster, and it can be static or dynamic, some key commands to keep in mind are:
 
@@ -235,9 +237,9 @@ And now, we will have another launch, where we are going to call our previous fi
 Do not forget to build and source, so you can run the next commands:
 
     ros2 launch m03_tf2_with_py lettuce_fix_frame.launch.py
-    TODO: Add tf_tree command
+    ros2 run tf2_tools view_frames
 
-TODO: Add image turtle and lettuce fixed launch
+You can check the results of the tf2 tree in the file: [frames_fix_lettuce.pdf](/m03_robot_description/frames_fix_lettuce.pdf).
 
 
 You can also add a dynamic frame, that for examples, move randomly, or follows a custom frame trajectory. The implementation is almost the same, but you will need some variable (like time) that add a dynamic change to the system, in our case, we will use the broadcast in the [lettuce_stick_frame](/m03_robot_description/m03_tf2_with_py/m03_tf2_with_py/lettuce_stick_frame.py) code, that follows the analogy of a lettuce on a stick and a row, making random moves. Now, let's add the entrypoint, compile and run:
@@ -278,13 +280,13 @@ But, before running, let's create another launch called [lettuce_dyn_frame.launc
 After this, we are ready to test it:
 
     ros2 launch m03_tf2_with_py lettuce_dyn_frame.launch
-    TODO: Add tf tree command
+    ros2 run tf2_tools view_frames
 
-TODO: Add image of the dynamic frame
+You can check the results of the tf2 tree in the file: [frames_dyn_lettuce.pdf](/m03_robot_description/frames_dyn_lettuce.pdf).
 
 # URDF: Unified Robot Description.
 
-URDF is the tool that relates with transforms in order to describe our robot_model that can be used for visualization (status of motors, sensors info, position in the world, and more) and simulation (for those cases when you do not have a robot or want to test it with different environments). 
+URDF is the tool that relates with transforms in order to describe our robot_model that can be used for visualization (status of motors, sensors info, position in the world, and more) and simulation (for those cases when you do not have a robot or want to test it with different environments).
 
 ## Using URDF for robot modeling:
 
@@ -548,7 +550,6 @@ Which can be used as a *robot_description* too, in fact, you can create another 
         parameters=[{'use_sim_time': use_sim_time, 
         'robot_description': Command(['xacro ', urdf_model])}],
         arguments=[default_urdf_model_path])
-
 
 ## Experimentation:
 

@@ -312,7 +312,7 @@ Then, you will need to build it, source and finally you can execute them, the co
     source install/local_setup.bash
     ros2 run m02_ros2_with_py add_nums_cli 16 20
 
-TODO: Add image of adding two nums.
+![add_two_nums_py](/m02_ros2_communication/resources/rclpy_add_two_nums.png)
 
 The arguments passed in the client are mandatory to achieve the sum, if the command is send without them you will get a warn and the node will close itself. In this example, the client will end process after it displays the message, but you can invoke it as many times as you want with all the numbers you can imagine.
 
@@ -341,7 +341,7 @@ After building, you should be able to execute them with the next commands:
     ros2 run m02_ros2_with_py set_bool_srv
     ros2 run m02_ros2_with_py set_bool_cli 1
 
-TODO: Add image of set bool in py
+![set_bool_py](/m02_ros2_communication/resources/rclpy_set_bool.png)
 
 ### Using parameters in Python
 
@@ -500,7 +500,7 @@ Before you run, make sure you source your workspace, and then, you can run:
     ros2 run m02_ros2_with_cpp pub_int64 # Terminal 1
     ros2 run m02_ros2_with_cpp sub_int64 # Terminal 2
 
-TODO: Add images of pending int64 sub / pub
+![int64_pub_sub_cpp](/m02_ros2_communication/resources/rclcpp_int64_pub_sub.png)
 
 Try to practice creating your own pub/sub with a type of your interest in the *std_msgs* library, and check what can you make.
 
@@ -569,6 +569,8 @@ After you have used colcon to build the packages, and sourced the setup file, yo
     ros2 run  m02_ros2_with_cpp add_nums_srv # Terminal 1
     ros2 run  m02_ros2_with_cpp add_nums_cli 16 20 # Terminal 2
 
+![add_ints_cpp](/m02_ros2_communication/resources/rclcpp_add_ints.png)
+
 You have now explored, in both Python and C++, the communication needed for your robots with ROS2, but... what if you need a custom msg or service? Well, you can do it, let's explore it in the next header.
 
 ### Using custom interfaces with *ament_cmake*:
@@ -610,8 +612,12 @@ For testing this interface, I added two source codes, one publisher and one serv
     ros2 run m02_ros2_with_cpp rand_xy_pub # Terminal 1
     ros2 topic echo /rare_point # Terminal 2
 
+![rand_xy_cpp](/m02_ros2_communication/resources/rclcpp_rand_xy.png)
+
     ros2 run m02_ros2_with_cpp exam_srv
     ros2 service call /exam_channel m02_ros2_with_cpp/srv/Answer "{option: 3}"
+
+![exam_cpp](/m02_ros2_communication/resources/rclcpp_exam.png)
 
 Now that you have discovered how to create your own interfaces, try to create the codes of the csubscriber for the *rand_xy_publisher* node, and a client for the *exam_srv*, you can even try it with Python. Just remember to add the corresponding dependencies.
 
@@ -636,6 +642,8 @@ You do not need extra tags or configs in CMake to make this node work, you only 
     ros2 run m02_ros2_with_cpp saying_hi               # Terminal 1
     ros2 param list                                    # Terminal 2
     ros2 param set /saying_your_name your_name dan     # Terminal 2
+
+![params_cpp](/m02_ros2_communication/resources/rclcpp_param_c.png)
 
 ### Resume of important *rclcpp* commands:
 
@@ -681,6 +689,9 @@ Finally, do not forget about general commands when using *rclcpp*:
 
 - **```<timer> = <node_obj>->create_wall_timer(<milliseconds>, <bind_callback>)```** : Instance a timer that will have a time of given <milliseconds> and everytime is completed, will call the <bind_callback> function.
 
+# Playing with Turtlesim
+
+You have played with the terminal, now it is time to play with a 2D robot.
 
 # Troubleshooting:
 
