@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" 
+  schematypens="http://www.w3.org/2001/XMLSchema"?>
+
+<package format="3">
+  <!--______________________ Adding general info ____________________________-->
+  <name>m03_tf2_with_py</name>
+  <version>0.0.0</version>
+  <description>
+  A simple package that search to serve as an example of the tf2 topic with Python.
+  </description>
+  <maintainer email="dfelipe.lopez@gmail.com">DanielFLopez1620</maintainer>
+  <license>BSD 3-Clause License</license>
+
+  <!--____________________ Adding execution dependencies _____________________-->
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>tf2_ros_py</exec_depend>
+  <exec_depend>turtlesim</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+
+  <!--________Adding test related dependencies (quality/functionality)________-->
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

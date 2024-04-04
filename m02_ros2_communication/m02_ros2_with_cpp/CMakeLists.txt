@@ -14,7 +14,10 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(turtlesim REQUIRED)
 find_package(example_interfaces REQUIRED)
+find_package(std_srvs REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
 #  Test specifications
@@ -77,6 +80,13 @@ ament_target_dependencies(exam_srv rclcpp)
 add_executable(saying_hi src/saying_hi.cpp)
 ament_target_dependencies(saying_hi rclcpp)
 
+# Simple turtle mov
+add_executable(simple_turtle_mov src/simple_turtle_mov.cpp)
+ament_target_dependencies(simple_turtle_mov rclcpp geometry_msgs)
+
+add_executable(turtle_challenge src/turtle_challenge.cpp)
+ament_target_dependencies(turtle_challenge rclcpp turtlesim std_srvs)
+
 # Usage of own definitions in the same package
 rosidl_get_typesupport_target(cpp_typesupport_target
   ${PROJECT_NAME} rosidl_typesupport_cpp)
@@ -93,6 +103,8 @@ install(TARGETS
   rand_xy_pub
   exam_srv
   saying_hi
+  simple_turtle_mov
+  turtle_challenge
   DESTINATION lib/${PROJECT_NAME})
 
 # -------------------------------- Ament final configs------------------------

@@ -15,6 +15,9 @@
   <!-- ___________________ Adding general dependencies _____________________-->
   <depend>rclcpp</depend>
   <depend>std_msgs</depend>
+  <depend>std_srvs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>turtlesim</depend>
   <depend>example_interfaces</depend>
 
   <!-- __________________ Adding execution dependencies_____________________-->
