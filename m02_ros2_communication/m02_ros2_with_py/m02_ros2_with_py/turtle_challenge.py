@@ -21,9 +21,46 @@ class PlaygroundTurtle(Node):
     
     Attributes
     ---
+    cli : rclpy client
+        Client implementation
+        
+    req : request
+        Generic request for interaction between service and client
+        
+    res : response
+        Generic request for interaction between service and client
+        
+    pub : rcply publisher
+        Publisher implementation
+        
+    sub : rcply subscriber
+        Subscriber implementation
     
     Methods
     ---
+    clear_board():
+        Clear screen of turtlesim
+    
+    spawn_turtle(x, y, theta, name):
+        Create new turtle 
+    
+    kill_turtle(name):
+        Delete given turtle
+    
+    teleport_abs_turtle(x, y, theta, name):
+        Move turtle according world origin
+    
+    teleport_rel_turtle(v_x, v_theta, name):
+        Move turtle relative to its tf with velocity
+    
+    set_pen_turtle(r, g, b, width, name):
+        Set color and width trace of the turtle
+    
+    get_pose_turtle(name):
+        Getter of pose of the given turtle
+        
+    save_pose_turtle(msg):
+        Callback to store pose
     """
     def __init__(self):
         """
@@ -39,14 +76,13 @@ class PlaygroundTurtle(Node):
         self.sub = None
         self.pose = Pose()
     
-    
     def clear_board(self):
         """
         Call service that clear the background of the turtlesim.
         
         Returns
         ---
-        True if the response is received without errors.
+            True if the response is received without errors.
         """
         self.cli = self.create_client(Empty, '/clear')
         while not self.cli.wait_for_service(timeout_sec=1.0):
@@ -73,7 +109,7 @@ class PlaygroundTurtle(Node):
             
         Returns
         ---
-        True if the response is received without errors.
+            True if the response is received without errors.
         """
         self.cli = self.create_client(Spawn, '/spawn')
         while not self.cli.wait_for_service(timeout_sec=1.0):
@@ -98,7 +134,7 @@ class PlaygroundTurtle(Node):
             
         Returns
         ---
-        True if the response is received without errors.
+            True if the response is received without errors.
         """
         self.cli = self.create_client(Kill, '/kill')
         while not self.cli.wait_for_service(timeout_sec=1.0):
@@ -206,22 +242,42 @@ class PlaygroundTurtle(Node):
         
     def get_pose_turtle(self, name):
         """
-        Getter of the pose of the turtle by using pose subscription
+        Getter of the pose of the turtle by using pose subscription via 
+        callback
+        
+        Params
+        ---
+        name : string
+            Name of the turtle to obtain the pose
         """
         self.sub = self.create_subscription(Pose, "/" + name + "/pose", 
             save_pos_turtle, 10)
         
     def save_pos_turtle(self, msg):
         """
+        Callback for getting the pose of the given turtle.
         
+        Params
+        ---
+        msg : Turtle Pose
+            Pose obtained via message of the turtle
         """
         self.pose = msg
+        
     
 def main():
+    """
+    Main oriented to test the playground functions that interacts with 
+    turtlesim.
+    """
+    # Initialize ROS Client Library for Python
     rclpy.init()
     
+    # Define name and instance class
     name1 = "dan_turtle"
     my_turtle = PlaygroundTurtle()
+    
+    # Start playing with turtlesim
     my_turtle.clear_board()
     my_turtle.spawn_turtle(3, 3, 0, name1)
     my_turtle.teleport_abs_turtle(7, 3, 3*math.pi()/2, name1)
@@ -232,9 +288,10 @@ def main():
     my_turtle.set_pen_turtle(0, 0, 255, 2, name1)
     my_turtle.teleport_abs_turtle(3, 3, math.pi()/2, name1)
     
+    # Destroy node and close program
     my_turtle.destroy_node()
     rclpy.shutdown()
-    
-    
+
+
 if __name__ == "__main__":
     main()
