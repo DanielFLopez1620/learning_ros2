@@ -691,7 +691,50 @@ Finally, do not forget about general commands when using *rclcpp*:
 
 # Playing with Turtlesim
 
-You have played with the terminal, now it is time to play with a 2D robot.
+You have played with the terminal, now it is time to play with a 2D robot. As you may remember, **turtlesim** has a collection of topics, services and actions you can interact with, then it is good for learning, testing and experimenting.
+
+    ros2 run turtlesim turtlesim_node
+
+Remember, you can list the topics, services and parameters, like follow:
+
+    ros2 topic list
+    ros2 service list
+    ros2 param list
+
+In case you can use a topic, you can get info of it with:
+
+    # Command
+    ros2 topic info /turtle1/cmd_vel
+
+    # Output
+    Type: geometry_msgs/msg/Twist
+    Publisher count: 0
+    Subscription count: 1
+
+And it provides the type (message type), the publisher and subscriber count. If you want to interact with the topic, you have to understand if it is a subscriber (so you need to publish in order to interact) or it is a publisher (then you need a subscriber to tget the proper info), after this, you can check the interface with:
+
+    # Command
+    ros2 interface show geometry/msg/Twist
+
+    # Output
+    Twist
+    # This expresses velocity in free space broken into its linear and angular parts.
+
+    Vector3  linear
+            float64 x
+            float64 y
+            float64 z
+    Vector3  angular
+            float64 x
+            float64 y
+            float64 z
+
+So, you will need to import the type of message, in the proper way for each language:
+
+- **Python:** from geometry_msgs.msg import Twist
+- **C++** #include "geometry_msgs/msg/twist.hpp"
+
+Here I have developed some examples you can check, for both **rcply** and **rclcpp**...
 
 # Troubleshooting:
 
