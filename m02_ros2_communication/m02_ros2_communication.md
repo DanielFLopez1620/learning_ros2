@@ -734,7 +734,18 @@ So, you will need to import the type of message, in the proper way for each lang
 - **Python:** from geometry_msgs.msg import Twist
 - **C++** #include "geometry_msgs/msg/twist.hpp"
 
-Here I have developed some examples you can check, for both **rcply** and **rclcpp**...
+Here I have developed some examples you can check, for both **rcply** and **rclcpp**, they are listed below:
+
+- **simple_turtle_mov:**  It is the implementation of a simple publisher that uses the */turtle1/cmd_vel* topic, then the turtle will move linearly and angularly. You can find the implementation for [py](/m02_ros2_communication/m02_ros2_with_py/m02_ros2_with_py/simple_turtle_mov.py) and [cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/simple_turtle_mov.cpp).
+- 
+- **turtle_challenge:** It provides a class to interact with the services of the *turtlesim* that include clear, spawn, kill, set pen and the teleports. It is provided a simple demostration, you can find the implementation for [py](/m02_ros2_communication/m02_ros2_with_py/m02_ros2_with_py/turtle_challenge.py) and [cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/turtle_challenge.cpp).
+
+If you want to interact with the, down below, I list the respective commands, do not forget to execute **turtlesim_node** and build the packages (and source) before using them:
+
+    ros2 run m02_ros2_with_py simple_turtle_mov
+    ros2 run m02_ros2_with_py turtle_challenge
+    ros2 run m02_ros2_with_cpp simple_turtle_mov
+    ros2 run m02_ros2_with_cpp turtle_challenge
 
 # Troubleshooting:
 

@@ -240,6 +240,37 @@ For getting a report, you can use:
 
     ros2 doctor --report
 
+# Using data with ROS2
+
+There would be times when you need to make tests, to make sure everything works as expected, you can try these with the topics of your nodes... you may need to test the same data to make sure it works, in those cases, using the node directly multiple times can be problematic. 
+
+That is why we have **ros2 bag**, which is a command line tool, it is used to record, save and reproduce data. As always, let's use our favorite turtle companion:
+
+    ros2 run turtlesim turtlesim_node
+    ros2 run turtlesim turtle_teleop_key
+
+Then, create a directory for your **bag files**:
+
+    mkdir <your_bag_dirs>
+    cd <your_bag_dirs>
+
+Select a topic to save, and start recording, note that you can stop recording by using Ctrl + C.
+
+    ros2 bag record /turtle1/cmd_vel
+
+In the case you want to record every topic, you just need to pass the **-a** flag. Now, to make sure you recorded the data, assign a file, you can use
+
+    ros2 bag record -o turtle_info /turtle1/cmd_vel /turtle1/pose # Ctrl+ C when you are done.
+
+If you want to check the information of a bag file, you can use:
+
+    ros2 bag info turtle_info
+
+Now, if you need to make some test with the same info, you just use the recorded data, you can play it with:
+
+    ros2 bag play turtle_info
+
+
 # Resources 
 
 - ROS2 Cli Tutorials: [Humble](https://docs.ros.org/en/humble/Tutorials/Beginner-CLI-Tools.html)
