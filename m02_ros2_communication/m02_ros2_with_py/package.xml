@@ -13,6 +13,8 @@
   <depend>rclpy</depend>
   <depend>example_interfaces</depend>
 
+  <exec_depend>ros2launch</exec_depend>
+
   <!--________Adding test related dependencies (quality/functionality)________-->
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>

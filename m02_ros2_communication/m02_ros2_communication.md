@@ -747,6 +747,27 @@ If you want to interact with the, down below, I list the respective commands, do
     ros2 run m02_ros2_with_cpp simple_turtle_mov
     ros2 run m02_ros2_with_cpp turtle_challenge
 
+# Launches
+
+You may notice that the number of nodes tend to increase, and if you need one terminal for each one... what will happen when you need to run 100 nodes?
+
+Well, there is a solution, it is called **ros2 launch**, and here we will discover how to use them. It is not limited to running a set of nodes, but you can also specify where to run them, how to configure their parameters and then offer a option to monitoring them. They can be made with Python, XMAL and YAML, for more info on the types you can check this [link](https://docs.ros.org/en/humble/How-To-Guides/Launch-file-different-formats.html)
+
+Here we will implement them with Python. You can check the documentation and API for more info on Python, or if you want to explore XML and YAML.
+
+AS a convention, for using launches, in your packages, you will need to create a *launch* dir:
+
+    cd <path_to_your_package>
+    mkdir launch
+
+As always, we will use our frineds from **turtlesim**, and we will use the nodes previously made for the turtles, create a file called [turtlesim_simple_mov.launch.py]() and explore the content:
+
+- **```from launch import LaunchDescription```** : From the launch module (non-ROS-specific launch framework) import the tools to generate a descriptio.
+- **```from launch_ros.actions import Node```** : Import node object description for launch execute.
+- **```def generate_launch_description(): return LaunchDescription([ ])```**: Space where the launch description is going to be added.
+- **```Node( package='<package_name>', namespace='<namespace>', executable='<exec>' name='<node_name>', remappings=[<remaps>]),```** : Add the configuration to execute a node by passing the name of the package, the name of the executable and the name of the node.Also you can optionally add a namespace and remap of topics.
+
+
 # Troubleshooting:
 
 - If you aren't able to autocomplete (a package), make sure you have succesfully build (using colcon build and the corresponding flags), and also, make sure you have added and sourced the *local_setup.bash* or the *setup.bash* file.
