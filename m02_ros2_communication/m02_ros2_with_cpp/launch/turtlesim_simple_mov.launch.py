@@ -9,7 +9,7 @@ def generate_launch_description():
             name='turtlesim_node'
         ),
         Node(
-            package="m02_ros2_with_py",
+            package="m02_ros2_with_cpp",
             executable="simple_turtle_mov",
             name='simple_move'
         )

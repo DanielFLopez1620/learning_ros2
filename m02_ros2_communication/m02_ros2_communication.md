@@ -760,7 +760,34 @@ AS a convention, for using launches, in your packages, you will need to create a
     cd <path_to_your_package>
     mkdir launch
 
-As always, we will use our frineds from **turtlesim**, and we will use the nodes previously made for the turtles, create a file called [turtlesim_simple_mov.launch.py]() and explore the content:
+You can use *launch* files in a packages with **ament_python** or **ament_cmake**, but you have to properly configure the package, let's watch the cases:
+
+- **ament_python:** In the [setup.py](/m02_ros2_communication/m02_ros2_with_py/setup.py) file, you need to include the *.launch.py* files, the configuration need is:
+
+        from setuptools import setup
+        
+        import os
+        
+        from glob import glob
+        
+        ...
+
+            data_files=[
+                ...
+                (os.path.join('share', package_name), glob('launch/*.launch.py'))
+            ],
+        ...
+
+- **ament_cmake:** In the [CMakeLists.txt](/m02_ros2_communication/m02_ros2_with_cpp/CMakeLists.txt) file, you need to add the directory launch:
+
+        ...
+        install(DIRECTORY
+        launch
+        DESTINATION share/${PROJECT_NAME}
+        )
+        ...
+
+Now, it is time to see a launch file, we will use our friends from **turtlesim**, and we will use the nodes previously made for the turtles, the examples files are called [turtlesim_simple_mov.launch.py | Python Package](/m02_ros2_communication/m02_ros2_with_py/launch/turtlesim_simple_mov.launch.py) and [turtlesim_simple_mov.launch.py | CMake Package]() and explore the content:
 
 - **```from launch import LaunchDescription```** : From the launch module (non-ROS-specific launch framework) import the tools to generate a descriptio.
 - **```from launch_ros.actions import Node```** : Import node object description for launch execute.
@@ -792,4 +819,6 @@ As always, we will use our frineds from **turtlesim**, and we will use the nodes
 - ROS2 rclpy API: [Foxy](https://docs.ros2.org/foxy/api/rclpy/)
 
 - ROS2 rclcpp API: [Foxy](https://docs.ros2.org/foxy/api/rclcpp/)
+
+- ROS2 Lauunch Tutorials: [Humble](https://docs.ros.org/en/humble/Tutorials/Intermediate/Launch/Launch-Main.html)
 
