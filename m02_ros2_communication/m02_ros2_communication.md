@@ -794,19 +794,43 @@ Now, it is time to see a launch file, we will use our friends from **turtlesim**
 - **```def generate_launch_description(): return LaunchDescription([ ])```**: Space where the launch description is going to be added.
 - **```Node( package='<package_name>', namespace='<namespace>', executable='<exec>' name='<node_name>', remappings=[<remaps>]),```** : Add the configuration to execute a node by passing the name of the package, the name of the executable and the name of the node.Also you can optionally add a namespace and remap of topics.
 
+The previous info presented is the basic one for launching multiple nodes, but you can make even more...
+- ### Adding launch configurations and arguments: 
+  This will make easier to configure and set up your nodes, while generating common default implementations of your params, and providing an easy way to change them.
+
+  - **```from launch.actions import DeclareLaunchArgument, ```** : Add commands related to arguments configuration and set up.
+  - **```<config_var> = LaunchConfiguration(<config_name>)```** : Add a launch configuration, it is recommended that both ```<config_var>``` and ```<config_name>``` are the same. They are passed and can be used with the package, namespace, exeutable, name or arguments params from a node.
+  - **```<config_arg> = DeclareLaunchArgument( <config_name>, default_value='<default_value>')```** : Create a launch argument that uses a launch configuration. They can be used above the launch or from the terminal.
+  - 
+
+- ### Using substitutions: 
+  When you have to configure parameters of multiple nodes, you may miss using macros or variables for this process, but in launches you can use substitutions, which makes a launch more flexible. The commands needed are present in the **launch.substitutions**, **launch.launch_description_sources** and **launch_ros.actions** library, keep in mind the next ones.
+
+  - **```from launch.substitutions import PathJoinSubstitution, TextSubstitution, LaunchConfiguration, PythonExpression```** : Import the commands relate to add paths to the files, replace text, configure a launch and add python expressions to substitute.
+  - **```from launch.launch_description_sources import PythonLaunchDescriptionSource```** : Import the command to use others launch descriptions in the current launch.
+  - **```PythonLaunchDescriptionSource([PathJoinSubstitution([FindPackageShare(<package_name>, <dir>, <launch_file>)])])```** : For using the ```<launch_file>```present in the package called ```<package_name>``` under the directory ```<dir>``` in the current launch, the substitution comes handy as with PathJoin it help to find the package an pass the path to the launch.
+  - **```'<launch_argument>' : TextSubstitution(text=str(<var/value>))```** : Use text substitutions to make sure you pass the arguments in a way it can be used by the launch configuration.
+        
+- ### Executing commands inside the launch file:
+  You can use the terminal (bash) for launching or adding additional info/commands to your launch in order to generate a proper implementation, or to call commands from the *ros2cli*.
+  **```from launch.actions import ExecuteProcess, TimerAction```** : Add commands related with process execution and timers.
+  - **```from launch.conditions import IfCondition```** : Add if statement for launches.
+  - **```<process_var> = ExecuteProcess(cmd=[[<command_description>]], shell=True)```** : Add a shell command to run, it can be a ros2cli command. And inside the ```command_description``` you can use launch configs.
+  - **```<condition_process_var> = ExecuteProcess(condition=IfCondition(PythonExpression([<condition>])), cmd=<command>)```** : Add a condition to execute the process, the ```<command>``` must have the structure previously defined.
+
 
 # Troubleshooting:
 
 - If you aren't able to autocomplete (a package), make sure you have succesfully build (using colcon build and the corresponding flags), and also, make sure you have added and sourced the *local_setup.bash* or the *setup.bash* file.
 
-    cd <your_ws>
-    colcon build
-    source install/local_setup.bash
+        cd <your_ws>
+        colcon build
+        source install/local_setup.bash
 
 - If you get a warn equal or related to: "SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
   warnings.warn (...)". It means that the package 'setuptools' isn't in the proper version for ros2, you can resolve (according to [ros.answer](https://answers.ros.org/question/396439/setuptoolsdeprecationwarning-setuppy-install-is-deprecated-use-build-and-pip-and-other-standards-based-tools/)) with the next command (only ROS2 Humble):
 
-    pip install setuptools==58.2.
+        pip install setuptools==58.2.
     
 # Resources
 
@@ -820,5 +844,5 @@ Now, it is time to see a launch file, we will use our friends from **turtlesim**
 
 - ROS2 rclcpp API: [Foxy](https://docs.ros2.org/foxy/api/rclcpp/)
 
-- ROS2 Lauunch Tutorials: [Humble](https://docs.ros.org/en/humble/Tutorials/Intermediate/Launch/Launch-Main.html)
+- ROS2 Launch Tutorials: [Humble](https://docs.ros.org/en/humble/Tutorials/Intermediate/Launch/Launch-Main.html)
 
