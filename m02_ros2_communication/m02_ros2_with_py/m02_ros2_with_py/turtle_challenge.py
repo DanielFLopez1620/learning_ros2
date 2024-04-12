@@ -115,13 +115,13 @@ class PlaygroundTurtle(Node):
         while not self.cli.wait_for_service(timeout_sec=1.0):
             self.get_logger("Waiting turtlesim for action: Spawn...")
         self.req = Spawn.Request()
-        self.req.x = x
-        self.req.y = y
-        self.req.theta = theta
-        self.req.name = name
+        self.req.x = float(x)
+        self.req.y = float(y)
+        self.req.theta = float(theta)
+        self.req.name = str(name)
         self.res = self.cli.call_async(self.req)
         rclpy.spin_until_future_complete(self, self.res)
-        return self.res.name
+        return True
     
     def kill_turtle(self, name):
         """
@@ -140,7 +140,7 @@ class PlaygroundTurtle(Node):
         while not self.cli.wait_for_service(timeout_sec=1.0):
             self.get_logger("Waiting turtlesim for action: Kill...")
         self.req = Kill.Request()
-        self.req.name = name
+        self.req.name = str(name)
         self.res = self.cli.call_async(self.req)
         rclpy.spin_until_future_complete(self, self.res)
         return True
@@ -165,14 +165,15 @@ class PlaygroundTurtle(Node):
         ---
             True if the response is received without errors.
         """
-        self.cli = self.create_client(TeleportAbsolute, "/" + name + "/teleport_absolute")
+        self.cli = self.create_client(TeleportAbsolute, "/" + str(name) + 
+                                        "/teleport_absolute")
         while not self.cli.wait_for_service(timeout_sec=1.0):
             self.get_logger("Waiting turtlesim for action: Teleport (Abs) " + 
                             str(name) + "...")
         self.req = TeleportAbsolute.Request()
-        self.req.x = x
-        self.req.y = y
-        self.req.theta = theta
+        self.req.x = float(x)
+        self.req.y = float(y)
+        self.req.theta = float(theta)
         self.res = self.cli.call_async(self.req)
         rclpy.spin_until_future_complete(self, self.res)
         return True
@@ -195,13 +196,14 @@ class PlaygroundTurtle(Node):
         ---
             True if the response is received without errors.
         """
-        self.cli = self.create_client(TeleportRelative, "/" + name + "/teleport_relative")
+        self.cli = self.create_client(TeleportRelative, "/" + str(name) + 
+                                        "/teleport_relative")
         while not self.cli.wait_for_service(timeout_sec=1.0):
             self.get_logger("Waiting turtlesim for action: Teleport (Rel) " + 
                             str(name) + "...")
         self.req = TeleportRelative.Request()
-        self.req.linear = v_x
-        self.req.angulary = v_theta
+        self.req.linear = float(v_x)
+        self.req.angulary = float(v_theta)
         self.res = self.cli.call_async(self.req)
         rclpy.spin_until_future_complete(self, self.res)
         return True
@@ -232,10 +234,10 @@ class PlaygroundTurtle(Node):
             self.get_logger("Waiting turtlesim for action: Set Pen " + 
                             str(name) + "...")
         self.req = SetPen.Request()
-        self.req.r = r
-        self.req.g = g
-        self.req.b = b
-        self.req.width = width
+        self.req.r = int(r)
+        self.req.g = int(g)
+        self.req.b = int(b)
+        self.req.width = int(width)
         self.res = self.cli.call_async(self.req)
         rclpy.spin_until_future_complete(self, self.res)
         return True
@@ -250,7 +252,7 @@ class PlaygroundTurtle(Node):
         name : string
             Name of the turtle to obtain the pose
         """
-        self.sub = self.create_subscription(Pose, "/" + name + "/pose", 
+        self.sub = self.create_subscription(Pose, "/" + str(name) + "/pose", 
             save_pos_turtle, 10)
         
     def save_pos_turtle(self, msg):
@@ -280,13 +282,14 @@ def main():
     # Start playing with turtlesim
     my_turtle.clear_board()
     my_turtle.spawn_turtle(3, 3, 0, name1)
-    my_turtle.teleport_abs_turtle(7, 3, 3*math.pi()/2, name1)
+    my_turtle.teleport_abs_turtle(7, 3, 3*math.pi/2, name1)
     my_turtle.set_pen_turtle(255, 0, 0, 2, name1)
-    my_turtle.teleport_abs_turtle(7, 7, -math.pi(), name1)
+    my_turtle.teleport_abs_turtle(7, 7, -math.pi, name1)
     my_turtle.set_pen_turtle(0, 255, 0, 1, name1)
-    my_turtle.teleport_abs_turtle(3, 7, math.pi()/2, name1)
+    my_turtle.teleport_abs_turtle(3, 7, math.pi/2, name1)
     my_turtle.set_pen_turtle(0, 0, 255, 2, name1)
-    my_turtle.teleport_abs_turtle(3, 3, math.pi()/2, name1)
+    my_turtle.teleport_abs_turtle(3, 3, math.pi/2, name1)
+    my_turtle.kill_turtle(name1)
     
     # Destroy node and close program
     my_turtle.destroy_node()
