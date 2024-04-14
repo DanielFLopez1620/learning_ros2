@@ -818,6 +818,18 @@ The previous info presented is the basic one for launching multiple nodes, but y
   - **```<process_var> = ExecuteProcess(cmd=[[<command_description>]], shell=True)```** : Add a shell command to run, it can be a ros2cli command. And inside the ```command_description``` you can use launch configs.
   - **```<condition_process_var> = ExecuteProcess(condition=IfCondition(PythonExpression([<condition>])), cmd=<command>)```** : Add a condition to execute the process, the ```<command>``` must have the structure previously defined.
 
+- ### Using event handlers:
+  - **```from launch.event_handlers import OnExecutionComplete, OnProcessExit, OnProcessIO, OnProcessStart, OnShutdown```** : Add commands related to handle events on different parts of the processes (start, end, I/O...)
+  - **```from launch.events import Shutdown```** : Add the event when the launch is asked to shutdown (usually when a kill command is executed)
+  - **```from launch.actions import EmitEvent, LogInfo, RegisterEventHandler```** : Add a commands for actions that are related with events and display info.
+  - **```LogInfo(msg='<content>')```** : Log a message or text, can be linked with actions.
+  - **```RegisterEventHandler( <event_to_handle> (<process>))```** : Mark an event to be handled, then link a corresponding action in the ```<event_to_handle>``` which can be on start, on I/O interrupt, on completion, on exit or on shutdown.
+  - **```OnProcessStart( target_action=<action>, on_start=[ <process> ]```** : In case that the given ```<action>``` begins, launch the ```<process>``` considered.
+  - **```OnProcessIO( target_action=<action>, on_stdout=[ <process> ]```** : In case that the ```<action>``` ask for an input/output process, launch the ```<process>``` considered.
+  - **```OnProcessComplete( target_action=<action>, on_completion=[ <process> ]```** : In case that the ```<action>``` is completed (launched with success but still running), launch the ```<process>``` considered.
+  - **```OnProcessExit( target_action=<action>, on_exit=[ <process> ]```** : In case that the ```<action>``` exits (or ends), launch the ```<process>``` considered.
+  - **```OnShutdown( target_action=<action>, on_shutdown=[ <process> ]```** : In case that the ```<action>``` the launch is asked for shutdown, it executes a final process.
+
 
 # Troubleshooting:
 
