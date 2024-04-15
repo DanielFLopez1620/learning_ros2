@@ -787,7 +787,7 @@ You can use *launch* files in a packages with **ament_python** or **ament_cmake*
         )
         ...
 
-Now, it is time to see a launch file, we will use our friends from **turtlesim**, and we will use the nodes previously made for the turtles, the examples files are called [turtlesim_simple_mov.launch.py | Python Package](/m02_ros2_communication/m02_ros2_with_py/launch/turtlesim_simple_mov.launch.py) and [turtlesim_simple_mov.launch.py | CMake Package]() and explore the content:
+Now, it is time to see a launch file, we will use our friends from **turtlesim**, and we will use the nodes previously made for the turtles, the examples files are called [turtlesim_simple_mov.launch.py | Python Package](/m02_ros2_communication/m02_ros2_with_py/launch/turtlesim_simple_mov.launch.py) and [turtlesim_simple_mov.launch.py | CMake Package](/m02_ros2_communication/m02_ros2_with_cpp/launch/turtlesim_simple_mov.launch.py) and explore the content:
 
 - **```from launch import LaunchDescription```** : From the launch module (non-ROS-specific launch framework) import the tools to generate a descriptio.
 - **```from launch_ros.actions import Node```** : Import node object description for launch execute.
@@ -819,6 +819,7 @@ The previous info presented is the basic one for launching multiple nodes, but y
   - **```<condition_process_var> = ExecuteProcess(condition=IfCondition(PythonExpression([<condition>])), cmd=<command>)```** : Add a condition to execute the process, the ```<command>``` must have the structure previously defined.
 
 - ### Using event handlers:
+  When you have multiple process, they may have problems on the way, launches provide options to check if the process started, was completed succesfully, or if it has error, it is exiting or shutting down. Then, you can implement a function, action or behavior in order to robust your launch files. Here some important commands to keep in mind.
   - **```from launch.event_handlers import OnExecutionComplete, OnProcessExit, OnProcessIO, OnProcessStart, OnShutdown```** : Add commands related to handle events on different parts of the processes (start, end, I/O...)
   - **```from launch.events import Shutdown```** : Add the event when the launch is asked to shutdown (usually when a kill command is executed)
   - **```from launch.actions import EmitEvent, LogInfo, RegisterEventHandler```** : Add a commands for actions that are related with events and display info.
@@ -829,6 +830,18 @@ The previous info presented is the basic one for launching multiple nodes, but y
   - **```OnProcessComplete( target_action=<action>, on_completion=[ <process> ]```** : In case that the ```<action>``` is completed (launched with success but still running), launch the ```<process>``` considered.
   - **```OnProcessExit( target_action=<action>, on_exit=[ <process> ]```** : In case that the ```<action>``` exits (or ends), launch the ```<process>``` considered.
   - **```OnShutdown( target_action=<action>, on_shutdown=[ <process> ]```** : In case that the ```<action>``` the launch is asked for shutdown, it executes a final process.
+
+If you want to check on the usage of the last commands, you can explore the next launch files:
+
+- **[turtlesim_background.launch.py](/m02_ros2_communication/m02_ros2_with_py/launch/turtlesim_background.launch.py):** Oriented to use actions and substitutions to play with the background, while also executing commands from turtlesim. You can test it with:
+
+        ros2 launch m02_ros2_with_py turtlesim_background.launch.py
+        ros2 launch m02_ros2_with_cpp turtlesim_background.launch.py
+
+- **[turtlesim_spawn.launch.py](/m02_ros2_communication/m02_ros2_with_cpp/launch/turtlesim_spawn.launch.py):** Oriented to check events while spawing a turtle in the turtlesim world. You can execute it with:
+
+        ros2 launch m02_ros2_with_py turtlesim_spawn.launch.py
+        ros2 launch m02_ros2_with_cpp turtlesim_spawn.launch.py
 
 
 # Troubleshooting:
