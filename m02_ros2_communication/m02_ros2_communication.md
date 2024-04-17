@@ -830,6 +830,30 @@ The previous info presented is the basic one for launching multiple nodes, but y
   - **```OnProcessComplete( target_action=<action>, on_completion=[ <process> ]```** : In case that the ```<action>``` is completed (launched with success but still running), launch the ```<process>``` considered.
   - **```OnProcessExit( target_action=<action>, on_exit=[ <process> ]```** : In case that the ```<action>``` exits (or ends), launch the ```<process>``` considered.
   - **```OnShutdown( target_action=<action>, on_shutdown=[ <process> ]```** : In case that the ```<action>``` the launch is asked for shutdown, it executes a final process.
+- ### Using config files:
+  You can use .yaml file (usually located in the *config* directory) to provide configurations of parameters for you nodes, you must be careful as they depend on the namespace and the name of the topic, their structure is:
+  
+        <namespace(optional)>/<node_name>:
+            ros__parameters:
+                <param_name>: <value>
+
+  The usage in the launch file is very simple, you need to provide the path to the config file, and then in the configs of a node, pass the object.
+
+        config = os.path.join(
+            get_package_share_directory('<package_name>'),
+            '<dir>',
+            '<name>.yaml'
+            )
+        
+        return LaunchDescription([
+            Node(
+                package='<package>',
+                executable='<exec>',
+                namespace='<namespace(optional)>',
+                name='<node_name>',
+                parameters=[config]
+            )
+        ])
 
 If you want to check on the usage of the last commands, you can explore the next launch files:
 
@@ -842,6 +866,11 @@ If you want to check on the usage of the last commands, you can explore the next
 
         ros2 launch m02_ros2_with_py turtlesim_spawn.launch.py
         ros2 launch m02_ros2_with_cpp turtlesim_spawn.launch.py
+
+- **[turtlesim_with_yaml.launch.py](/m02_ros2_communication/m02_ros2_with_cpp/launch/turtlesim_with_yaml.launch.py):** Oriented to use a parameter file for chaning the background of the turtlesim.
+
+        ros2 launch m02_ros2_with_py turtlesim_with_yaml.launch.py
+        ros2 launch m02_ros2_with_cpp turtlesim_with_yaml.launch.py
 
 
 # Troubleshooting:
@@ -856,6 +885,10 @@ If you want to check on the usage of the last commands, you can explore the next
   warnings.warn (...)". It means that the package 'setuptools' isn't in the proper version for ros2, you can resolve (according to [ros.answer](https://answers.ros.org/question/396439/setuptoolsdeprecationwarning-setuppy-install-is-deprecated-use-build-and-pip-and-other-standards-based-tools/)) with the next command (only ROS2 Humble):
 
         pip install setuptools==58.2.
+
+- If a yaml file seems to not be loading the parameters, you can check for the next options:
+  - ```[WARNING] [launch_ros.actions.node]: Parameter file path is not a file: ...``` If you receive this warn, you should check the *share* path and watch for the real location of the yaml file, for example, if it is in the *config* dir or the directory you specified in the launch.
+  - Pay attentation to the namespaces, if you are sure the name of the node and the execution is done properly, maybe you mistype something in the namespace section or you have to use a namespace as the topic, service (...) was launched inside one.
     
 # Resources
 

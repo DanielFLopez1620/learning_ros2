@@ -1,0 +1,5 @@
+/cpp_pkg/turtlesim:
+  ros__parameters:
+    background_b: 153
+    background_g: 204
+    background_r: 255

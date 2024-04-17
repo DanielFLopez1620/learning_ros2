@@ -109,7 +109,7 @@ install(TARGETS
 
 # Launch files
 install(DIRECTORY
-  launch
+  launch config
   DESTINATION share/${PROJECT_NAME}
 )
 
