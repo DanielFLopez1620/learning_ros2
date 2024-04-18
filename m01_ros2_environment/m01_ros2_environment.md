@@ -219,4 +219,59 @@ But, this is not all, you can save the params and use them later, this process i
 Another possibility is to load the params in the moment you run the node, for that, you can use:
 
     ros2 run turtlesim turtlesim_node --ros-args --params-file my_params.yaml
+
+# When something goes wrong...
+
+There would be case when you will need some help, you can find resources online searching on Google (or the search engine of your preference), in the forum of [Robotics Exchange]() and in the documentation. Also, pay attetion to the errors and warning the console is displaying to you when you compile and test.
+
+However, you should try **ros2doctor** at some point, for those cases when the ROS2 setup is not working as expected, as it check the platform, version, network, env and system, then it informs you about warnings and reason for the issues. For running you just use:
+
+    ros2 doctor
+
+If everthing seems to be right, you should see a:
+
+    All <n> checks passed
+
+If you received a warn, it could have the form of
+
+    <path>: <line> UserWaring: <message>
+
+For getting a report, you can use:
+
+    ros2 doctor --report
+
+# Using data with ROS2
+
+There would be times when you need to make tests, to make sure everything works as expected, you can try these with the topics of your nodes... you may need to test the same data to make sure it works, in those cases, using the node directly multiple times can be problematic. 
+
+That is why we have **ros2 bag**, which is a command line tool, it is used to record, save and reproduce data. As always, let's use our favorite turtle companion:
+
+    ros2 run turtlesim turtlesim_node
+    ros2 run turtlesim turtle_teleop_key
+
+Then, create a directory for your **bag files**:
+
+    mkdir <your_bag_dirs>
+    cd <your_bag_dirs>
+
+Select a topic to save, and start recording, note that you can stop recording by using Ctrl + C.
+
+    ros2 bag record /turtle1/cmd_vel
+
+In the case you want to record every topic, you just need to pass the **-a** flag. Now, to make sure you recorded the data, assign a file, you can use
+
+    ros2 bag record -o turtle_info /turtle1/cmd_vel /turtle1/pose # Ctrl+ C when you are done.
+
+If you want to check the information of a bag file, you can use:
+
+    ros2 bag info turtle_info
+
+Now, if you need to make some test with the same info, you just use the recorded data, you can play it with:
+
+    ros2 bag play turtle_info
+
+
+# Resources 
+
+- ROS2 Cli Tutorials: [Humble](https://docs.ros.org/en/humble/Tutorials/Beginner-CLI-Tools.html)
     

@@ -691,20 +691,204 @@ Finally, do not forget about general commands when using *rclcpp*:
 
 # Playing with Turtlesim
 
-You have played with the terminal, now it is time to play with a 2D robot.
+You have played with the terminal, now it is time to play with a 2D robot. As you may remember, **turtlesim** has a collection of topics, services and actions you can interact with, then it is good for learning, testing and experimenting.
+
+    ros2 run turtlesim turtlesim_node
+
+Remember, you can list the topics, services and parameters, like follow:
+
+    ros2 topic list
+    ros2 service list
+    ros2 param list
+
+In case you can use a topic, you can get info of it with:
+
+    # Command
+    ros2 topic info /turtle1/cmd_vel
+
+    # Output
+    Type: geometry_msgs/msg/Twist
+    Publisher count: 0
+    Subscription count: 1
+
+And it provides the type (message type), the publisher and subscriber count. If you want to interact with the topic, you have to understand if it is a subscriber (so you need to publish in order to interact) or it is a publisher (then you need a subscriber to tget the proper info), after this, you can check the interface with:
+
+    # Command
+    ros2 interface show geometry/msg/Twist
+
+    # Output
+    Twist
+    # This expresses velocity in free space broken into its linear and angular parts.
+
+    Vector3  linear
+            float64 x
+            float64 y
+            float64 z
+    Vector3  angular
+            float64 x
+            float64 y
+            float64 z
+
+So, you will need to import the type of message, in the proper way for each language:
+
+- **Python:** from geometry_msgs.msg import Twist
+- **C++** #include "geometry_msgs/msg/twist.hpp"
+
+Here I have developed some examples you can check, for both **rcply** and **rclcpp**, they are listed below:
+
+- **simple_turtle_mov:**  It is the implementation of a simple publisher that uses the */turtle1/cmd_vel* topic, then the turtle will move linearly and angularly. You can find the implementation for [py](/m02_ros2_communication/m02_ros2_with_py/m02_ros2_with_py/simple_turtle_mov.py) and [cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/simple_turtle_mov.cpp).
+- 
+- **turtle_challenge:** It provides a class to interact with the services of the *turtlesim* that include clear, spawn, kill, set pen and the teleports. It is provided a simple demostration, you can find the implementation for [py](/m02_ros2_communication/m02_ros2_with_py/m02_ros2_with_py/turtle_challenge.py) and [cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/turtle_challenge.cpp).
+
+If you want to interact with the, down below, I list the respective commands, do not forget to execute **turtlesim_node** and build the packages (and source) before using them:
+
+    ros2 run m02_ros2_with_py simple_turtle_mov
+    ros2 run m02_ros2_with_py turtle_challenge
+    ros2 run m02_ros2_with_cpp simple_turtle_mov
+    ros2 run m02_ros2_with_cpp turtle_challenge
+
+# Launches
+
+You may notice that the number of nodes tend to increase, and if you need one terminal for each one... what will happen when you need to run 100 nodes?
+
+Well, there is a solution, it is called **ros2 launch**, and here we will discover how to use them. It is not limited to running a set of nodes, but you can also specify where to run them, how to configure their parameters and then offer a option to monitoring them. They can be made with Python, XMAL and YAML, for more info on the types you can check this [link](https://docs.ros.org/en/humble/How-To-Guides/Launch-file-different-formats.html)
+
+Here we will implement them with Python. You can check the documentation and API for more info on Python, or if you want to explore XML and YAML.
+
+AS a convention, for using launches, in your packages, you will need to create a *launch* dir:
+
+    cd <path_to_your_package>
+    mkdir launch
+
+You can use *launch* files in a packages with **ament_python** or **ament_cmake**, but you have to properly configure the package, let's watch the cases:
+
+- **ament_python:** In the [setup.py](/m02_ros2_communication/m02_ros2_with_py/setup.py) file, you need to include the *.launch.py* files, the configuration need is:
+
+        from setuptools import setup
+        
+        import os
+        
+        from glob import glob
+        
+        ...
+
+            data_files=[
+                ...
+                (os.path.join('share', package_name), glob('launch/*.launch.py'))
+            ],
+        ...
+
+- **ament_cmake:** In the [CMakeLists.txt](/m02_ros2_communication/m02_ros2_with_cpp/CMakeLists.txt) file, you need to add the directory launch:
+
+        ...
+        install(DIRECTORY
+        launch
+        DESTINATION share/${PROJECT_NAME}
+        )
+        ...
+
+Now, it is time to see a launch file, we will use our friends from **turtlesim**, and we will use the nodes previously made for the turtles, the examples files are called [turtlesim_simple_mov.launch.py | Python Package](/m02_ros2_communication/m02_ros2_with_py/launch/turtlesim_simple_mov.launch.py) and [turtlesim_simple_mov.launch.py | CMake Package](/m02_ros2_communication/m02_ros2_with_cpp/launch/turtlesim_simple_mov.launch.py) and explore the content:
+
+- **```from launch import LaunchDescription```** : From the launch module (non-ROS-specific launch framework) import the tools to generate a descriptio.
+- **```from launch_ros.actions import Node```** : Import node object description for launch execute.
+- **```def generate_launch_description(): return LaunchDescription([ ])```**: Space where the launch description is going to be added.
+- **```Node( package='<package_name>', namespace='<namespace>', executable='<exec>' name='<node_name>', remappings=[<remaps>]),```** : Add the configuration to execute a node by passing the name of the package, the name of the executable and the name of the node.Also you can optionally add a namespace and remap of topics.
+
+The previous info presented is the basic one for launching multiple nodes, but you can make even more...
+- ### Adding launch configurations and arguments: 
+  This will make easier to configure and set up your nodes, while generating common default implementations of your params, and providing an easy way to change them.
+
+  - **```from launch.actions import DeclareLaunchArgument, ```** : Add commands related to arguments configuration and set up.
+  - **```<config_var> = LaunchConfiguration(<config_name>)```** : Add a launch configuration, it is recommended that both ```<config_var>``` and ```<config_name>``` are the same. They are passed and can be used with the package, namespace, exeutable, name or arguments params from a node.
+  - **```<config_arg> = DeclareLaunchArgument( <config_name>, default_value='<default_value>')```** : Create a launch argument that uses a launch configuration. They can be used above the launch or from the terminal.
+  - 
+
+- ### Using substitutions: 
+  When you have to configure parameters of multiple nodes, you may miss using macros or variables for this process, but in launches you can use substitutions, which makes a launch more flexible. The commands needed are present in the **launch.substitutions**, **launch.launch_description_sources** and **launch_ros.actions** library, keep in mind the next ones.
+
+  - **```from launch.substitutions import PathJoinSubstitution, TextSubstitution, LaunchConfiguration, PythonExpression```** : Import the commands relate to add paths to the files, replace text, configure a launch and add python expressions to substitute.
+  - **```from launch.launch_description_sources import PythonLaunchDescriptionSource```** : Import the command to use others launch descriptions in the current launch.
+  - **```PythonLaunchDescriptionSource([PathJoinSubstitution([FindPackageShare(<package_name>, <dir>, <launch_file>)])])```** : For using the ```<launch_file>```present in the package called ```<package_name>``` under the directory ```<dir>``` in the current launch, the substitution comes handy as with PathJoin it help to find the package an pass the path to the launch.
+  - **```'<launch_argument>' : TextSubstitution(text=str(<var/value>))```** : Use text substitutions to make sure you pass the arguments in a way it can be used by the launch configuration.
+        
+- ### Executing commands inside the launch file:
+  You can use the terminal (bash) for launching or adding additional info/commands to your launch in order to generate a proper implementation, or to call commands from the *ros2cli*.
+  **```from launch.actions import ExecuteProcess, TimerAction```** : Add commands related with process execution and timers.
+  - **```from launch.conditions import IfCondition```** : Add if statement for launches.
+  - **```<process_var> = ExecuteProcess(cmd=[[<command_description>]], shell=True)```** : Add a shell command to run, it can be a ros2cli command. And inside the ```command_description``` you can use launch configs.
+  - **```<condition_process_var> = ExecuteProcess(condition=IfCondition(PythonExpression([<condition>])), cmd=<command>)```** : Add a condition to execute the process, the ```<command>``` must have the structure previously defined.
+
+- ### Using event handlers:
+  When you have multiple process, they may have problems on the way, launches provide options to check if the process started, was completed succesfully, or if it has error, it is exiting or shutting down. Then, you can implement a function, action or behavior in order to robust your launch files. Here some important commands to keep in mind.
+  - **```from launch.event_handlers import OnExecutionComplete, OnProcessExit, OnProcessIO, OnProcessStart, OnShutdown```** : Add commands related to handle events on different parts of the processes (start, end, I/O...)
+  - **```from launch.events import Shutdown```** : Add the event when the launch is asked to shutdown (usually when a kill command is executed)
+  - **```from launch.actions import EmitEvent, LogInfo, RegisterEventHandler```** : Add a commands for actions that are related with events and display info.
+  - **```LogInfo(msg='<content>')```** : Log a message or text, can be linked with actions.
+  - **```RegisterEventHandler( <event_to_handle> (<process>))```** : Mark an event to be handled, then link a corresponding action in the ```<event_to_handle>``` which can be on start, on I/O interrupt, on completion, on exit or on shutdown.
+  - **```OnProcessStart( target_action=<action>, on_start=[ <process> ]```** : In case that the given ```<action>``` begins, launch the ```<process>``` considered.
+  - **```OnProcessIO( target_action=<action>, on_stdout=[ <process> ]```** : In case that the ```<action>``` ask for an input/output process, launch the ```<process>``` considered.
+  - **```OnProcessComplete( target_action=<action>, on_completion=[ <process> ]```** : In case that the ```<action>``` is completed (launched with success but still running), launch the ```<process>``` considered.
+  - **```OnProcessExit( target_action=<action>, on_exit=[ <process> ]```** : In case that the ```<action>``` exits (or ends), launch the ```<process>``` considered.
+  - **```OnShutdown( target_action=<action>, on_shutdown=[ <process> ]```** : In case that the ```<action>``` the launch is asked for shutdown, it executes a final process.
+- ### Using config files:
+  You can use .yaml file (usually located in the *config* directory) to provide configurations of parameters for you nodes, you must be careful as they depend on the namespace and the name of the topic, their structure is:
+  
+        <namespace(optional)>/<node_name>:
+            ros__parameters:
+                <param_name>: <value>
+
+  The usage in the launch file is very simple, you need to provide the path to the config file, and then in the configs of a node, pass the object.
+
+        config = os.path.join(
+            get_package_share_directory('<package_name>'),
+            '<dir>',
+            '<name>.yaml'
+            )
+        
+        return LaunchDescription([
+            Node(
+                package='<package>',
+                executable='<exec>',
+                namespace='<namespace(optional)>',
+                name='<node_name>',
+                parameters=[config]
+            )
+        ])
+
+If you want to check on the usage of the last commands, you can explore the next launch files:
+
+- **[turtlesim_background.launch.py](/m02_ros2_communication/m02_ros2_with_py/launch/turtlesim_background.launch.py):** Oriented to use actions and substitutions to play with the background, while also executing commands from turtlesim. You can test it with:
+
+        ros2 launch m02_ros2_with_py turtlesim_background.launch.py
+        ros2 launch m02_ros2_with_cpp turtlesim_background.launch.py
+
+- **[turtlesim_spawn.launch.py](/m02_ros2_communication/m02_ros2_with_cpp/launch/turtlesim_spawn.launch.py):** Oriented to check events while spawing a turtle in the turtlesim world. You can execute it with:
+
+        ros2 launch m02_ros2_with_py turtlesim_spawn.launch.py
+        ros2 launch m02_ros2_with_cpp turtlesim_spawn.launch.py
+
+- **[turtlesim_with_yaml.launch.py](/m02_ros2_communication/m02_ros2_with_cpp/launch/turtlesim_with_yaml.launch.py):** Oriented to use a parameter file for chaning the background of the turtlesim.
+
+        ros2 launch m02_ros2_with_py turtlesim_with_yaml.launch.py
+        ros2 launch m02_ros2_with_cpp turtlesim_with_yaml.launch.py
+
 
 # Troubleshooting:
 
 - If you aren't able to autocomplete (a package), make sure you have succesfully build (using colcon build and the corresponding flags), and also, make sure you have added and sourced the *local_setup.bash* or the *setup.bash* file.
 
-    cd <your_ws>
-    colcon build
-    source install/local_setup.bash
+        cd <your_ws>
+        colcon build
+        source install/local_setup.bash
 
 - If you get a warn equal or related to: "SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
   warnings.warn (...)". It means that the package 'setuptools' isn't in the proper version for ros2, you can resolve (according to [ros.answer](https://answers.ros.org/question/396439/setuptoolsdeprecationwarning-setuppy-install-is-deprecated-use-build-and-pip-and-other-standards-based-tools/)) with the next command (only ROS2 Humble):
 
-    pip install setuptools==58.2.
+        pip install setuptools==58.2.
+
+- If a yaml file seems to not be loading the parameters, you can check for the next options:
+  - ```[WARNING] [launch_ros.actions.node]: Parameter file path is not a file: ...``` If you receive this warn, you should check the *share* path and watch for the real location of the yaml file, for example, if it is in the *config* dir or the directory you specified in the launch.
+  - Pay attentation to the namespaces, if you are sure the name of the node and the execution is done properly, maybe you mistype something in the namespace section or you have to use a namespace as the topic, service (...) was launched inside one.
     
 # Resources
 
@@ -717,4 +901,6 @@ You have played with the terminal, now it is time to play with a 2D robot.
 - ROS2 rclpy API: [Foxy](https://docs.ros2.org/foxy/api/rclpy/)
 
 - ROS2 rclcpp API: [Foxy](https://docs.ros2.org/foxy/api/rclcpp/)
+
+- ROS2 Launch Tutorials: [Humble](https://docs.ros.org/en/humble/Tutorials/Intermediate/Launch/Launch-Main.html)
 
