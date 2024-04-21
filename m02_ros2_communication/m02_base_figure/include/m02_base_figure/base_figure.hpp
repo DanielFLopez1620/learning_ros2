@@ -1,7 +1,7 @@
-#ifndef M02_POLYGON_BASE_BASE_FIGURE_HPP
-#define M02_POLYGON_BASE_BASE_FIGURE_HPP
+#ifndef M02_BASE_FIGURE_BASE_FIGURE_HPP
+#define M02_BASE_FIGURE_BASE_FIGURE_HPP
 
-namespace polygon_base
+namespace base_figure
 {
     class BaseFigure
     {

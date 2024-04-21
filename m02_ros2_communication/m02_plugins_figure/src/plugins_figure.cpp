@@ -1,6 +1,6 @@
-#include "m02_polygon_base/base_figure.hpp"
+#include "m02_base_figure/base_figure.hpp"
 
-namespace polygon_plugins
+namespace plugins_figure
 {
 
     class Square : public polygon_base::BaseFigure
@@ -56,9 +56,9 @@ namespace polygon_plugins
         }
     };
 
-}  // namespace m02_polygon_plugins
+}  // namespace m02_plugins_figure
 
 #include <pluginlib/class_list_macros.hpp>
 
-PLUGINLIB_EXPORT_CLASS(polygon_plugins::Square, polygon_base::RegularPolygon)
-PLUGINLIB_EXPORT_CLASS(polygon_plugins::Triangle, polygon_base::RegularPolygon)
+PLUGINLIB_EXPORT_CLASS(plugins_figure::Square, polygon_base::RegularPolygon)
+PLUGINLIB_EXPORT_CLASS(plugins_figure::Triangle, polygon_base::RegularPolygon)

@@ -872,6 +872,7 @@ If you want to check on the usage of the last commands, you can explore the next
         ros2 launch m02_ros2_with_py turtlesim_with_yaml.launch.py
         ros2 launch m02_ros2_with_cpp turtlesim_with_yaml.launch.py
 
+# Adding pluggins:
 
 # Troubleshooting:
 

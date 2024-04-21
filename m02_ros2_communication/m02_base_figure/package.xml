@@ -1,11 +1,11 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>m02_polygon_base</name>
+  <name>m02_base_figure</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="dfelipe.lopez@gmail.com">dan1620</maintainer>
-  <license>TODO: License declaration</license>
+  <description>A base package for a plugin integration</description>
+  <maintainer email="dfelipe.lopez@gmail.com">DanielFLopez1620</maintainer>
+  <license>BSD-3-Clause</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
