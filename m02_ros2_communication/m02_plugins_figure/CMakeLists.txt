@@ -8,10 +8,10 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_ros REQUIRED)
-find_package(m02_base_figure REQUIRED)
 find_package(pluginlib REQUIRED)
+find_package(m02_base_figure REQUIRED)
 
-add_library(m02_plugins_figure src/m02_plugins_figure.cpp)
+add_library(m02_plugins_figure src/plugins_figure.cpp)
 target_compile_features(m02_plugins_figure PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 target_include_directories(m02_plugins_figure PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -22,7 +22,7 @@ ament_target_dependencies(
   "pluginlib"
 )
 
-pluginlib_export_plugin_description_file(polygon_base plugins.xml)
+pluginlib_export_plugin_description_file(base_figure plugins.xml)
 
 # Causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.

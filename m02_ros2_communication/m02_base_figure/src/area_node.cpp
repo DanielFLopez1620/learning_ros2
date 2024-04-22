@@ -7,7 +7,7 @@ int main(int argc, char ** argv)
   (void) argc;
   (void) argv;
 
-  pluginlib::ClassLoader<m02_base_figure::BaseFigure> figure_loader("base_figure", "base_figure::BaseFigure");
+  pluginlib::ClassLoader<base_figure::BaseFigure> figure_loader("m02_base_figure", "base_figure::BaseFigure");
 
   try
   {
@@ -19,8 +19,5 @@ int main(int argc, char ** argv)
   {
       printf("The plugin failed to load, error message: %s\n", ex.what());
   }
-  
-
-  printf("hello world m02_base_figure package\n");
   return 0;
 }
