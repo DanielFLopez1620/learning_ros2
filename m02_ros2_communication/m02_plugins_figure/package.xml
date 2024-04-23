@@ -4,12 +4,12 @@
   <name>m02_plugins_figure</name>
   <version>0.0.0</version>
   <description>A package for implementing plugins</description>
-  <maintainer email="dfelipe.lopez@gmail.com">dan1620</maintainer>
+  <maintainer email="dfelipe.lopez@gmail.com">DanielFLopez1620</maintainer>
   <license>BSD-3-Clause</license>
 
   <buildtool_depend>ament_cmake_ros</buildtool_depend>
 
-  <depend>m02_polygon_base</depend>
+  <depend>m02_base_figure</depend>
   <depend>pluginlib</depend>
 
   <test_depend>ament_lint_auto</test_depend>

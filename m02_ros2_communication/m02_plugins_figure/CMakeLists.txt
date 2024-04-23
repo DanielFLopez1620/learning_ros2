@@ -11,6 +11,8 @@ find_package(ament_cmake_ros REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(m02_base_figure REQUIRED)
 
+pluginlib_export_plugin_description_file(base_figure plugins.xml)
+
 add_library(m02_plugins_figure src/plugins_figure.cpp)
 target_compile_features(m02_plugins_figure PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 target_include_directories(m02_plugins_figure PUBLIC
@@ -21,8 +23,6 @@ ament_target_dependencies(
   "m02_base_figure"
   "pluginlib"
 )
-
-pluginlib_export_plugin_description_file(base_figure plugins.xml)
 
 # Causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.
@@ -52,9 +52,6 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
-ament_export_include_directories(
-  include
-)
 ament_export_libraries(
   m02_plugins_figure
 )

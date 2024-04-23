@@ -1,19 +1,19 @@
-#ifndef M02_POLYGON_PLUGINS__M02_POLYGON_PLUGINS_HPP_
-#define M02_POLYGON_PLUGINS__M02_POLYGON_PLUGINS_HPP_
+#ifndef M02_PLUGINS_FIGURE__M02_PLUGINS_FIGURE_HPP_
+#define M02_PLUGINS_FIGURE__M02_PLUGINS_FIGURE_HPP_
 
-#include "m02_polygon_plugins/visibility_control.h"
+#include "m02_plugins_figure/visibility_control.h"
 
-namespace m02_polygon_plugins
+namespace m02_plugins_figure
 {
 
-class M02PolygonPlugins
-{
-public:
-  M02PolygonPlugins();
+  class M02PluginsFigure
+  {
+  public:
+    M02PluginsFigure();
 
-  virtual ~M02PolygonPlugins();
-};
+    virtual ~M02PluginsFigure();
+  };
 
-}  // namespace m02_polygon_plugins
+}
 
-#endif  // M02_POLYGON_PLUGINS__M02_POLYGON_PLUGINS_HPP_
+#endif
