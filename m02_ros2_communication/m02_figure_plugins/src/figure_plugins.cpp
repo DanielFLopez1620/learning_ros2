@@ -1,28 +1,26 @@
 #include "m02_base_figure/base_figure.hpp"
 #include <cmath>
 
-
-namespace plugins_figure
+namespace m02_figure_plugins
 {
-
-    class Square : public base_figure::BaseFigure
+    class Square : public figure::BaseFigure
     {
         public:
-            void initialize(double side_length) override
-            {
-                side_length_ = side_length;
-            }
+        void initialize(double side_length) override
+        {
+            side_length_ = side_length;
+        }
 
-            double area() override
-            {
+        double area() override
+        {
             return side_length_ * side_length_;
-            }
+        }
 
         protected:
-            double side_length_;
+        double side_length_;
     };
 
-    class Triangle : public base_figure::BaseFigure
+    class Triangle : public figure::BaseFigure
     {
         public:
         void initialize(double side_length) override
@@ -43,8 +41,8 @@ namespace plugins_figure
         protected:
         double side_length_;
     };
-    
-    class Circle : public base_figure::BaseFigure
+
+    class Circle : public figure::BaseFigure
     {
         public:
         void initialize(double side_length) override
@@ -54,17 +52,15 @@ namespace plugins_figure
 
         double area() override
         {
-            return 3.1416 * side_length_ * side_length_;
+            return M_PI * side_length_ * side_length_;
         }
 
         protected:
         double side_length_;
     };
-
-}  // namespace m02_plugins_figure
+}  // namespace m02_figure_plugins
 
 #include <pluginlib/class_list_macros.hpp>
 
-PLUGINLIB_EXPORT_CLASS(plugins_figure::Square, base_figure::BaseFigure)
-PLUGINLIB_EXPORT_CLASS(plugins_figure::Triangle, base_figure::BaseFigure)
-PLUGINLIB_EXPORT_CLASS(plugins_figure::Circle, base_figure::BaseFigure)
+PLUGINLIB_EXPORT_CLASS(m02_figure_plugins::Square, figure::BaseFigure)
+PLUGINLIB_EXPORT_CLASS(m02_figure_plugins::Triangle, figure::BaseFigure)
