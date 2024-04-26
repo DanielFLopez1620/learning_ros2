@@ -1,11 +1,11 @@
-<library path="m02_figure_plugins">
-    <class type="m02_figure_plugins::Square" base_class_type="figure::BaseFigure">
+<library path="figure_plugins">
+    <class type="m02_figure_plugins::Square" base_class_type="m02_base_figure::BaseFigure">
         <description>This is a square plugin.</description>
     </class>
-    <class type="m02_figure_plugins::Triangle" base_class_type="figure::BaseFigure">
+    <class type="m02_figure_plugins::Triangle" base_class_type="m02_basefigure::BaseFigure">
         <description>This is a triangle plugin.</description>
     </class>
-    <class type="m02_figure_plugins::Circle" base_class_type="figure::BaseFigure">
+    <class type="m02_figure_plugins::Circle" base_class_type="m02_base_figure::BaseFigure">
         <description>This is a circle plugin.</description>
     </class>
 </library>

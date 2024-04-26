@@ -1,7 +1,7 @@
 #ifndef M02_BASE_FIGURE_BASE_FIGURE_HPP
 #define M02_BASE_FIGURE_BASE_FIGURE_HPP
 
-namespace figure
+namespace m02_base_figure
 {
     class BaseFigure
     {
@@ -13,6 +13,6 @@ namespace figure
         protected:
         BaseFigure(){}
     };
-}  // namespace figure
+}  // namespace m02_base_figure
 
 #endif  // M02_BASE_FIGURE_BASE_FIGURE_HPP

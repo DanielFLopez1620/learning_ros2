@@ -3,7 +3,7 @@
 
 namespace m02_figure_plugins
 {
-    class Square : public figure::BaseFigure
+    class Square : public m02_base_figure::BaseFigure
     {
         public:
         void initialize(double side_length) override
@@ -20,7 +20,7 @@ namespace m02_figure_plugins
         double side_length_;
     };
 
-    class Triangle : public figure::BaseFigure
+    class Triangle : public m02_base_figure::BaseFigure
     {
         public:
         void initialize(double side_length) override
@@ -42,7 +42,7 @@ namespace m02_figure_plugins
         double side_length_;
     };
 
-    class Circle : public figure::BaseFigure
+    class Circle : public m02_base_figure::BaseFigure
     {
         public:
         void initialize(double side_length) override
@@ -62,5 +62,6 @@ namespace m02_figure_plugins
 
 #include <pluginlib/class_list_macros.hpp>
 
-PLUGINLIB_EXPORT_CLASS(m02_figure_plugins::Square, figure::BaseFigure)
-PLUGINLIB_EXPORT_CLASS(m02_figure_plugins::Triangle, figure::BaseFigure)
+PLUGINLIB_EXPORT_CLASS(m02_figure_plugins::Square, m02_base_figure::BaseFigure)
+PLUGINLIB_EXPORT_CLASS(m02_figure_plugins::Triangle, m02_base_figure::BaseFigure)
+PLUGINLIB_EXPORT_CLASS(m02_figure_plugins::Circle, m02_base_figure::BaseFigure)

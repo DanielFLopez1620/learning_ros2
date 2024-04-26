@@ -11,9 +11,9 @@ find_package(ament_cmake_ros REQUIRED)
 find_package(m02_base_figure REQUIRED)
 find_package(pluginlib REQUIRED)
 
-pluginlib_export_plugin_description_file(polygon_base plugins.xml)
+pluginlib_export_plugin_description_file(m02_base_figure plugins.xml)
 
-add_library(figure_plugins src/figure_plugins.cpp)
+add_library(figure_plugins src/m02_figure_plugins.cpp)
 target_compile_features(figure_plugins PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 target_include_directories(figure_plugins PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
