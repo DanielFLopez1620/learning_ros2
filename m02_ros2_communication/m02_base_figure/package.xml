@@ -1,19 +1,29 @@
+<!-- _______________________ Package info ___________________________________-->
 <?xml version="1.0"?>
-<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" 
+  schematypens="http://www.w3.org/2001/XMLSchema"?>
+
 <package format="3">
+  <!--______________________ Package description ____________________________-->
   <name>m02_base_figure</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>
+    A package that defines the base class for a plugin that uses 2D figures
+  </description>
   <maintainer email="dfelipe.lopez@gmail.com">dan1620</maintainer>
   <license>BSD-3-Clause</license>
 
+  <!--_______________________ Package Ament _________________________________-->
   <buildtool_depend>ament_cmake</buildtool_depend>
 
+  <!--_______________________ Build Dependencies ____________________________-->
   <depend>pluginlib</depend>
 
+  <!--_______________________ Test Dependencies _____________________________-->
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 
+  <!--________________________ Export info __________________________________-->
   <export>
     <build_type>ament_cmake</build_type>
   </export>
