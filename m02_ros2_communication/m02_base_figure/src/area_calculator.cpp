@@ -10,6 +10,7 @@
 // --------------------- MAIN IMPLEMENTATION -----------------------------------
 int main(int argc, char** argv)
 {
+    std::cout << "Welcome to the showcase of a plugin..." << std::endl;
     // Load base class present in header file
     pluginlib::ClassLoader<m02_base_figure::BaseFigure> 
         figure_loader("m02_base_figure", "m02_base_figure::BaseFigure");

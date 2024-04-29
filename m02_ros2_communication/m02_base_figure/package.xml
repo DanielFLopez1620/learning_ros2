@@ -10,7 +10,7 @@
   <description>
     A package that defines the base class for a plugin that uses 2D figures
   </description>
-  <maintainer email="dfelipe.lopez@gmail.com">dan1620</maintainer>
+  <maintainer email="dfelipe.lopez@gmail.com">DanielFLopez1620</maintainer>
   <license>BSD-3-Clause</license>
 
   <!--_______________________ Package Ament _________________________________-->

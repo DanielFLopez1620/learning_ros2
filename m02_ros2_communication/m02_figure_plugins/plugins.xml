@@ -1,11 +1,18 @@
+<!-- Library path is oriented to the added library in the CMakeList file-->
 <library path="figure_plugins">
+
+    <!-- When defining a class for a plugin, you must include the parent too -->
+    
     <class type="m02_figure_plugins::Square" base_class_type="m02_base_figure::BaseFigure">
         <description>This is a square plugin.</description>
     </class>
+
     <class type="m02_figure_plugins::Triangle" base_class_type="m02_basefigure::BaseFigure">
         <description>This is a triangle plugin.</description>
     </class>
+
     <class type="m02_figure_plugins::Circle" base_class_type="m02_base_figure::BaseFigure">
         <description>This is a circle plugin.</description>
     </class>
+    
 </library>

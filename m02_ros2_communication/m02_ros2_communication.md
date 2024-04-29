@@ -874,6 +874,10 @@ If you want to check on the usage of the last commands, you can explore the next
 
 # Adding pluggins:
 
+You may have heard about plugins in your programs... they are software components that can be used to add specific functionalities withouth modifying core code. It is added dinamically so it gives a lot of flexibility, and we can achieve this in ROS2. 
+
+For this reason, we are going to use **pluginlib** which is a library that facilitates the creation, loading and manage of plugins, and can be used with ROS, then, it is a required dependency when creating a package for a plugin. Our example in this case is divided in two packages [m02_base_figure](/m02_ros2_communication/m02_base_figure/) and [m02_figure_plugins](/m02_ros2_communication/m02_figure_plugins/), which are packages based on the official tutorials of [plugins](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries/Pluginlib.html) for ROS2.
+
 # Troubleshooting:
 
 - If you aren't able to autocomplete (a package), make sure you have succesfully build (using colcon build and the corresponding flags), and also, make sure you have added and sourced the *local_setup.bash* or the *setup.bash* file.
@@ -904,4 +908,6 @@ If you want to check on the usage of the last commands, you can explore the next
 - ROS2 rclcpp API: [Foxy](https://docs.ros2.org/foxy/api/rclcpp/)
 
 - ROS2 Launch Tutorials: [Humble](https://docs.ros.org/en/humble/Tutorials/Intermediate/Launch/Launch-Main.html)
+
+- ROS2 Plugins Tutorial: [Humble](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries/Pluginlib.html)
 
