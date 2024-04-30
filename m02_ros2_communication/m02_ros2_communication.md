@@ -876,7 +876,60 @@ If you want to check on the usage of the last commands, you can explore the next
 
 You may have heard about plugins in your programs... they are software components that can be used to add specific functionalities withouth modifying core code. It is added dinamically so it gives a lot of flexibility, and we can achieve this in ROS2. 
 
-For this reason, we are going to use **pluginlib** which is a library that facilitates the creation, loading and manage of plugins, and can be used with ROS, then, it is a required dependency when creating a package for a plugin. Our example in this case is divided in two packages [m02_base_figure](/m02_ros2_communication/m02_base_figure/) and [m02_figure_plugins](/m02_ros2_communication/m02_figure_plugins/), which are packages based on the official tutorials of [plugins](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries/Pluginlib.html) for ROS2.
+For this reason, we are going to use **pluginlib** which is a library that facilitates the creation, loading and manage of plugins, and can be used with ROS, then, it is a required dependency when creating a package for a plugin. Our example in this case is divided in two packages [m02_base_figure](/m02_ros2_communication/m02_base_figure/) and [m02_figure_plugins](/m02_ros2_communication/m02_figure_plugins/), which are packages based on the official tutorials of [plugins](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries/Pluginlib.html) for ROS2. Now you are ready to check what is this about
+
+First, we need to create the package of the base class, for this we use:
+
+    ros2 pkg create --build-type ament_cmake --license Apache-2.0 --dependencies pluginlib --node-name <node_for_impl> <base_class_package>
+
+    # In our case:
+
+    ros2 pkg create --build-type ament_cmake --license BSD-3-Clause --dependencies pluginlib --node-name area_calculator.cpp m02_base_figure
+
+Second, we need to define our base class, for this purpose, we need to create a header file, they must be located in the *```/include/<base_class_package>```*, the structure of the file should be like this:
+
+    #ifndef <BASE_CLASS_NAMESPACE>_<HEADER_FILE_NAME>_HPP
+    #define <BASE_CLASS_NAMESPACE>_<HEADER_FILE_NAME>_HPP
+
+    namespace <base_class_namespace>
+    {
+        class <base_class_name>
+        {
+            public:
+                virtual <type> <mehtod0>( <args> ) = 0;
+                virtual <type> <method1>() = 0;
+                virtual ~<base_class_name>(){}
+
+            protected:
+                <base_class_name>(){}
+        };
+    }  
+
+    #endif
+
+You can check the proper implementation for our 2D figures in the file [base_figure.hpp](/m02_ros2_communication/m02_base_figure/include/m02_base_figure/base_figure.hpp).
+
+Third, let's modify the [CMakeLists.txt](/m02_ros2_communication/m02_base_figure/CMakeLists.txt) file, where you need to add the information to include and use the content of the *include* directory:
+
+    # Must be added after the ament_target_dependencies
+    install(
+        DIRECTORY include/
+        DESTINATION include
+    )
+
+    # Must be added before ament_package
+    ament_export_include_directories(
+        include
+    )
+
+Fourth, it is time to create the code of the plugin source info, one requirement is the base class implemented before:
+
+    ros2 pkg create --build-type ament_cmake --license Apache-2.0 --dependencies <base_class_package> pluginlib --library-name <source_code_name> <plugin_package>
+
+    # In the case of this example, it should be
+
+    ros2 pkg create --build-type ament_cmake --license BSD-3-Clause --dependencies m02_base_figure pluginlib --library-name plugins_figure m02_figure_plugins
+
 
 # Troubleshooting:
 
