@@ -928,8 +928,83 @@ Fourth, it is time to create the code of the plugin source info, one requirement
 
     # In the case of this example, it should be
 
-    ros2 pkg create --build-type ament_cmake --license BSD-3-Clause --dependencies m02_base_figure pluginlib --library-name plugins_figure m02_figure_plugins
+    ros2 pkg create --build-type ament_cmake --license BSD-3-Clause --dependencies m02_base_figure pluginlib --library-name figure_plugins m02_figure_plugins
 
+Fifth, inside the package there should be a source code called [figure_plugins](/m02_ros2_communication/m02_figure_plugins/src/m02_figure_plugins.cpp), this file has been linked to be treated as a library. So, you have to add here the implementation code of your plugin. In our case, it is a set of figures that has a side attribute, and two methods, one for initialization and other to calculate the area. An idea of the code should be like this:
+
+    #include <<base_class_packge>/<base_class_header>.hpp>
+    #include <cmath>
+
+    namespace <plugin_namespace>
+    {
+        class <child_class_name> : public <base_class_namespace>::<base_class_name>
+        {
+            public:
+                void <method1>(<type> <attribute>) override
+                {
+                    /* Init override*/
+                }
+
+                <type> <method2>() override
+                {
+                    /* Area override*/
+                }
+
+            protected:
+                <type> <attribute_name>;
+        };
+    
+        /* ... */
+
+    }
+
+    #include <pluginlib/class_list_macros.hpp>
+
+    PLUGINLIB_EXPORT_CLASS(<plugin_namespace>::<child_class_name>, <base_class_namespace>::<base_class_name>)
+
+Sixth, you will need to define a [plugins.xml](/m02_ros2_communication/m02_figure_plugins/plugins.xml) file, which makes the info of the tool available to the ROS ToolChain. The structure should be like this:
+
+    <library path="<exec_name_in_CMakeLists.txt">
+        <class type="<plugins_namespace>::<child_class_name>" base_class_type="<base_class_namespace>::<base_class_name>">
+            <description>  Info about the class or element... </description>
+        </class>
+    <!-- ... -->
+    </library>
+
+Seventh, you have to add the plugin manifiest instruction to the [CMakeLists.txt](/m02_ros2_communication/m02_figure_plugins/CMakeLists.txt), the code is:
+
+    # Add after find_package(pluginlib REQUIRED)
+    pluginlib_export_plugin_description_file(<base_figure_package> )
+
+Finally, you can create an implementation, for this you will need to incluee the **class_loader** of pluginlib and the header file of your base class. You can check the *[area_calculator.cpp](/m02_ros2_communication/m02_base_figure/src/area_calculator.cpp)* code, but the basic part of it is:
+
+    #include <pluginlib/class_loader.hpp>
+    #include <<base_class_package>/<base_class_header.hpp>>
+
+    int main(int argc, char** argv)
+    {
+        pluginlib::ClassLoader<<base_class_package>::<base_class>> <class_loader_name>("<base_class_package>", "<base_class_namespace>::<base_class_name>)
+
+        /* ... */
+
+        try
+        {
+            std::shared_ptr<<base_class_namespace>::<base_class_name>> <impl_name> = <class_loader_name>.createSharedInstance("<plugins_namespace>::<child_class_name>");
+
+            /* ... */
+        }
+        catch(pluginlib::PluginlibException& ex)
+        {
+            /* ... */
+        }
+    }
+
+Then, you can build and try your code.
+
+    cd <your_workspace_path>
+    colcon build
+    source ./install/setup.bash
+    ros2 run m02_base_figure area_calculator
 
 # Troubleshooting:
 
