@@ -1006,6 +1006,23 @@ Then, you can build and try your code.
     source ./install/setup.bash
     ros2 run m02_base_figure area_calculator
 
+# ROSDEP: Managing dependencies
+
+**rosdep** is a depedency management utility for packages and external libraries. It will try to find the appropiate packages to install on a particular form and it relates with the apt system package manager (in the case of Debian distros, like Ubuntu the one we are working).
+
+NOTE: It is not properly callable ROS tool, as it can be used in non ROS projects that can work with Python packages.
+
+Do you remember about the packages.xml files? We let's take a brief look again to the Format Three of the package manifiest [REP149](https://ros.org/reps/rep-0149.html).
+
+- ```<depend>```: For those packages and libraries requred and build and run time for your package. More used in C++ packages.
+- ```<build_depend>```: If it is a particular dependency for building, but not runing, you can configure it here. It may also need a ```<build_export_depend>```.
+- ```<build_export_depend>:``` In thouse cases where a header that include a header form a dependency, will be required in another file that has a ```<build_depend>```.
+- ```<exec_depend>```: For shared libraries and executables, often required for Python modules and launch scripts. 
+- ```<test_depend>```: Shouldn't be duplicated with the previous depends, and add the only ones needed to ensure the tests of your package.
+
+Why did we explain again the manifiest of our packages? It is because **rosdep** will realy on it. As it will check for the installed packages and will search for the missing ones, the central index is known as *rosdistro*...
+
+
 # Troubleshooting:
 
 - If you aren't able to autocomplete (a package), make sure you have succesfully build (using colcon build and the corresponding flags), and also, make sure you have added and sourced the *local_setup.bash* or the *setup.bash* file.
