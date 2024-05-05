@@ -1020,8 +1020,20 @@ Do you remember about the packages.xml files? We let's take a brief look again t
 - ```<exec_depend>```: For shared libraries and executables, often required for Python modules and launch scripts. 
 - ```<test_depend>```: Shouldn't be duplicated with the previous depends, and add the only ones needed to ensure the tests of your package.
 
-Why did we explain again the manifiest of our packages? It is because **rosdep** will realy on it. As it will check for the installed packages and will search for the missing ones, the central index is known as *rosdistro*...
+Why did we explain again the manifiest of our packages? It is because **rosdep** will realy on it. As it will check for the installed packages and will search for the missing ones, the central index is known as *[rosdistro](https://github.com/ros/rosdistro)*.
 
+Then you will need to add keys to your [package.xml] file so they can be searched. But what should you add? In the case of a standard package or a ROS released package in the ecosystem, you just have to simply add the name of the package. In other case, of a non ROS package, you should add the particular keys to the library, which can be made with .yaml files (**rosdep/base.yaml** fro apt dependencies and **rosdep/python.yaml** for Python depdencencies) and then add the corresponding key into your manifiest file. For example, in the case of searching for doxygen, you will need the *base.yaml* with something like this:
+
+    doxygen:
+        arch: [doxygen]
+        debian: [doxygen]
+        fedora: [doxygen]
+        freebsd: [doxygen]
+        macports: [doxygen]
+        ubuntu: [doxygen]
+        (...)
+
+In case your library isn't present in a rosdistro, you can suggest or add it yourself. If you want more info, you can check the [rosdistro Contributing file](https://github.com/ros/rosdistro/blob/master/CONTRIBUTING.md#rosdep-rules-contributions).
 
 # Troubleshooting:
 
@@ -1039,6 +1051,14 @@ Why did we explain again the manifiest of our packages? It is because **rosdep**
 - If a yaml file seems to not be loading the parameters, you can check for the next options:
   - ```[WARNING] [launch_ros.actions.node]: Parameter file path is not a file: ...``` If you receive this warn, you should check the *share* path and watch for the real location of the yaml file, for example, if it is in the *config* dir or the directory you specified in the launch.
   - Pay attentation to the namespaces, if you are sure the name of the node and the execution is done properly, maybe you mistype something in the namespace section or you have to use a namespace as the topic, service (...) was launched inside one.
+ 
+- When using plugins, the names will be priority, then make sure the next:
+  
+  - Your package and plugins have similar names or are linked by a familiarity of topics.
+  - Use proper namespaces according the package where you are defining the headers or the source codes.
+  - Remeber that the library name (source code of your implementation) should be consistent throughout the phases of compilation and linking, then do not mess the info of the **CMakeLists.txt** file and keep present it when declaring the **plugins.xml** file.
+  - REspect and keep consistent the names of the base class and the child implementation durin ghte source definition and the **plugins.xml** file.
+  - Do not forget to include ```#include <pluginlib/class_list_macros.hpp>``` to export macros, and, of course, do not forget to export the classes you just defined with the ```PLUGINLIB_EXPORT_CLASS``` macro.
     
 # Resources
 
