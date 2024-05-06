@@ -19,6 +19,9 @@
   <depend>geometry_msgs</depend>
   <depend>turtlesim</depend>
   <depend>example_interfaces</depend>
+  <depend>action_msgs</depend>
+  <depend>rclcpp_action</depend>
+  <depend>rclcpp_components</depend>
 
   <!-- __________________ Adding execution dependencies_____________________-->
   <exec_depend>rosidl_default_runtime</exec_depend>

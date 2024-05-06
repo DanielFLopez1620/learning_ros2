@@ -18,6 +18,9 @@ find_package(geometry_msgs REQUIRED)
 find_package(turtlesim REQUIRED)
 find_package(example_interfaces REQUIRED)
 find_package(std_srvs REQUIRED)
+find_package(action_msgs REQUIRED)
+find_package(rclcpp_action REQUIRED)
+find_package(rclcpp_components REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
 #  Test specifications
@@ -37,13 +40,18 @@ set(msg_files
 set(srv_files
   "srv/Answer.srv")
 
+set(act_files
+  "action/RegularMove.action")
+
 rosidl_generate_interfaces(${PROJECT_NAME}
   # You can manually add your srv and msg file, like this:
   # "msg/RarePoint.msg"
   # "srv/Answer.srv"
+
   # But it is better to use the sets.
   ${msg_files}
   ${srv_files}
+  ${act_files}
   DEPENDENCIES std_msgs
 )
 
@@ -109,7 +117,7 @@ install(TARGETS
 
 # Launch files
 install(DIRECTORY
-  launch config
+  launch config include
   DESTINATION share/${PROJECT_NAME}
 )
 
