@@ -95,6 +95,25 @@ ament_target_dependencies(simple_turtle_mov rclcpp geometry_msgs)
 add_executable(turtle_challenge src/turtle_challenge.cpp)
 ament_target_dependencies(turtle_challenge rclcpp turtlesim std_srvs)
 
+# Adding turtle_action_srv
+add_library(turtle_action_server SHARED
+  src/turtle_action_server.cpp)
+
+target_include_directories(action_server PRIVATE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+
+target_compile_definitions(turtle_action_server
+  PRIVATE "M02_ROS2_WITH_CPP_BUILDING_DLL") 
+
+ament_target_dependencies(turtle_action_server
+  "rclcpp"
+  "rclcpp_action"
+  "rclcpp_components")
+
+rclcpp_components_register_node(turtle_action_server PLUGIN "m02_ros2_with_cpp::TurtleActionServer" EXECUTABLE turtle_action_server)
+
+
 # Usage of own definitions in the same package
 rosidl_get_typesupport_target(cpp_typesupport_target
   ${PROJECT_NAME} rosidl_typesupport_cpp)
@@ -114,6 +133,14 @@ install(TARGETS
   simple_turtle_mov
   turtle_challenge
   DESTINATION lib/${PROJECT_NAME})
+
+# Pending revision
+install(TARGETS
+  turtle_action_server
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+  )
 
 # Launch files
 install(DIRECTORY
