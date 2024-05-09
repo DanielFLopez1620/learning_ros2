@@ -95,11 +95,18 @@ ament_target_dependencies(simple_turtle_mov rclcpp geometry_msgs)
 add_executable(turtle_challenge src/turtle_challenge.cpp)
 ament_target_dependencies(turtle_challenge rclcpp turtlesim std_srvs)
 
+# Usage of own definitions in the same package
+rosidl_get_typesupport_target(cpp_typesupport_target
+  ${PROJECT_NAME} rosidl_typesupport_cpp)
+
+target_link_libraries(rand_xy_pub "${cpp_typesupport_target}")
+target_link_libraries(exam_srv "${cpp_typesupport_target}")
+
 # Adding turtle_action_srv
 add_library(turtle_action_server SHARED
-  src/turtle_action_server.cpp)
+  src/turtle_action_srv.cpp)
 
-target_include_directories(action_server PRIVATE
+target_include_directories(turtle_action_server PRIVATE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
@@ -111,15 +118,10 @@ ament_target_dependencies(turtle_action_server
   "rclcpp_action"
   "rclcpp_components")
 
-rclcpp_components_register_node(turtle_action_server PLUGIN "m02_ros2_with_cpp::TurtleActionServer" EXECUTABLE turtle_action_server)
+target_link_libraries(turtle_action_server "${cpp_typesupport_target}")
 
+rclcpp_components_register_node(turtle_action_server PLUGIN "m02_ros2_with_cpp::TurtleActionServer" EXECUTABLE turtle_action_srv)
 
-# Usage of own definitions in the same package
-rosidl_get_typesupport_target(cpp_typesupport_target
-  ${PROJECT_NAME} rosidl_typesupport_cpp)
-
-target_link_libraries(rand_xy_pub "${cpp_typesupport_target}")
-target_link_libraries(exam_srv "${cpp_typesupport_target}")
 
 # Adding targets to the libraries
 install(TARGETS

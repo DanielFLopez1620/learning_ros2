@@ -17,13 +17,13 @@ public:
 
     M02_ROS2_WITH_CPP_PUBLIC
     explicit TurtleActionServer(const rclcpp::NodeOptions & options = rclcpp::NodeOptions())
-    : Node("turtle_action_server", options)
+    : Node("turtle_action_srv", options)
     {
         using namespace std::placeholders;
 
         this->action_server_ = rclcpp_action::create_server<RegularMove>(
             this,
-            'turtle_mov',
+            "turtle_mov",
             std::bind(&TurtleActionServer::handle_goal, this, _1, _2),
             std::bind(&TurtleActionServer::handle_cancel, this, _1),
             std::bind(&TurtleActionServer::handle_accepted, this, _1));
