@@ -1,8 +1,12 @@
 #include <functional>
 #include <memory>
 #include <thread>
+#include <bits/stdc++.h>
+#include <cmath>
 
 #include "m02_ros2_with_cpp/action/regular_move.hpp"
+#include "geometry_msgs/msg/twist.hpp"
+
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "rclcpp_components/register_node_macro.hpp"
@@ -60,11 +64,54 @@ private:
         rclcpp::Rate loop_rate(1);
         const auto goal = goal_handle->get_goal();
         auto feedback = std::make_shared<RegularMove::Feedback>();
-        auto & current_move = feedback->current_move;
+
+        std::default_random_engine gen;
+        std::uniform_real_distribution<float> distro(1.0, 5.0);
+        auto dist = distro(gen);
         
         // Pending to design turtlebot moves
         auto result = std::make_shared<RegularMove::Result>();
-        
+
+        rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_publisher_ =
+            this->create_publisher<geometry_msgs::msg::Twist>("/turtle1/cmd_vel", 10);
+
+        auto msg = geometry_msgs::msg::Twist();
+        auto rot = M_PI / goal->num_moves;
+        feedback->current_move = 0;
+
+        for(auto i = 0; i < goal->num_moves; ++i)
+        {
+            if(goal_handle->is_canceling())
+            {
+                result->moves = feedback->current_move;
+                goal_handle->canceled(result);
+                RCLCPP_INFO(this->get_logger(), "Goal was canceled");
+                return;
+            }
+
+            msg.linear.x = 0;
+            msg.angular.z = rot;
+            cmd_vel_publisher_->publish(msg);
+
+            loop_rate.sleep();
+
+            msg.linear.x = dist;
+            msg.angular.z = 0;
+            cmd_vel_publisher_->publish(msg);
+
+            loop_rate.sleep();
+
+            (feedback->current_move)++;
+            goal_handle->publish_feedback(feedback);
+            RCLCPP_INFO(this->get_logger(), "Publishing feedback...");  
+        }
+    
+        if(rclcpp::ok())
+        {
+            result->moves = feedback->current_move;
+            goal_handle->succeed(result);
+            RCLCPP_INFO(this->get_logger(), "Goal completed");
+        }
     }
 };
 

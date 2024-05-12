@@ -102,7 +102,7 @@ rosidl_get_typesupport_target(cpp_typesupport_target
 target_link_libraries(rand_xy_pub "${cpp_typesupport_target}")
 target_link_libraries(exam_srv "${cpp_typesupport_target}")
 
-# Adding turtle_action_srv
+# Adding turtle_action_srvs
 add_library(turtle_action_server SHARED
   src/turtle_action_srv.cpp)
 
@@ -116,11 +116,32 @@ target_compile_definitions(turtle_action_server
 ament_target_dependencies(turtle_action_server
   "rclcpp"
   "rclcpp_action"
-  "rclcpp_components")
+  "rclcpp_components"
+  "geometry_msgs")
 
 target_link_libraries(turtle_action_server "${cpp_typesupport_target}")
 
 rclcpp_components_register_node(turtle_action_server PLUGIN "m02_ros2_with_cpp::TurtleActionServer" EXECUTABLE turtle_action_srv)
+
+# Adding turtle_action_cli
+add_library(turtle_action_client SHARED
+  src/turtle_action_cli.cpp)
+
+target_include_directories(turtle_action_client PRIVATE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+
+target_compile_definitions(turtle_action_client
+  PRIVATE "M02_ROS2_WITH_CPP_BUILDING_DLL") 
+
+ament_target_dependencies(turtle_action_client
+  "rclcpp"
+  "rclcpp_action"
+  "rclcpp_components")
+
+target_link_libraries(turtle_action_client "${cpp_typesupport_target}")
+
+rclcpp_components_register_node(turtle_action_client PLUGIN "m02_ros2_with_cpp::TurtleActionClient" EXECUTABLE turtle_action_cli)
 
 
 # Adding targets to the libraries
@@ -136,9 +157,10 @@ install(TARGETS
   turtle_challenge
   DESTINATION lib/${PROJECT_NAME})
 
-# Pending revision
+# Adding targets for actions
 install(TARGETS
   turtle_action_server
+  turtle_action_client
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
