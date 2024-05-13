@@ -121,7 +121,7 @@ ament_target_dependencies(turtle_action_server
 
 target_link_libraries(turtle_action_server "${cpp_typesupport_target}")
 
-rclcpp_components_register_node(turtle_action_server PLUGIN "m02_ros2_with_cpp::TurtleActionServer" EXECUTABLE turtle_action_srv)
+rclcpp_components_register_node(turtle_action_server PLUGIN "TurtleActionServer" EXECUTABLE turtle_action_srv)
 
 # Adding turtle_action_cli
 add_library(turtle_action_client SHARED
@@ -141,7 +141,7 @@ ament_target_dependencies(turtle_action_client
 
 target_link_libraries(turtle_action_client "${cpp_typesupport_target}")
 
-rclcpp_components_register_node(turtle_action_client PLUGIN "m02_ros2_with_cpp::TurtleActionClient" EXECUTABLE turtle_action_cli)
+rclcpp_components_register_node(turtle_action_client PLUGIN "TurtleActionClient" EXECUTABLE turtle_action_cli)
 
 
 # Adding targets to the libraries
