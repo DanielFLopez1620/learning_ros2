@@ -5,7 +5,7 @@
 #include <thread>         // For thread support (multithreading programming)
 #include <bits/stdc++.h>  // Part numeric library, oriented to distributions
 #include <cmath>          // Numeric constants and math functions
-#include <chrono>         // For time usage iwth different precisions
+#include <chrono>         // For time usage with different precisions
 
 // ------------------------------- ROS2 MSGS AND ACTIONS ----------------------
 
@@ -28,18 +28,21 @@
 class TurtleActionServer : public rclcpp::Node
 {
 public:
-    // Type aliase for action type
+    // Type alias for the action type
     using RegularMove = m02_ros2_with_cpp::action::RegularMove;
 
-    // Type alise for the goal handler
+    // Type alias for the goal handler
     using GoalHandlerRegularMove = 
         rclcpp_action::ServerGoalHandle<RegularMove>;
 
     M02_ROS2_WITH_CPP_PUBLIC
     /**
      * Explict constructor that initialize the node 'turtle_action_srv' and
-     * pass the node options. Then it links the handles for the states of the
+     * pass the node options. Then it links the handler for the states of the
      * action (goal, cancel and accept).
+     * 
+     * @param options Node options (related with the call of library 
+     *                implemented).
     */
     explicit TurtleActionServer(const rclcpp::NodeOptions & options = 
         rclcpp::NodeOptions())
@@ -58,6 +61,8 @@ public:
             std::bind(&TurtleActionServer::handle_goal, this, _1, _2),
             std::bind(&TurtleActionServer::handle_cancel, this, _1),
             std::bind(&TurtleActionServer::handle_accepted, this, _1));
+        
+        RCLCPP_INFO(this->get_logger(), "Action server initialized...");
     }
 private:
     // Instance an action server by considering the alias action defined
@@ -144,7 +149,7 @@ private:
         // Generate random number for lineal velocity
         auto seed = std::chrono::system_clock::now().time_since_epoch().count();
         std::default_random_engine gen(seed);
-        std::uniform_real_distribution<float> distro(1.0, 5.0);
+        std::uniform_real_distribution<float> distro(0.5, 2);
         auto dist = distro(gen);
         
         // Create a result (will be updated when goal is completed)
