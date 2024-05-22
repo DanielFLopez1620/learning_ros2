@@ -1,7 +1,6 @@
 import time
 import random
 import math
-from datatime import datatime
 
 import rclpy
 from rclpy.action import ActionServer
@@ -25,8 +24,8 @@ class turtleActionServer(Node):
         feedback = RegularMove.Feedback()
         feedback.current_move = 0
 
-        random.seed(datatime.now().timestamp())
-        dist = random.uniform(0.5, 2);
+        random.seed(time.time())
+        dist = random.uniform(0.5, 2)
 
         cmd_vel_publisher = self.create_publisher(Twist, '/turtle1/cmd_vel', 10)
         msg = Twist()
@@ -34,15 +33,15 @@ class turtleActionServer(Node):
 
 
 
-        for i in range(1, goal_handle.request.num_moves):
+        for i in range(1, goal_handle.request.num_moves + 1):
 
-            msg.linear.x = 0
+            msg.linear.x = float(0)
             msg.angular.z = rot
             cmd_vel_publisher.publish(msg)
             time.sleep(1)
 
             msg.linear.x = dist
-            msg.angular.z = 0
+            msg.angular.z = float(0)
             cmd_vel_publisher.publish(msg)
             time.sleep(1)
 
