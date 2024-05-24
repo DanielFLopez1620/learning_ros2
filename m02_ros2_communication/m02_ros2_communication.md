@@ -1006,6 +1006,35 @@ Then, you can build and try your code.
     source ./install/setup.bash
     ros2 run m02_base_figure area_calculator
 
+# Actions: More on ROS2 Communications
+
+Actions is another form of communication, it was not explored before because it is better to get familiarized with **topics** and **services**.
+
+They aim to create a bilateral communication where a feedback is needed, they are also based in *client* and *services* (we will call them *action client* and *action server* to prevent confusion), but they provide a way to keep knowing about the process if it is long, complex and the objective cannot be achieved with a single action. 
+
+As the others type of communication, they can be created with their own specific file. In this case the extension is **.action**, and the structure is:
+
+    # Request / Goal
+    ---
+    # Result
+    ---
+    # Feedback
+
+The **goal** or **request** is the action to be completed, the **result** is the returned value of the process when it is done (or rejected, stopped, canceled...), and the **feedback** is the notification of advance of the process. We can have a simple example with a robot arm and making a movement with it, if we want to use a Inverse Kinematics Algorithm, we can propose a goal of a final pose of the final effector, during the process we can have feedback related to the final effector pose in fixed time intervals to know how our robot is doing, and when the process is done we get a result of the position obtained (which can be different from the goal as it has to consider tolereances and other factors during the process). 
+
+Also, we can implement them with *Python* or *C++*, to illustrate actions we will use our loyal turtle friend */turtle1* from the package **turtlesim**. What are we going to do? Play with the drawings that can meake our turtles, we will draw regular polygons, then our goal is the num of moves (sides or vertex for the regular polygon), the feedback will be the move at a certain time and the result will be the number of nums achieved. Our action file for the examples is [RegularMove.action](/m02_ros2_communication/m02_ros2_with_cpp/action/RegularMove.action), and the content is:
+
+    # Request
+    int32 num_moves
+    ---
+    # Result
+    int32 moves
+    ---
+    # Feedback
+    int32 current_move
+
+This interface was definid implicitly in the same package we used for the C++ communication examples, if you do not remember how to add custom interfaces and how to link them to the same package, go and review a little of our previous implementation.
+
 # ROSDEP: Managing dependencies
 
 **rosdep** is a depedency management utility for packages and external libraries. It will try to find the appropiate packages to install on a particular form and it relates with the apt system package manager (in the case of Debian distros, like Ubuntu the one we are working).
