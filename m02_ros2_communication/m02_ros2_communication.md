@@ -1035,6 +1035,28 @@ Also, we can implement them with *Python* or *C++*, to illustrate actions we wil
 
 This interface was definid implicitly in the same package we used for the C++ communication examples, if you do not remember how to add custom interfaces and how to link them to the same package, go and review a little of our previous implementation.
 
+## Python implementation of an action server and action client
+
+Let's start with Python, we will take a first look to an **action server** which must provide an interface to receive incoming goals or requests, a way to achieve the goal while providing feedback and a form to notifiy when the goal is completed or rejected or canceled or other (if something unexpected happens). Some steps to consider are:
+
+1. Import all the necessary libraries, you will still need the **rclpy** and the **Node** implementation, but you will also have to add a **rclpy.action** instance called Action Server.
+2. Import the action you are going to implement, in this case **RegularMove**, along side with other **msg** or **srv** you may need for achieving the goal, for example, the turtlesim message or Twist messages.
+3. Create the class of the action server, and in the constructor initialize the node and define an action, you must link the channel of communication, the action of interest and the callback for interact and complete the goal.
+4. In the callback implement the way to achieve the goal, in our case, a publisher and a loop to publish to **cmd_vel** of the turtle,
+5. During the callback implementation link a *feedback publisher* and publish feedback when having progress on completing the action.
+6. At the end of the callback implementation, add a notification of goal succeed and publish the result obtained.
+7. In the main, you will have to instance the action server class and spin its implementation.
+
+The implementation made for this purpose is present in the file [turtle_action_srv.py](/m02_ros2_communication/m02_ros2_with_py/m02_ros2_with_py/turtle_action_srv.py). Some key commands you will have to keep in mind are:
+
+- **```from rclpy.action import ActionServer```**: Import needed to use the action server.
+- **```<node>.<action_server> = ActionServer(<node>, <action_interface>, <action_name>, <callback>)```**: It will define an action server linked to the given ```<node>``` using the .action definition provided in the ```<action_interface>```, this will use the channel provided in ```<action_name>``` and will link the ```<callback>``` to start executing and then search for the achieving of the goal.
+- **```<feedback> = <action_interface>.Feedback()```** Instance an object feedback from the action interface provided, the same can be applied with the goal and result. You will have to access the attributes of the feedback (or the correspoding element) to use nad providing it correctly. 
+- **```<goal_handle>.request.<attribute>```**: The goal or final objective can be accesible from the handle goal that must be provided when a client send a call to the action server. 
+- **```<goal_handle>.publish_feedback(<feedback>)```**: Send to the client the feedback of the developing of the current goal (proposed previously).
+- **```<goal_handle>.succeed()```**: Notifiy completation of the goal.
+- **NOTE:** The callback linked to the action server must return the result of the action when completed.  
+
 # ROSDEP: Managing dependencies
 
 **rosdep** is a depedency management utility for packages and external libraries. It will try to find the appropiate packages to install on a particular form and it relates with the apt system package manager (in the case of Debian distros, like Ubuntu the one we are working).
