@@ -1057,6 +1057,40 @@ The implementation made for this purpose is present in the file [turtle_action_s
 - **```<goal_handle>.succeed()```**: Notifiy completation of the goal.
 - **NOTE:** The callback linked to the action server must return the result of the action when completed.  
 
+Then, we will have our **action client**, to send the requests and goals to the server when required. For this purpose you will have to consider:
+
+1. Import all the necessary libraries, you will still need the **rclpy** and the **Node** implementation, but you will also have to add a **rclpy.action** instance called Action Client.
+2. Import the action you are going to implement, in this case **RegularMove**, as it must be consistent with the server. You can also import messages and services required for the process. 
+3. Create the alass of the action client, in the constructor initialize the node and define an action client that has the same action definition and action name as the server.
+4. Define a method to send the goal that considers the arguments as part of the request to implement. Instance a goal definition, add a wait operation in case the server isn't ready and finally using the action client send the goal asynchronous (in this part you must link a response callback and a feedback callbac).
+5. Define a method for the response callback where you have to check if the goal was accepted by the server, display the info you need and get the result (future asynchronous), so you will have to implement another callback to deal with the result when received.
+6. Define a method for dealing with the result, as it will be passsed as an argument when it is called, then use the result obtained to the update a process or just display it.
+7. Define a method for the feedback, that will receive feedback message as arguments, then you will have to create an interface to use them, for example, as a notification of the process. 
+8. In the main, initialize the ROS client library, instance the action client, call the method to send the goal, and wait for the feedback and result.
+
+The code made for the action client is present in the file [turtle_action_srv.py](/m02_ros2_communication/m02_ros2_with_py/m02_ros2_with_py/turtle_action_cli.py). Some key commands you will need to understand are:
+
+-**```<node>.<action_client> = ActionClient(<node>, <action_interface>, <action_name>)```**: Define an action client that uses the action interface provided (must be consistent with the one of the server) and will use the ```<action_name>``` as the channel for the request, responses and feedback of the process. 
+- **```<goal> = <action_interface>.Goal()```**: Instance a goal of the action interface of interest.
+- **```<action_client>.wait_for_server()```**: Add a wait so no process of the action is made until the server is available.
+- **```<send_goal_future> = <action_client>.send_goal_async(<goal>, feedback_callback = <feedback_callbac>)```**: Send the desired goal asynchronous (then it will use a goal handler for the process) and link a feedback callback to watch or notify the progress.
+- **```<send_goal_future>.add_done_callbac(<response_callback>)```**: Link a response callback in order to check if the goal was accepted.
+- **```<goal_handle> = <future_goal>.result()```** Using the argument ```<future_goal>``` passed the response callback is called, created the goal handler.
+- **```<goal_handle>.accepted```**: Boolean to check if the goal has been accepted by the server. 
+- **```<get_future_result> = <goal_handle>.get_result_async()```**: Define a getter of the result in case of asynchronous response by using the goal handler.
+- **```<get_future_result>.add_done_callback(<result_callback>)```**: Link a callback to read and process the asynchronous result.
+- **NOTE:** Remember that the result (future) get in the callbacks related with the goal, you will need the method *.result()* to access properly to the result methdos and instances.
+
+When you are ready (and you have build and source the packages), you can use the action provided to draw some figure, the commands you need (in different terminals) are: 
+
+    ros2 run turtlesim turtlesim node 
+    ros2 run m02_ros2_with_py turtle_action_srv 
+    ros2 run m02_ros2_with_py turtle_action_cli 5
+
+## C++ implementation of an action server and action client
+
+### Composable nodes: 
+
 # ROSDEP: Managing dependencies
 
 **rosdep** is a depedency management utility for packages and external libraries. It will try to find the appropiate packages to install on a particular form and it relates with the apt system package manager (in the case of Debian distros, like Ubuntu the one we are working).
