@@ -1090,6 +1090,58 @@ When you are ready (and you have build and source the packages), you can use the
 ## C++ implementation of an action server and action client
 
 ### Composable nodes: 
+Before we start talking about **actions** in C++ with ROS, we can take the opportunity to learn about composable nodes. 
+
+It is a powerful feature oriented to optimize the performance and efficiency of robotics as it allows multiple nodes to run in the same process. Some advantages are reudced overhead, resource fficiency, dynamic reconfiguration and simplified development.
+
+Some changes from the original nodes are listed here:
+
+- The node configuration includes a registery, that comes from ```rclcpp_components::NodeFactory"
+- The definition in the *CMakeLists.txt* file is different as it must treat it as a library and then register the node.
+- There is no main implementation, only a macro for registering the class as a nodes.
+
+Well, maybe that was unclear in how the implementation is added, but let's move to explain from the code perspective:
+
+1. Add **rclcpp_components** to your maniefiest [package.xlm](/m02_ros2_communication/m02_ros2_with_cpp/package.xml).
+
+        <depend>rclcpp_components</depend>
+
+2. Define the class that inherates from **Node**, and in the constructor add the **NodeOptions**:
+
+        <class_name> (const rclcpp::NodeOptions & options)
+        {
+            // ...
+        }
+
+3. Do not implain a main, instaed, you will need a macro called **RCLCPP_COMPONENTS_REGISTER_NODE**, the importation and usage is shown down below:
+
+        #include <rclcpp_components/register_node_macro.hpp>
+        RCLCPP_COMPONENTS_REGISTER_NODE(<namespace>::<class>)
+
+4. Changes in the [CMakeLists.txt](/m02_ros2_communication/m02_ros2_with_cpp/CMakeLists.txt) are oriented to add the dependencies required, treat the cpp executable as a library and register the node:
+
+        find_package(rclcpp_components REQUIRED)
+
+        add_library(v<lib_name> src/<file_name>.cpp)
+
+        rclcpp_components_register_node(
+            <lib_name>
+            PLUGIN "<namespace>::<class>"
+            EXECUTABLE <executable_name>
+            )
+        ament_export_targets(export_vincent_driver_component)
+
+        install(TARGETS vincent_driver_component
+                EXPORT export_vincent_driver_component
+                ARCHIVE DESTINATION lib
+                LIBRARY DESTINATION lib
+                RUNTIME DESTINATION bin
+        )
+
+5. In case you want to use a launch, the configuration of the node also changes, here is a brief example:
+
+
+
 
 # ROSDEP: Managing dependencies
 
