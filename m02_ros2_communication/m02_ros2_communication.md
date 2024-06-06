@@ -1129,19 +1129,47 @@ Well, maybe that was unclear in how the implementation is added, but let's move 
             PLUGIN "<namespace>::<class>"
             EXECUTABLE <executable_name>
             )
-        ament_export_targets(export_vincent_driver_component)
+        ament_export_targets(<exportation_components_name>)
 
-        install(TARGETS vincent_driver_component
-                EXPORT export_vincent_driver_component
+        install(TARGETS <executable_name>
+                EXPORT <exportation_components_name>
                 ARCHIVE DESTINATION lib
                 LIBRARY DESTINATION lib
                 RUNTIME DESTINATION bin
         )
 
-5. In case you want to use a launch, the configuration of the node also changes, here is a brief example:
+5. In case you want to use a launch, the configuration of the node also changes, as you need to create a container for the composable nodes, insert the description for the composable nodes (present in the library you created), it must be linked with the **rclcpp_components** library, and must use the plugin (similar to the idea we used in the plugins example), here is the basic struture of a luanch for composable nodes:
+
+        # Imports related with composable nodes
+        from launch_ros.actions import ComposableNodeContainer
+        from launch_ros.descriptions import ComposableNode
+
+        # ...
+
+        ld.add_action(ComposableNodeContainer(
+            name='<group_name_for_composed_nodes>',
+            namespace='<namespace>',
+            package='rclcpp_components',
+            executable='component_container',
+            composable_node_descriptions=[
+                ComposableNode(
+                    package='<package_name>',
+                    plugin='<namespace>::<class>',
+                    name='<name_for_composed_node>',
+
+                    # ..,
+                    extra_arguments=[{'use_intra_process_comms': True}],
+                ),
+            ]
+        ))
+
+* **NOTE:** **component_container** is for those programs that doesn't require multithreading, but if you require it, you have to use **component_container_mt**. 
+
+But you may ask... if I can comose multiple nodes, how can I achieve it? Before we check it out, let's make something clear... In ROS (1) existed **nodes** and **nodelets**, the difference was that the second one allowd a way to run multiple algorithms in the same process with no copy transport. But in ROS2, the concept was unified and it much more similar to a **nodelet** but now it is called a **Component** which also allows to add a *life cycle*, then there is now a preffered unified API. Then the user and programmer can decide to run multiple nodes in separated process (isolate them) to debug them easier or run multipl enodes in a single process for a more efficient communication and lower overhead.
 
 
 
+Then as you suppose, it is still possible to use the *node* style (which is something we have been doing when writing our own main), but it is not recommended.
 
 # ROSDEP: Managing dependencies
 
@@ -1210,6 +1238,8 @@ In case your library isn't present in a rosdistro, you can suggest or add it you
 - ROS2 rclcpp API: [Foxy](https://docs.ros2.org/foxy/api/rclcpp/)
 
 - ROS2 Launch Tutorials: [Humble](https://docs.ros.org/en/humble/Tutorials/Intermediate/Launch/Launch-Main.html)
+
+- ROS2 Composable Nodes: [Humble](https://docs.ros.org/en/humble/Tutorials/Intermediate/Writing-a-Composable-Node.html)
 
 - ROS2 Plugins Tutorial: [Humble](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries/Pluginlib.html)
 
