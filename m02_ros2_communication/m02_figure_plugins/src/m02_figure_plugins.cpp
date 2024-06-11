@@ -21,7 +21,7 @@ namespace m02_figure_plugins
 
         double area() override
         {
-            return pow(side_lenght_, 2);
+            return pow(side_length_, 2);
         }
     protected:
         double side_length_;

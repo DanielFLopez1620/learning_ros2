@@ -22,22 +22,30 @@ If this is your first time, you will need to build everything in your ROS2 space
 
 As always, do not forget to source the **setup.bash** file, otherwise you won't be able to run the executables of any packages.
 
+```bash
     source /opt/ros/humble/setup.bash
+```
 
 After this introduction to colcon, we need a *workspace*, the place where your robotics development and magic will come to life. So, the basic for creating a package is that you need a folder (with the name of your preference), and a nested *src* directory.
 
+```bash
     mkdir -p ~/<your_workspace>/src
+```
 
 In the *src* directory you can clone packages from Github, Gitlab or you can aslo create your own packages. This packages would need some **dependencies** to be able to run/execute something, in these cases, you can run:
 
+```bash
     cd ~/<your_workspace>
     rosdep install -i --from-path src --rosdistro humble -y
+```
 
 Each time you add/create a package you will need to build them and adds the executables to the list, for this you run:
 
+```bash
     cd ~/<your_workspace>
     colcon build
     source install/local_setup.bash
+```
 
 ## Packages are the key:
 
@@ -65,39 +73,55 @@ The packages in your workspace doesn't need to be of the same ament, and you can
 Now, let's create one package with one simple node that says "hello world", before running the commands, make sure you are located on the workspace on your terminal.
 
 - **CMake:**
-    
+
+```bash
     ros2 pkg create --build-type ament_cmake --license Apache-2.0 --node-name my_node my_package --license Apache-2.0
+```
 
 - **Python:**
 
+```bash
     ros2 pkg create --build-type ament_python --license Apache-2.0 --node-name my_node my_package --license Apache-2.0
+```
 
 So, the basic structure of the command is:
 
+```
     ros2 pkg create --build-type ament_<type> --license <LICENSE> <package_name>
+```
 
 And the aditional argument *--node_name* results in the creation of a simple Hello World node.
 
 After the creation of the packages, you will need to build and compile, as you should remember, we use *colcon*:
 
+```bash
     cd ~/<your_workspace>
     colcon build
+```
 
 If you want to compile and build a single package, you can add the flag *--package-select*:
 
+```bash
     colcon build --packages-select <package_name>
+```
 
 Also, you will need to set up the files, so you will need to run:
 
+```bash
     source ~/<your_workspace>/install/local_setup.bash
+```
 
 Another option is to add it to your .bashrc, so every time that you open a new terminal, it has the setup for execution of nodes:
 
+```bash
     echo "source ~/<your_workspace>/install/local_setup.bash" >> ~/.bashrc
+```
 
 If you creating the "Hello World" node, you should be able to run it after the building and set up with:
 
+```bash
     ros2 run <package_name> <node_name>
+```
 
 NOTE: Do not forget to check your **package.xml** files and update them with your info and the proper info of the package. This will also apply for the **setup.cfg** files with Python Ament.
 
@@ -119,7 +143,9 @@ But... how can this be implemented? For this we will use client libraries for Py
 
 As you may suppose, we will need a package with **amment_python** set up, we will be working with the package [m02_ros2_with_py](/m02_ros2_communication/m02_ros2_with_py/) and you can make the modifications you want to learn more, or even duplicate files and then edit them to practice, but if you want to create your own package, you can always do it, remember that you can use:
 
+```bash
     ros2 pkg create --build-type ament_python --license Apache-2.0 <your_python_package_name>
+```
 
 All the codes that aims to use Python muss import the **rclpy** (ROS Client Library for Python) to be compatible with ROS, but before we move to some examples and explain the communication, you have to understand the basics of a **amen_python** package with the **setup.py**, **setup.cfg** and the **package.xml** files.
 
@@ -129,6 +155,7 @@ For making a *package* you need some files, so *colcon* can understand it is a p
 
 - **setup.py** : It is the file where you specify your package name, the basic set up (for versions, data files, exclusions and install requirements), the package info of the maintainers and devs, the license and the entry points (where you add what will be your executables). Here you can find a template, and there you can see that it is pretty clear what is the idea of each item: 
 
+```python
     from setuptools import find_packages, setup
 
     package_name = '<name_of_package>'
@@ -155,32 +182,33 @@ For making a *package* you need some files, so *colcon* can understand it is a p
             ],
         },
     )
+```
 
 - **setup.cfg:** Used to indicate where are the scripts that will be used as entry points, and where will be installed the libraries. This is a part related with the 'colcon' build process after it ahs added the packages to the build dir, and there locates the executables and libraries.
 
 - **package.xml:** It is known as the package manifiest, here you add the most important info of the package. It is formed by XML tags, so let's explore some of them:
 
-    - <package fomrmat=#3></package>: Tags that contains all of the info of the package, format 3 is relativ to ROS2, at least during Foxy and Humble version.
+    - ```<package fomrmat=#3></package>``` Tags that contains all of the info of the package, format 3 is relativ to ROS2, at least during Foxy and Humble version.
 
-    - <name></name> Contains the package name.
+    - ```<name></name>``` Contains the package name.
 
-    - <version></version> Stores the version of the package. Usually with three numbers separeated by points.
+    - ```<version></version>``` Stores the version of the package. Usually with three numbers separeated by points.
 
-    - <description></description> Used to add a short, but illustrative explanation of what you package's purpose is.
+    - ```<description></description>``` Used to add a short, but illustrative explanation of what you package's purpose is.
 
-    - <maintainer email=""></maintainer> Here you add your name (or ROS User or Github/Gitlab user) and your email, to indicate that you are the one in charge of the package.
+    - ```<maintainer email=""></maintainer>``` Here you add your name (or ROS User or Github/Gitlab user) and your email, to indicate that you are the one in charge of the package.
 
-    - <license></license> One of the most important related with a license (official name) that indicates limitations that other people have when using your codes.
+    - ```<license></license>``` One of the most important related with a license (official name) that indicates limitations that other people have when using your codes.
 
-    - <depend><depend> Add a general dependency (execution, build or other) to your package, the dependencies are other packages that contains msg, srv, interfaces or nodes needed for your packages.
+    - ```<depend><depend>``` Add a general dependency (execution, build or other) to your package, the dependencies are other packages that contains msg, srv, interfaces or nodes needed for your packages.
 
-    - <runtime_depend></runtime_depend> Dependency needed only for runtime operations.
+    - ```<runtime_depend></runtime_depend>``` Dependency needed only for runtime operations.
 
-    - <test_depend></test_depend> Dependency needed for test about code quality, format or functionlity.
+    - ```<test_depend></test_depend>``` Dependency needed for test about code quality, format or functionlity.
 
-    - <export></export> For exporting info or data of the package.
+    - ```<export></export>``` For exporting info or data of the package.
 
-    - <build_type></build_type> Export needed for specifying the ament_type, in this case, it will be *ament_python*.
+    - ```<build_type></build_type>``` Export needed for specifying the ament_type, in this case, it will be *ament_python*.
 
 After checking this, let's move to our first way to communicate using *Python* and *rclpy*.
 
@@ -212,37 +240,47 @@ And for the case of the subscriber, in our case the [int64_sub.py](/m02_ros2_com
 
 This are the codes to implement this types of communication, but they aren't ready to be executed, first you will need to make sure that your packages has the related dependencies. As we mentined before, the python codes will need **rclpy**, and also they are using msg types that comes with the **std_msgs** package, for that we will need to modify the *[package.xml](/m02_ros2_communication/m02_ros2_with_py/package.xml)* file of our package and add the next tags:
 
+```XML
     <exec_depend>rclpy<exec_depend>
     <exec_depend>std_msgs<exec_depend>
+```
 
 **NOTE**: In our package.xml file, the <exec_depend> tag was replaced with <depend> which is also valid. Also, if you add a package (in this case, turtlesim) and it already has the dependency of std_msgs, you do not need to define it again in the tag. 
 
 Then to make sure, you can execute the code, you will need to configure the **entry points** of your *[setup.py](/m02_ros2_communication/m02_ros2_with_py/setup.py)* file, the corresponding structure that is "<exec_name> = <package_name>.<node_name>:main", in the present case would be:
 
+```python
     entry_points={
             'console_scripts': [
                     'pub_int64 = m02_ros2_with_py.int64_pub:main',
                     'sub_int64 = m02_ros2_with_py.int64_sub:main',
             ],
     },
+```
 
 Finally, before executing, make sure the the *[setup.cfg](/m02_ros2_communication/m02_ros2_with_py/setup.cfg)* file is propertly populated like this:
 
+```python
     [develop]
     script_dir=$base/lib/<package_name>
     [install]
     install_scripts=$base/lib/<package_name>
+```
 
 To execute them, you will need to build them and configure your terminal, the commands are:
-    
+
+```bash
     cd ~/<your_workspace>
     colcon build --packages-select m02_ros2_with_py
     source install/local_setup.bash
+```
 
 Then, in two terminal, you have two run one of the next to commands:
 
+```bash
     ros2 run m02_ros2_with_py pub_int64
     ros2 run m02_ros2_with_py sub_int64
+```
 
 After running this, you should be able to see that in one terminal, the pub is sending information, and the sub is receiving information, like the following case:
 
@@ -257,18 +295,24 @@ The basic for using services is that there is a request and a response, the firs
 
 Always keep in mind that for using message or services, we need to have an already defined implementation, which can be in another package that we can add to the depedencies of our package. For implementing your own custom messages/services you will need to use packages with ament_cmake and there write the raw implementation for **msg**, **srv** and **act**, this will be covered more ahead in this module when we got to talk about CPP, rclcpp and ament_cmake. For now, we will use two interfaces, one in the package called **example_interfaces** and another one in the **std_srvs**. If **std_msgs** work for you and you made the desktop installation, you may probably have both, but if you do not, you can try installing it with apt, for example:
 
+```bash
     sudo apt install ros-humble-example-interfaces
+```
 
 For using custom interfaces that are present in other packages (and this apply when using messages or services present in other packages), you will need to add them in the dependencies of your package, most specific in hte *package.xml*, in this case, you need to add:
 
+```XML
     <depend>example_interfaces</depend>
+```
 
 The definition that we will focus is *AddTwoInts* which structure is:
 
+```
     int64 a
     int64 b
     ---
     int64 sum
+```
 
 Remember that the characters **---** indicate the separation of the request and the response of the service. with this said, no it is time to explore the creation of the nodes.
  
@@ -296,11 +340,14 @@ NOTE: If you want you receive parameters from the user with the terminal, you wi
 
 After you have written/checked your codes, you should remember to add the entrypoints so you can execute them after building your packages, in this case, add the next info to your [setup.py](/m02_ros2_communication/m02_ros2_with_py/setup.py) file:
 
+```python
     'add_nums_cli = m02_ros2_with_py.add_two_nums_cli:main', 
-    'add_nums_srv = m02_ros2_with_py.add_two_nums_srv:main', 
+    'add_nums_srv = m02_ros2_with_py.add_two_nums_srv:main',
+```
 
 Then, you will need to build it, source and finally you can execute them, the commands are listed here
 
+```bash
     # Terminal 1
     cd ~/<your_workspace>
     colcon build --packages-select m02_ros2_with_py
@@ -311,6 +358,7 @@ Then, you will need to build it, source and finally you can execute them, the co
     cd ~/<your_workspace>
     source install/local_setup.bash
     ros2 run m02_ros2_with_py add_nums_cli 16 20
+```
 
 ![add_two_nums_py](/m02_ros2_communication/resources/rclpy_add_two_nums.png)
 
@@ -318,7 +366,9 @@ The arguments passed in the client are mandatory to achieve the sum, if the comm
 
 Now, let's try to use an official service provided by the packages, in this case, we can explore the **std_srvs** (standard services), if you want to know more about them, you can run:
 
+```bash
     ros2 interface list | grep std_srvs
+```
 
 You will obtain a list that contains the *Empty*, *SetBool* and *Trigger* services, if you want to see the service description you can run:
 
@@ -326,20 +376,26 @@ You will obtain a list that contains the *Empty*, *SetBool* and *Trigger* servic
 
 Which will show you this:
 
+```bash
     bool data # e.g. for hardware enabling / disabling
     ---
     bool success   # indicate successful run of triggered service
     string message # informational, e.g. for error message
+```
 
 You can check the implementation for the server in the [set_bool_srv.py](/m02_ros2_communication/m02_ros2_with_py/m02_ros2_with_py/set_bool_srv.py) file, and the client in the [set_bool_cli.py](/m02_ros2_communication/m02_ros2_with_py/m02_ros2_with_py/set_bool_cli.py), keep in mind, that this isn't a serious implementation as it uses random states and it is only a short example. Do not forget to add the *entrypoints* in the [setup.py](/m02_ros2_communication/m02_ros2_with_py/setup.py) file:
 
+```python
     'set_bool_srv = m02_ros2_with_py.set_bool_srv:main',
     'set_bool_cli = m02_ros2_with_py.set_bool_cli:main',
+```
 
 After building, you should be able to execute them with the next commands:
 
+```bash
     ros2 run m02_ros2_with_py set_bool_srv
     ros2 run m02_ros2_with_py set_bool_cli 1
+```
 
 ![set_bool_py](/m02_ros2_communication/resources/rclpy_set_bool.png)
 
@@ -349,8 +405,10 @@ Parameters can be considered node configurations you can change even when the no
 
 After you have added the entrypoints, and compile the package, you can run it with the next command:
 
+```bash
     ros2 run m02_ros2_with_py saying_hi             # Terminal 1
     ros2 param set /saying_your_name your_name dan  # Termianl 2
+```
 
 The idea for implementing a parameter with rclpy is:
 
@@ -467,13 +525,16 @@ On the other hand, our subscriber will be the [int64_sub.cpp](/m02_ros2_communic
 
 As you may know, you need to compile the codes and create the executables in order to run cpp codes. For this, we will take advantage of *Make* and *CMake* to build our package, but first... we need to configure our manifiest, the [package.xml](/m02_ros2_communication/m02_ros2_with_cpp/package.xml) file, with:
 
+```XML
     <exec_depend>rclpy<exec_depend>
     <exec_depend>std_msgs<exec_depend>
+```
 
 **NOTE:** If you check the *package.xml* file, you should have noticed we hace changed the <exec_depend> with <depend>, and also, as we have imported *turtlesim*, we ignore the *std_msgs* inclussion as we have already had it in the *turtlesim* package.
 
 Then, we can use the [CMakeLists.txt](/m02_ros2_communication/m02_ros2_with_cpp/CMakeLists.txt) file to add the building configuration, for this case, it will be:
 
+```CMake
     # Add package dependencies
     find_package(rclcpp REQUIRED)
     find_package(std_msgs REQUIRED)
@@ -492,13 +553,16 @@ Then, we can use the [CMakeLists.txt](/m02_ros2_communication/m02_ros2_with_cpp/
         sub_int64
         DESTINATION lib/${PROJEC_NAME}
     )
+```
 
 The previous allow us to make the compilation, link dependencies and locate the executables so after colcon build, we know where they are and call them to run its content.
 
 Before you run, make sure you source your workspace, and then, you can run:
 
+```bash
     ros2 run m02_ros2_with_cpp pub_int64 # Terminal 1
     ros2 run m02_ros2_with_cpp sub_int64 # Terminal 2
+```
 
 ![int64_pub_sub_cpp](/m02_ros2_communication/resources/rclcpp_int64_pub_sub.png)
 
@@ -508,20 +572,26 @@ Try to practice creating your own pub/sub with a type of your interest in the *s
 
 We will make an implementation of the adding srv that we check previously with Python, the idea is the same, connect a server and a client by using a service which have a request and a response component. If you haven't install the *example_interfaces*, do it with the command:
 
+```bash
     sudo apt install ros-humble-example-interfaces
+```
 
 For custom interfaces (made by someone in the community or by you), you need to add the package as a dependency, firstly in your *package.xml*, as we made before in Python:
 
+```XML
     <depend>example_interfaces</depend>
+```
 
 The definition we are gonna use is the same, related with *AddTwoInts*, which is presented here:
 
+```bash
     # Request
     int64 a
     int64 b
     ---
     # Response
     int64 sum
+```
 
 One curious fact, is that it is called due to the objetive (to add nums), but it is a generic definition, that just sends to numbers and ask back for just one. So, you can use this interface to substract, multiply and divide (but returning a integer), keep in mind that a good practice is to follow the convention of the name, but prevent to use specific names to general interfaces, for example, this interface could be called *OperateTwoNums* which could be implemented in different services that make a different operation. Keep this like an idea on how to improve your projects.
 
@@ -549,6 +619,7 @@ On the second hand, we create the client node, check the [add_two_nums_cli.cpp](
 
 To run this example, make sure you add the corresponding files to the [CMakeList.txt](/m02_ros2_communication/m02_ros2_with_cpp/CMakeLists.txt) to create the executables:
 
+```CMake
     # Adding Two Nums Server
     add_executable(add_nums_srv src/add_two_nums_srv.cpp)
     ament_target_dependencies(add_nums_srv rclcpp example_interfaces)
@@ -563,11 +634,14 @@ To run this example, make sure you add the corresponding files to the [CMakeList
         add_nums_srv
         DESTINATION lib/${PROJEC_NAME}
     )
+```
 
 After you have used colcon to build the packages, and sourced the setup file, you can run:
 
+```bash
     ros2 run  m02_ros2_with_cpp add_nums_srv # Terminal 1
     ros2 run  m02_ros2_with_cpp add_nums_cli 16 20 # Terminal 2
+```
 
 ![add_ints_cpp](/m02_ros2_communication/resources/rclcpp_add_ints.png)
 
@@ -579,13 +653,16 @@ No matter it is the case where you need to define a custom *msg* for a specific 
 
 For this, you will need a package with *ament_cmake* in order to configure the interface, export it or even use it in the same package. We will start by creating to important directories, **msg** and **srv** dirs:
 
+```bash
     cd <path_to_your_package>
     mkdir srv msg
+```
 
 After that, you can create your own interface for msg or srv, in this case, we created both, the [RarePoint.msg](/m02_ros2_communication/m02_ros2_with_cpp/msg/RarePoint.msg) and the [Answer.srv](/m02_ros2_communication/m02_ros2_with_cpp/srv/Answer.srv) interfaces, that you can check there. Remember to follow the structure of the message (using valid types) and the service (request/response structure).
 
 The next step is to make available, the structure, for that, on the [CMakeLists.txt] file, make sure you add:
 
+```CMake
     set(msg_files
         "msg/RarePoint.msg"
     )
@@ -599,23 +676,30 @@ The next step is to make available, the structure, for that, on the [CMakeLists.
         ${srv_files}
         DEPENDENCIES std_msgs
     )
+```
 
 If you want to use the same definition on the package, you will need to configure the type support target in the CMakeLists.txt:
 
+```CMake
     rosidl_get_typesupport_target(cpp_typesupport_target
         ${PROJECT_NAME} rosidl_typesupport_cpp)
     
     target_link_libraries(<executable> ${cpp_typesupport_target})
+```
 
 For testing this interface, I added two source codes, one publisher and one server, they are the [rand_xy_pub.cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/rand_xy_pub.cpp) file and the [exam_srv.cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/exam_srv.cpp) file, after you have added the executables, and link the custom interface, let's try them:
 
+```bash
     ros2 run m02_ros2_with_cpp rand_xy_pub # Terminal 1
     ros2 topic echo /rare_point # Terminal 2
+```
 
 ![rand_xy_cpp](/m02_ros2_communication/resources/rclcpp_rand_xy.png)
 
+```bash
     ros2 run m02_ros2_with_cpp exam_srv
     ros2 service call /exam_channel m02_ros2_with_cpp/srv/Answer "{option: 3}"
+```
 
 ![exam_cpp](/m02_ros2_communication/resources/rclcpp_exam.png)
 
@@ -639,9 +723,11 @@ Let's mention the idea of the code:
 
 You do not need extra tags or configs in CMake to make this node work, you only have to add the executable, link the dependencies and install the target as you have done before in the *CMakeLists.txt* of the package. You can execute it here with:
 
+```bash
     ros2 run m02_ros2_with_cpp saying_hi               # Terminal 1
     ros2 param list                                    # Terminal 2
     ros2 param set /saying_your_name your_name dan     # Terminal 2
+```
 
 ![params_cpp](/m02_ros2_communication/resources/rclcpp_param_c.png)
 
@@ -697,12 +783,15 @@ You have played with the terminal, now it is time to play with a 2D robot. As yo
 
 Remember, you can list the topics, services and parameters, like follow:
 
+```bash
     ros2 topic list
     ros2 service list
     ros2 param list
+```
 
 In case you can use a topic, you can get info of it with:
 
+```bash
     # Command
     ros2 topic info /turtle1/cmd_vel
 
@@ -710,9 +799,11 @@ In case you can use a topic, you can get info of it with:
     Type: geometry_msgs/msg/Twist
     Publisher count: 0
     Subscription count: 1
+```
 
 And it provides the type (message type), the publisher and subscriber count. If you want to interact with the topic, you have to understand if it is a subscriber (so you need to publish in order to interact) or it is a publisher (then you need a subscriber to tget the proper info), after this, you can check the interface with:
 
+```bash
     # Command
     ros2 interface show geometry/msg/Twist
 
@@ -728,6 +819,7 @@ And it provides the type (message type), the publisher and subscriber count. If 
             float64 x
             float64 y
             float64 z
+```
 
 So, you will need to import the type of message, in the proper way for each language:
 
@@ -742,10 +834,12 @@ Here I have developed some examples you can check, for both **rcply** and **rclc
 
 If you want to interact with the, down below, I list the respective commands, do not forget to execute **turtlesim_node** and build the packages (and source) before using them:
 
+```bash
     ros2 run m02_ros2_with_py simple_turtle_mov
     ros2 run m02_ros2_with_py turtle_challenge
     ros2 run m02_ros2_with_cpp simple_turtle_mov
     ros2 run m02_ros2_with_cpp turtle_challenge
+```
 
 # Launches
 
@@ -757,35 +851,41 @@ Here we will implement them with Python. You can check the documentation and API
 
 AS a convention, for using launches, in your packages, you will need to create a *launch* dir:
 
+```Bash
     cd <path_to_your_package>
     mkdir launch
+```
 
 You can use *launch* files in a packages with **ament_python** or **ament_cmake**, but you have to properly configure the package, let's watch the cases:
 
 - **ament_python:** In the [setup.py](/m02_ros2_communication/m02_ros2_with_py/setup.py) file, you need to include the *.launch.py* files, the configuration need is:
 
-        from setuptools import setup
-        
-        import os
-        
-        from glob import glob
-        
-        ...
+```Python
+    from setuptools import setup
+    
+    import os
+    
+    from glob import glob
+    
+    ...
 
-            data_files=[
-                ...
-                (os.path.join('share', package_name), glob('launch/*.launch.py'))
-            ],
-        ...
+        data_files=[
+            ...
+            (os.path.join('share', package_name), glob('launch/*.launch.py'))
+        ],
+    ...
+```
 
 - **ament_cmake:** In the [CMakeLists.txt](/m02_ros2_communication/m02_ros2_with_cpp/CMakeLists.txt) file, you need to add the directory launch:
 
+```CMake
         ...
         install(DIRECTORY
         launch
         DESTINATION share/${PROJECT_NAME}
         )
         ...
+```
 
 Now, it is time to see a launch file, we will use our friends from **turtlesim**, and we will use the nodes previously made for the turtles, the examples files are called [turtlesim_simple_mov.launch.py | Python Package](/m02_ros2_communication/m02_ros2_with_py/launch/turtlesim_simple_mov.launch.py) and [turtlesim_simple_mov.launch.py | CMake Package](/m02_ros2_communication/m02_ros2_with_cpp/launch/turtlesim_simple_mov.launch.py) and explore the content:
 
@@ -832,13 +932,16 @@ The previous info presented is the basic one for launching multiple nodes, but y
   - **```OnShutdown( target_action=<action>, on_shutdown=[ <process> ]```** : In case that the ```<action>``` the launch is asked for shutdown, it executes a final process.
 - ### Using config files:
   You can use .yaml file (usually located in the *config* directory) to provide configurations of parameters for you nodes, you must be careful as they depend on the namespace and the name of the topic, their structure is:
-  
+
+```yaml
         <namespace(optional)>/<node_name>:
             ros__parameters:
                 <param_name>: <value>
+```
 
   The usage in the launch file is very simple, you need to provide the path to the config file, and then in the configs of a node, pass the object.
 
+```Python
         config = os.path.join(
             get_package_share_directory('<package_name>'),
             '<dir>',
@@ -854,23 +957,30 @@ The previous info presented is the basic one for launching multiple nodes, but y
                 parameters=[config]
             )
         ])
+```
 
 If you want to check on the usage of the last commands, you can explore the next launch files:
 
 - **[turtlesim_background.launch.py](/m02_ros2_communication/m02_ros2_with_py/launch/turtlesim_background.launch.py):** Oriented to use actions and substitutions to play with the background, while also executing commands from turtlesim. You can test it with:
 
-        ros2 launch m02_ros2_with_py turtlesim_background.launch.py
-        ros2 launch m02_ros2_with_cpp turtlesim_background.launch.py
+```bash
+    ros2 launch m02_ros2_with_py turtlesim_background.launch.py
+    ros2 launch m02_ros2_with_cpp turtlesim_background.launch.py
+```
 
 - **[turtlesim_spawn.launch.py](/m02_ros2_communication/m02_ros2_with_cpp/launch/turtlesim_spawn.launch.py):** Oriented to check events while spawing a turtle in the turtlesim world. You can execute it with:
 
-        ros2 launch m02_ros2_with_py turtlesim_spawn.launch.py
-        ros2 launch m02_ros2_with_cpp turtlesim_spawn.launch.py
+```bash
+    ros2 launch m02_ros2_with_py turtlesim_spawn.launch.py
+    ros2 launch m02_ros2_with_cpp turtlesim_spawn.launch.py
+```
 
 - **[turtlesim_with_yaml.launch.py](/m02_ros2_communication/m02_ros2_with_cpp/launch/turtlesim_with_yaml.launch.py):** Oriented to use a parameter file for chaning the background of the turtlesim.
 
-        ros2 launch m02_ros2_with_py turtlesim_with_yaml.launch.py
-        ros2 launch m02_ros2_with_cpp turtlesim_with_yaml.launch.py
+```bash
+    ros2 launch m02_ros2_with_py turtlesim_with_yaml.launch.py
+    ros2 launch m02_ros2_with_cpp turtlesim_with_yaml.launch.py
+```
 
 # Adding pluggins:
 
@@ -880,14 +990,17 @@ For this reason, we are going to use **pluginlib** which is a library that facil
 
 First, we need to create the package of the base class, for this we use:
 
-    ros2 pkg create --build-type ament_cmake --license Apache-2.0 --dependencies pluginlib --node-name <node_for_impl> <base_class_package>
+```Bash
+ros2 pkg create --build-type ament_cmake --license Apache-2.0 --dependencies pluginlib --node-name <node_for_impl> <base_class_package>
 
-    # In our case:
+# In our case:
 
-    ros2 pkg create --build-type ament_cmake --license BSD-3-Clause --dependencies pluginlib --node-name area_calculator.cpp m02_base_figure
+ros2 pkg create --build-type ament_cmake --license BSD-3-Clause --dependencies pluginlib --node-name area_calculator.cpp m02_base_figure
+```
 
 Second, we need to define our base class, for this purpose, we need to create a header file, they must be located in the *```/include/<base_class_package>```*, the structure of the file should be like this:
 
+```C++
     #ifndef <BASE_CLASS_NAMESPACE>_<HEADER_FILE_NAME>_HPP
     #define <BASE_CLASS_NAMESPACE>_<HEADER_FILE_NAME>_HPP
 
@@ -906,11 +1019,13 @@ Second, we need to define our base class, for this purpose, we need to create a 
     }  
 
     #endif
+```
 
 You can check the proper implementation for our 2D figures in the file [base_figure.hpp](/m02_ros2_communication/m02_base_figure/include/m02_base_figure/base_figure.hpp).
 
 Third, let's modify the [CMakeLists.txt](/m02_ros2_communication/m02_base_figure/CMakeLists.txt) file, where you need to add the information to include and use the content of the *include* directory:
 
+```CMake
     # Must be added after the ament_target_dependencies
     install(
         DIRECTORY include/
@@ -919,19 +1034,23 @@ Third, let's modify the [CMakeLists.txt](/m02_ros2_communication/m02_base_figure
 
     # Must be added before ament_package
     ament_export_include_directories(
-        include
+        include 
     )
+```
 
 Fourth, it is time to create the code of the plugin source info, one requirement is the base class implemented before:
 
-    ros2 pkg create --build-type ament_cmake --license Apache-2.0 --dependencies <base_class_package> pluginlib --library-name <source_code_name> <plugin_package>
+```BASH
+ros2 pkg create --build-type ament_cmake --license Apache-2.0 --dependencies <base_class_package> pluginlib --library-name <source_code_name> <plugin_package>
 
-    # In the case of this example, it should be
+# In the case of this example, it should be
 
-    ros2 pkg create --build-type ament_cmake --license BSD-3-Clause --dependencies m02_base_figure pluginlib --library-name figure_plugins m02_figure_plugins
+ros2 pkg create --build-type ament_cmake --license BSD-3-Clause --dependencies m02_base_figure pluginlib --library-name figure_plugins m02_figure_plugins
+```
 
 Fifth, inside the package there should be a source code called [figure_plugins](/m02_ros2_communication/m02_figure_plugins/src/m02_figure_plugins.cpp), this file has been linked to be treated as a library. So, you have to add here the implementation code of your plugin. In our case, it is a set of figures that has a side attribute, and two methods, one for initialization and other to calculate the area. An idea of the code should be like this:
 
+```C++
     #include <<base_class_packge>/<base_class_header>.hpp>
     #include <cmath>
 
@@ -961,15 +1080,18 @@ Fifth, inside the package there should be a source code called [figure_plugins](
     #include <pluginlib/class_list_macros.hpp>
 
     PLUGINLIB_EXPORT_CLASS(<plugin_namespace>::<child_class_name>, <base_class_namespace>::<base_class_name>)
+```
 
 Sixth, you will need to define a [plugins.xml](/m02_ros2_communication/m02_figure_plugins/plugins.xml) file, which makes the info of the tool available to the ROS ToolChain. The structure should be like this:
 
+```XML
     <library path="<exec_name_in_CMakeLists.txt">
         <class type="<plugins_namespace>::<child_class_name>" base_class_type="<base_class_namespace>::<base_class_name>">
             <description>  Info about the class or element... </description>
         </class>
-    <!-- ... -->
+        <!-- ... -->
     </library>
+```
 
 Seventh, you have to add the plugin manifiest instruction to the [CMakeLists.txt](/m02_ros2_communication/m02_figure_plugins/CMakeLists.txt), the code is:
 
@@ -978,6 +1100,7 @@ Seventh, you have to add the plugin manifiest instruction to the [CMakeLists.txt
 
 Finally, you can create an implementation, for this you will need to incluee the **class_loader** of pluginlib and the header file of your base class. You can check the *[area_calculator.cpp](/m02_ros2_communication/m02_base_figure/src/area_calculator.cpp)* code, but the basic part of it is:
 
+```C++
     #include <pluginlib/class_loader.hpp>
     #include <<base_class_package>/<base_class_header.hpp>>
 
@@ -998,7 +1121,7 @@ Finally, you can create an implementation, for this you will need to incluee the
             /* ... */
         }
     }
-
+```
 Then, you can build and try your code.
 
     cd <your_workspace_path>
@@ -1014,24 +1137,28 @@ They aim to create a bilateral communication where a feedback is needed, they ar
 
 As the others type of communication, they can be created with their own specific file. In this case the extension is **.action**, and the structure is:
 
-    # Request / Goal
-    ---
-    # Result
-    ---
-    # Feedback
+```bash
+# Request / Goal
+---
+# Result
+---
+# Feedback
+```
 
 The **goal** or **request** is the action to be completed, the **result** is the returned value of the process when it is done (or rejected, stopped, canceled...), and the **feedback** is the notification of advance of the process. We can have a simple example with a robot arm and making a movement with it, if we want to use a Inverse Kinematics Algorithm, we can propose a goal of a final pose of the final effector, during the process we can have feedback related to the final effector pose in fixed time intervals to know how our robot is doing, and when the process is done we get a result of the position obtained (which can be different from the goal as it has to consider tolereances and other factors during the process). 
 
 Also, we can implement them with *Python* or *C++*, to illustrate actions we will use our loyal turtle friend */turtle1* from the package **turtlesim**. What are we going to do? Play with the drawings that can meake our turtles, we will draw regular polygons, then our goal is the num of moves (sides or vertex for the regular polygon), the feedback will be the move at a certain time and the result will be the number of nums achieved. Our action file for the examples is [RegularMove.action](/m02_ros2_communication/m02_ros2_with_cpp/action/RegularMove.action), and the content is:
 
-    # Request
-    int32 num_moves
-    ---
-    # Result
-    int32 moves
-    ---
-    # Feedback
-    int32 current_move
+```bash
+# Request
+int32 num_moves
+---
+# Result
+int32 moves
+---
+# Feedback
+int32 current_move
+```
 
 This interface was definid implicitly in the same package we used for the C++ communication examples, if you do not remember how to add custom interfaces and how to link them to the same package, go and review a little of our previous implementation.
 
@@ -1074,7 +1201,7 @@ The code made for the action client is present in the file [turtle_action_srv.py
 - **```<goal> = <action_interface>.Goal()```**: Instance a goal of the action interface of interest.
 - **```<action_client>.wait_for_server()```**: Add a wait so no process of the action is made until the server is available.
 - **```<send_goal_future> = <action_client>.send_goal_async(<goal>, feedback_callback = <feedback_callbac>)```**: Send the desired goal asynchronous (then it will use a goal handler for the process) and link a feedback callback to watch or notify the progress.
-- **```<send_goal_future>.add_done_callbac(<response_callback>)```**: Link a response callback in order to check if the goal was accepted.
+- ```<send_goal_future>.add_done_callbac(<response_callback>)```: Link a response callback in order to check if the goal was accepted.
 - **```<goal_handle> = <future_goal>.result()```** Using the argument ```<future_goal>``` passed the response callback is called, created the goal handler.
 - **```<goal_handle>.accepted```**: Boolean to check if the goal has been accepted by the server. 
 - **```<get_future_result> = <goal_handle>.get_result_async()```**: Define a getter of the result in case of asynchronous response by using the goal handler.
@@ -1120,56 +1247,103 @@ Well, maybe that was unclear in how the implementation is added, but let's move 
 
 4. Changes in the [CMakeLists.txt](/m02_ros2_communication/m02_ros2_with_cpp/CMakeLists.txt) are oriented to add the dependencies required, treat the cpp executable as a library and register the node:
 
-        find_package(rclcpp_components REQUIRED)
+```CMake
 
-        add_library(v<lib_name> src/<file_name>.cpp)
+    find_package(rclcpp_components REQUIRED)
 
-        rclcpp_components_register_node(
-            <lib_name>
-            PLUGIN "<namespace>::<class>"
-            EXECUTABLE <executable_name>
-            )
-        ament_export_targets(<exportation_components_name>)
+    add_library(v<lib_name> src/<file_name>.cpp)
 
-        install(TARGETS <executable_name>
-                EXPORT <exportation_components_name>
-                ARCHIVE DESTINATION lib
-                LIBRARY DESTINATION lib
-                RUNTIME DESTINATION bin
+    rclcpp_components_register_node(
+        <lib_name>
+        PLUGIN "<namespace>::<class>"
+        EXECUTABLE <executable_name>
         )
+    ament_export_targets(<exportation_components_name>)
+
+    install(TARGETS <executable_name>
+            EXPORT <exportation_components_name>
+            ARCHIVE DESTINATION lib
+            LIBRARY DESTINATION lib
+            RUNTIME DESTINATION bin
+    )
+```
 
 5. In case you want to use a launch, the configuration of the node also changes, as you need to create a container for the composable nodes, insert the description for the composable nodes (present in the library you created), it must be linked with the **rclcpp_components** library, and must use the plugin (similar to the idea we used in the plugins example), here is the basic struture of a luanch for composable nodes:
 
-        # Imports related with composable nodes
-        from launch_ros.actions import ComposableNodeContainer
-        from launch_ros.descriptions import ComposableNode
+    ```Python
 
-        # ...
+    # Imports related with composable nodes
+    from launch_ros.actions import ComposableNodeContainer
+    from launch_ros.descriptions import ComposableNode
 
-        ld.add_action(ComposableNodeContainer(
-            name='<group_name_for_composed_nodes>',
-            namespace='<namespace>',
-            package='rclcpp_components',
-            executable='component_container',
-            composable_node_descriptions=[
-                ComposableNode(
-                    package='<package_name>',
-                    plugin='<namespace>::<class>',
-                    name='<name_for_composed_node>',
+    # ...
 
-                    # ..,
-                    extra_arguments=[{'use_intra_process_comms': True}],
-                ),
-            ]
-        ))
+    ld.add_action(ComposableNodeContainer(
+        name='<group_name_for_composed_nodes>',
+        namespace='<namespace>',
+        package='rclcpp_components',
+        executable='component_container',
+        composable_node_descriptions=[
+            ComposableNode(
+                package='<package_name>',
+                plugin='<namespace>::<class>',
+                name='<name_for_composed_node>',
+
+                # ...
+                extra_arguments=[{'use_intra_process_comms': True}],
+            ),
+        ]
+    ))
+    ```
 
 * **NOTE:** **component_container** is for those programs that doesn't require multithreading, but if you require it, you have to use **component_container_mt**. 
 
 But you may ask... if I can comose multiple nodes, how can I achieve it? Before we check it out, let's make something clear... In ROS (1) existed **nodes** and **nodelets**, the difference was that the second one allowd a way to run multiple algorithms in the same process with no copy transport. But in ROS2, the concept was unified and it much more similar to a **nodelet** but now it is called a **Component** which also allows to add a *life cycle*, then there is now a preffered unified API. Then the user and programmer can decide to run multiple nodes in separated process (isolate them) to debug them easier or run multipl enodes in a single process for a more efficient communication and lower overhead.
 
 
-
 Then as you suppose, it is still possible to use the *node* style (which is something we have been doing when writing our own main), but it is not recommended.
+
+Before watching a proper example of composable nodes, let's take a look at **Intra-Process Communication** in ROS2.
+
+### Intra-process communication:
+
+You have seen nodes that are a composition of individual nodes that performs one narrow task in a isolated and modular way which also allows a faster development and re-usage, but may have some performance cost. Then, we aim to generate nodes that can be composed manually (an even be present in the same process layouts ) without changing the original code and preserving the functionality of the code. 
+
+During the next examples, we are going to seee briefly how to generate an intracommunication (this doesn't mean that the node can communicate externally, it just implies that the composition allows the communication also in the same process). Keep in mind that a key change here is that our main will not only have one node spin, then the structure change and acts like it's shown below:
+
+```C++
+int main(int argc, char * argv[])
+{
+    // For configuring buffering behavior, in this case stdout for console/terminal as output string
+    setvbuf(stdout, NULL, _IONBF, BUFSIZ);
+
+    // Node initialization 
+    rclcpp::init(argc, argv);
+    
+    // Definition of executor (single threaded)
+    rclcpp::executors::SingleThreadedExecutor executor;
+
+    // ---- Begin node definitions 
+    // ...
+    // ---- End node definitions 
+
+    // Add composable nodes
+    executor.add_node(node1);
+    executor.add_node(node2);
+    // ....
+
+    // Sping executor
+    executor.spin();
+
+    // Shutdown and exit
+    rclcpp::shutdown();
+    return 0;
+}
+```
+
+Now, let's implement a intra communication between two nodes (one subscriber and one publisher), for this purpose, check the [intra_com_2n.cpp]() file which has a detailed structure with comments for clarifications, but some key commands and points to keep in mind are:
+
+
 
 # ROSDEP: Managing dependencies
 
@@ -1189,6 +1363,7 @@ Why did we explain again the manifiest of our packages? It is because **rosdep**
 
 Then you will need to add keys to your [package.xml] file so they can be searched. But what should you add? In the case of a standard package or a ROS released package in the ecosystem, you just have to simply add the name of the package. In other case, of a non ROS package, you should add the particular keys to the library, which can be made with .yaml files (**rosdep/base.yaml** fro apt dependencies and **rosdep/python.yaml** for Python depdencencies) and then add the corresponding key into your manifiest file. For example, in the case of searching for doxygen, you will need the *base.yaml* with something like this:
 
+```yaml
     doxygen:
         arch: [doxygen]
         debian: [doxygen]
@@ -1197,6 +1372,7 @@ Then you will need to add keys to your [package.xml] file so they can be searche
         macports: [doxygen]
         ubuntu: [doxygen]
         (...)
+```
 
 In case your library isn't present in a rosdistro, you can suggest or add it yourself. If you want more info, you can check the [rosdistro Contributing file](https://github.com/ros/rosdistro/blob/master/CONTRIBUTING.md#rosdep-rules-contributions).
 
@@ -1204,14 +1380,18 @@ In case your library isn't present in a rosdistro, you can suggest or add it you
 
 - If you aren't able to autocomplete (a package), make sure you have succesfully build (using colcon build and the corresponding flags), and also, make sure you have added and sourced the *local_setup.bash* or the *setup.bash* file.
 
+```bash
         cd <your_ws>
         colcon build
         source install/local_setup.bash
+```
 
 - If you get a warn equal or related to: "SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
   warnings.warn (...)". It means that the package 'setuptools' isn't in the proper version for ros2, you can resolve (according to [ros.answer](https://answers.ros.org/question/396439/setuptoolsdeprecationwarning-setuppy-install-is-deprecated-use-build-and-pip-and-other-standards-based-tools/)) with the next command (only ROS2 Humble):
 
+```bash
         pip install setuptools==58.2.
+```
 
 - If a yaml file seems to not be loading the parameters, you can check for the next options:
   - ```[WARNING] [launch_ros.actions.node]: Parameter file path is not a file: ...``` If you receive this warn, you should check the *share* path and watch for the real location of the yaml file, for example, if it is in the *config* dir or the directory you specified in the launch.

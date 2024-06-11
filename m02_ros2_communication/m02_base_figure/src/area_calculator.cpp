@@ -26,7 +26,7 @@ int main(int argc, char** argv)
         circle->initialize(2.0);
 
         // Use area method and display the result
-        std::cout << "Circle area: " <<  circle->area()); << std::endl;
+        std::cout << "Circle area: " <<  circle->area() << std::endl;
     }
     catch(pluginlib::PluginlibException& ex)
     {
