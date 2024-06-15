@@ -143,9 +143,13 @@ target_link_libraries(turtle_action_client "${cpp_typesupport_target}")
 
 rclcpp_components_register_node(turtle_action_client PLUGIN "TurtleActionClient" EXECUTABLE turtle_action_cli)
 
-# Adding intra communication for randonm float
+# Adding intra process communication for randonm float
 add_executable(intra_com_2_nodes src/intra_com_2_nodes.cpp)
 target_link_libraries(intra_com_2_nodes rclcpp::rclcpp ${std_msgs_TARGETS})
+
+# Adding intra process communication for cyclic incrementer
+add_executable(intra_com_1_node src/intra_com_1_node.cpp)
+target_link_libraries(intra_com_1_node rclcpp::rclcpp ${std_msgs_TARGETS})
 
 # Adding targets to the libraries
 install(TARGETS
@@ -159,6 +163,7 @@ install(TARGETS
   simple_turtle_mov
   turtle_challenge
   intra_com_2_nodes
+  intra_com_1_node
   DESTINATION lib/${PROJECT_NAME})
 
 # Adding targets for actions

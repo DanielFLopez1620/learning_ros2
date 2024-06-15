@@ -6,7 +6,7 @@
 #include <utility>
 
 #include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msgs/char.hpp"
+#include "std_msgs/msg/char.hpp"
 
 using namespace std::chrono_literals;
 
@@ -17,7 +17,7 @@ struct IncrementerASCII : public rclcpp::Node
     : Node(name, rclcpp::NodeOptions().use_intra_process_comms(true))
     {
         pub = this->create_publisher<std_msgs::msg::Char>(out, 10);
-        std::weak_ptr<std::remove_pointer<decltype(pub.get())>::type> capture_pub = pub;
+        std::weak_ptr<std::remove_pointer<decltype(pub.get())>::type> captured_pub = pub;
 
         sub = this->create_subscription<std_msgs::msg::Char>
         (
@@ -32,17 +32,17 @@ struct IncrementerASCII : public rclcpp::Node
                 }
                 printf("Letter received: %c | Memory address: 0x%" PRIXPTR "\n",
                     msg->data, reinterpret_cast<std::uintptr_t>(msg.get()));
-                if(!rclcpp::sleep_for(1.5s))
+                if(!rclcpp::sleep_for(2s))
                 {
                     return;
                 }
-                int ascii = (int msg->data)
+                int ascii = (int) msg->data;
                 
                 if( ++ascii > 126 )
                 {
                     ascii = 33;
                 }
-                msg->data = (char)(ascii)
+                msg->data = (char)(ascii);
                 printf("Incrementing ASCII Value: %c | Memory address: 0x%" PRIXPTR "\n",
                     msg->data, reinterpret_cast<std::uintptr_t>(msg.get()));
                 pub_ptr->publish(std::move(msg));
@@ -56,6 +56,28 @@ struct IncrementerASCII : public rclcpp::Node
 
 int main(int argc, char* argv[])
 {
+    setvbuf(stdout, NULL, _IONBF, BUFSIZ);
+
+    rclcpp::init(argc, argv);
+    rclcpp::executors::SingleThreadedExecutor st_exec;
+
+    auto ascii1 = std::make_shared<IncrementerASCII>("first_ascii_node", 
+        "channel1", "channel2");
+    auto ascii2 = std::make_shared<IncrementerASCII>("second_ascii_node",
+        "channel2", "channel1");
     
+    rclcpp::sleep_for(2s);
+    std::unique_ptr<std_msgs::msg::Char> msg(new std_msgs::msg::Char());
+    msg->data = '!';
+
+    printf("First (and only manual publication) letter: %c | Memory Address: 0x%" 
+        PRIXPTR "\n", msg->data, reinterpret_cast<std::uintptr_t>(msg.get()));
+    ascii1->pub->publish(std::move(msg));
+
+    st_exec.add_node(ascii1);
+    st_exec.add_node(ascii2);
+    st_exec.spin();
+
+    rclcpp::shutdown();
     return 0;
 }
