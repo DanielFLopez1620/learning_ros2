@@ -1,17 +1,16 @@
-// ------------------------------ STANDARARD HEADERS --------------------------
-
+// ------------------------------ STANDARD HEADERS --------------------------
 #include <chrono>         // For time usage with different precisions.
 #include <cinttypes>      // For width base integral types
 #include <cstdio>         // For standard input/output stream operations
 #include <memory>         // Dynamic memory management
-#include <string>         // Related with string usages
+#include <string>         // Related with string usage
 #include <utility>        // Variety of utilites from bit count to partial func
 #include <bits/stdc++.h>  // Includes every std library
 
 // ------------------------------ ROS2 RCLCPP REQUIRED ------------------------
 #include "rclcpp/rclcpp.hpp"  // For C++ with ROS2
 
-// -------------------------- ROS2 MSGS ---------------------------------------
+// -------------------------- ROS2 MSGS  REQUIRED ----------------------------
 #include "std_msgs/msg/float32.hpp"   // For uisng float of 32 bits
 
 

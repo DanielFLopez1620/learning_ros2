@@ -1314,7 +1314,7 @@ During the next examples, we are going to seee briefly how to generate an intrac
 ```C++
 int main(int argc, char * argv[])
 {
-    // For configuring buffering behavior, in this case stdout for console/terminal as output string
+    // For configuring buffering behavior, in this case stdout for console/terminal as output string, no buffering (direct to console).
     setvbuf(stdout, NULL, _IONBF, BUFSIZ);
 
     // Node initialization 
@@ -1341,8 +1341,13 @@ int main(int argc, char * argv[])
 }
 ```
 
-Now, let's implement a intra communication between two nodes (one subscriber and one publisher), for this purpose, check the [intra_com_2n.cpp]() file which has a detailed structure with comments for clarifications, but some key commands and points to keep in mind are:
+Now, let's implement a *intra process communication* between two nodes (one subscriber and one publisher), for this purpose, check the [intra_com_2n.cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/intra_com_2_nodes.cpp) file which aims to communicate by using the info present in a **unique_ptr** to prevent copies (and there are similar optimization present like the usage of a **weak_ptr** for publishing and the buffering setup while also considering the *printf* from C Library), do not forget to check the file which has a detailed structure with comments for clarifications, but some key commands and points to keep in mind are:
 
+-
+
+But this isn't the only example we can have for *intra process communication* as we can generate the communication with one node and itself, or the same node in different instances. This is demonstrated in with a ASCII incrementer in the [intra_com_1_node.cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/intra_com_1_node.cpp) file, that also uses a unique_ptr (and some features presented recently) but it has the implementation of a subscriber and a publisher inside the same constructor definition.
+
+-
 
 
 # ROSDEP: Managing dependencies
