@@ -1214,6 +1214,8 @@ When you are ready (and you have build and source the packages), you can use the
     ros2 run m02_ros2_with_py turtle_action_srv 
     ros2 run m02_ros2_with_py turtle_action_cli 5
 
+TODO: Add git for demo of turtle action with py
+
 ## C++ implementation of an action server and action client
 
 ### Composable nodes: 
@@ -1343,11 +1345,40 @@ int main(int argc, char * argv[])
 
 Now, let's implement a *intra process communication* between two nodes (one subscriber and one publisher), for this purpose, check the [intra_com_2n.cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/intra_com_2_nodes.cpp) file which aims to communicate by using the info present in a **unique_ptr** to prevent copies (and there are similar optimization present like the usage of a **weak_ptr** for publishing and the buffering setup while also considering the *printf* from C Library), do not forget to check the file which has a detailed structure with comments for clarifications, but some key commands and points to keep in mind are:
 
--
+- **```setvbuf(stdout, NULL; _IONBF, BUFSIZ);```** It is a buffer configuration to write direct at the stream without buffer, as we want to avoid copies and additional steps for a more effective communication.
+- **```Node(name, rclcpp::NodeOptions().use_intra_process_comms(true))```** Configuration (using parent constructor) for the node name and communitation set up.
+- **```std::weak_ptr<std::remove_pointer<decltype(pub_.get())>::type> captured_pub = pub;```** This type pointer is used to prevent keeping a strong reference in case of the object destruction byt also to avoid cycilic references that may lead to memory leaks.
+- **```auto callback = [captured_pub]() -> void {}```** The callback for the subscription is implemented by using a lambda function that captures the defined *captured_pub weak_ptr* for accesing the publisher inside the subscription process.
+- **```std_msgs::msg::Float32::UniquePtr msg (new std_msgs::msg::Float32())```** Instance of a message as *unique_ptr* to prevent copies during the process, as we want to implement zero-copy communication.
+- **```auto intra_pub = std::make_shared<RandomPublisher>("rand_float_pub", "random_flt");```** Instance of the publisher as shared pointer by using the constructor that allows *intra process communication*.
+- **```rclcpp::executors::SingleThreadedExecutor st_exec```** The main implementation isn't just going to run one node, then we need to add an executor, which we will later add nodes and make the spin.
 
-But this isn't the only example we can have for *intra process communication* as we can generate the communication with one node and itself, or the same node in different instances. This is demonstrated in with a ASCII incrementer in the [intra_com_1_node.cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/intra_com_1_node.cpp) file, that also uses a unique_ptr (and some features presented recently) but it has the implementation of a subscriber and a publisher inside the same constructor definition.
+For running the node, execute the next line:
 
--
+```bash
+ros2 run m02_ros2_with_cpp intra_com_2_nodes
+```
+
+And if you have doubts... that intra process communication isn't available for other nodes, check the current topics and make an echo:
+
+```bash
+ros2 topic list 
+ros2 topic echo /random_flt
+```
+
+TODO: Add image of running nodes of intra communication
+
+But this isn't the only example we can have for *intra process communication* as we can generate the communication with one node and itself, or the same node in different instances. This is demonstrated in with a ASCII incrementer in the [intra_com_1_node.cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/intra_com_1_node.cpp) file, that also uses a unique_ptr (and some features presented recently) but it has the implementation of a subscriber and a publisher inside the same constructor definition. Some things (additional to the ones mentioned in the previous example) are:
+
+- **```ascii1->pub->publish(std::move(msg));```** As the communication is cyclic for this process, we need to create a first publishing to start the process (once the nodes have being defined). That is the reason, the publisher isn't named **pub_** as it will be considered a private attribute (for convention).
+
+For now, we have just checked examples of *intra process communication* and the basics (what is needed) for composition, we haven't implemented actions on C++ yet. But that will change in the next subsection, as we are going to replicate the actions we made for Python, in C++, however, we will use composition.
+
+**NOTE:** If you want more demos on intra process communication, you can check the original demos for *ROS2 Humble* in the [ros2/demos](https://github.com/ros2/demos/tree/humble/intra_process_demo) repository.
+
+### Composition and actions with C++ and ROS2: 
+
+...
 
 
 # ROSDEP: Managing dependencies
