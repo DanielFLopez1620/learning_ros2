@@ -1378,7 +1378,32 @@ For now, we have just checked examples of *intra process communication* and the 
 
 ### Composition and actions with C++ and ROS2: 
 
-...
+Let's first take a look at the implementation of the *action service*, for our example, we have the file called [turtle_action_srv.cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/turtle_action_srv.cpp), some important commands and notes to keep in mind are:
+
+- **```#include "rclcpp_action_rclcpp_action.hpp"```** Required for implementing action servers and clients (and related definitions).
+- **```#include "rclccpp_components/register_node_macro.hpp"```** For using the macro to present composition of node.
+- **```#include "m02_ros2_with_cpp/action_regular_move.hpp```** Usage of the action defined in the same package of the actions (do not forget to check the definition of custom interfaces previously mentioned to understand more on the usage of a custom definition in the same package it is defined).
+- **```using RegularMove = m02_ros2_with_cpp::action::RegularMove;```** Alias implementation for using the action in a more readable way.
+- **```using GoalHanlderRegularMove = rclcpp_action::ServerGoalHandle<RegularMove>;```** Another alias implementation, but in this case for the respective GoalHandler.
+- **``` ... : Node("turtle_action_srv", options) { /* ... */}```** Construction by using parent's method that specifies a name and gives rclcpp::NodeOptions defaulted, even thouhg we talked about intra process communication recenlty, here we won't take advantage of it as our focus is
+the action and composition itself.
+- **```this-><action_server_name> = rclcpp_action::create_server< <action_type> >(<node>, <action_channel>, <goal_handler>, <cancel_handler>, <accepted_handler>);```** Creation of the server by considering the node, the channel and providing the respective callbacks for goal implementation, cancelation and acceptation, they are passed with std::bind and considering placeholders for future interactions.
+- **```RCLCPP_COMPONENTS_REGISTER_NODE(TurtleActionServer)```** Register node for composition by providing the class that defines the process.
+- **NOTE:** When having actions, do not forget to include feedback that is constantly updating.
+- **NOTE:** Check the implementation of the goal, cancel and accept callbacks in the original code.
+
+With that said, we can start running the nodes and check, remember to build and source the workspace, then you can use:
+
+```bash
+ros2 run turtlesim turtlesim_node            # Terminal 1
+ros2 run m02_ros2_with_cpp turtle_action_srv # Terminal 2
+ros2 run m02_ros2_with_cpp turtle action_cli # Terminal 3
+```
+
+Here we do not need to pass arguments to the client, as we defined random generators for the purpose of the request sending. Now, enjoy watching your turtle making geometric moves while receiving feedbacks by using composable nodes.
+
+
+TODO: Add info of running nodes of turtle action with C++
 
 
 # ROSDEP: Managing dependencies
