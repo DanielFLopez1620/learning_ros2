@@ -1388,9 +1388,24 @@ Let's first take a look at the implementation of the *action service*, for our e
 - **``` ... : Node("turtle_action_srv", options) { /* ... */}```** Construction by using parent's method that specifies a name and gives rclcpp::NodeOptions defaulted, even thouhg we talked about intra process communication recenlty, here we won't take advantage of it as our focus is
 the action and composition itself.
 - **```this-><action_server_name> = rclcpp_action::create_server< <action_type> >(<node>, <action_channel>, <goal_handler>, <cancel_handler>, <accepted_handler>);```** Creation of the server by considering the node, the channel and providing the respective callbacks for goal implementation, cancelation and acceptation, they are passed with std::bind and considering placeholders for future interactions.
-- **```RCLCPP_COMPONENTS_REGISTER_NODE(TurtleActionServer)```** Register node for composition by providing the class that defines the process.
-- **NOTE:** When having actions, do not forget to include feedback that is constantly updating.
-- **NOTE:** Check the implementation of the goal, cancel and accept callbacks in the original code.
+- **```const rclcpp_action::GoalUUID & uuid```** Each goal must provide a ID, it can be used for logging, debugging or check processes completation, but in the example provided, it isn't used.
+- **```std::shared_ptr<const RegularMove::Goal> goal```** Definition of a goal, in the action, it is passed as args by the place holder in the case of the three callbacks implemented.
+- **```return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;```** In the case of the handle goal callback, it must return a **GoalResponse** it can be *REJECT*, *ACCEPT_AND_EXECUTE* (immediate executation) or *ACCEPT_AND_DEFER* (later execution).
+- **```return rclcpp_action::CancelResponse::ACCEPT;```** In the case of the cancel implementation, the return must be REJECT or ACCEPT.
+- **```const std::shared_ptr<GoalHandlerRegularMove> goal_handle```** The server goal handler (remember that here we used type aliases), allows to publish feedback, abort operations, execute goals, get goals (status and id) and obtain if it was canceled or succeeded.
+- **```const auto goal = goal_handle->get_goal();```** Get the current goal to implement execution and try to achieve it.
+- **```auto feedback = std::make_shared<RegularMove::Feedback>();```** Instance the feedback according the action of interest. It have to be updated constantly to notify about progress related with the goal.
+- **```auto result = std::make_shared<RegularMove::Result>();```** Instance of result according the action of interest. It has to be updated when the goal is achieved (or a cancelation happens).
+- **```goal_handle->is_canceling()```** Boolean function that notifies in case of cancelation.
+- **```goal_handle->canceled(result);```** In case of canceltion, make the proper cancellation of the goal execution and return last result achieved.
+-**```goal_handle->publish_feedback(feedback);```** Publish current feedback.
+-**```goal_handle->succeed(result);```** In case of complatation and success, return the final result.
+-**```RCLCPP_COMPONENTS_REGISTER_NODE(TurtleActionServer)```** Register node for composition by providing the class that defines the process.
+
+
+Do not forget to check the callback implementation for more context and info on the usage of feedback, result and goal related operations, also to check the links of differnt functions implemented to achieve the execution of the goal. 
+
+Now, it is time to pass to the action client....
 
 With that said, we can start running the nodes and check, remember to build and source the workspace, then you can use:
 
@@ -1477,6 +1492,10 @@ In case your library isn't present in a rosdistro, you can suggest or add it you
 - ROS2 rclpy API: [Foxy](https://docs.ros2.org/foxy/api/rclpy/)
 
 - ROS2 rclcpp API: [Foxy](https://docs.ros2.org/foxy/api/rclcpp/)
+
+- ROS2 rclcpp_actions API: [Foxy](https://docs.ros2.org/foxy/api/rclcpp_action/)
+
+- ROS2 rclcpp_components API: [Foxy](https://docs.ros2.org/foxy/api/rclcpp_components)
 
 - ROS2 Launch Tutorials: [Humble](https://docs.ros.org/en/humble/Tutorials/Intermediate/Launch/Launch-Main.html)
 
