@@ -1405,7 +1405,20 @@ the action and composition itself.
 
 Do not forget to check the callback implementation for more context and info on the usage of feedback, result and goal related operations, also to check the links of differnt functions implemented to achieve the execution of the goal. 
 
-Now, it is time to pass to the action client....
+Now, it is time to pass to the *action client*, for this purpose we will use the [turtle_action_cli.cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/turtle_action_cli.cpp) code, some additional comments to have on the commands present here is:
+
+-**```using RegularMove = m02_ros2_with_cpp::action::RegularMove;```** Usage of type alias for the action to simplify the process of invokation.
+-**```using GoalHandlerRegularMove = rclcpp_action::ClientGoalHandle<RegularMove>;```** Type alias for the goal handler related operations and definitions.
+- **```this->client_ptr_ = rclcpp_action::create_client<RegularMove>(this, "turtle_mov");```** Instance of a client action for the **RegularMove** action.
+- **```this->timer_ = this->create_wall_timer(std::chrono::milliseconds(500), std::bind(&TurtleActionClient::send_goal, this));```** Create a timer that will be used only once to publish a goal by linking a callback to properly do it. 
+- **```this->timer_->cancel()```** Manual timer cancellation, implemented here as we only need one call interaction when the time is completed. 
+- **```this->client_ptr_->wait_for_action_server()```** Boolean method that indicates when the *action server* is ready and available to recieve the client's goal.
+- **```auto goal_msg = RegularMove::Goal();```** Instance of a goal, that will be used later to be sent by the client to the server.
+- **```auto send_goal_options = rclcpp_action::Client<RegularMove>::SendGoalOptions();```** Obtain goal options for sending it, and it will later be configured for managing the response, feedback and result callback.
+- **```send_goal_options.goal_response_callback = std::bind(&TurtleActionClient::goal_response_callback, this, _1);```** Link goal response callback, which function is to get the notification in case of the goal is accepted or rejected. Do not forget to check the implementation callback, and the *_1* refers to the placeholder of the arguments when the process is called by the node.
+- **```send_goal_options.feedback_callback = std::bind(&TurtleActionClient::feedback_callback, this, _1, _2);```** Link feedback callback to get updates on how it is the process going.
+- **```send_goal_options.result_callback = std::bind(&TurtleActionClient::result_callback, this, _1);```** Link result callback that will be used to obtain the final result of the profcess when it is completed or cancelled.
+- **```this->client_ptr_->async_send_goal(goal_msg, send_goal_options);```** Send goal in a asynchronous way and wait for future result, the rest of the process should be carried on the server and the results and feedback must be received with the proper callbacks.
 
 With that said, we can start running the nodes and check, remember to build and source the workspace, then you can use:
 
