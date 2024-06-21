@@ -1398,9 +1398,10 @@ the action and composition itself.
 - **```auto result = std::make_shared<RegularMove::Result>();```** Instance of result according the action of interest. It has to be updated when the goal is achieved (or a cancelation happens).
 - **```goal_handle->is_canceling()```** Boolean function that notifies in case of cancelation.
 - **```goal_handle->canceled(result);```** In case of canceltion, make the proper cancellation of the goal execution and return last result achieved.
--**```goal_handle->publish_feedback(feedback);```** Publish current feedback.
--**```goal_handle->succeed(result);```** In case of complatation and success, return the final result.
--**```RCLCPP_COMPONENTS_REGISTER_NODE(TurtleActionServer)```** Register node for composition by providing the class that defines the process.
+- **```goal_handle->publish_feedback(feedback);```** Publish current feedback.
+- **```goal_handle->succeed(result);```** In case of complatation and success, return the final result.
+- **```rclcpp_action::Server<RegularMove>::SharedPtr action_server_;```** Definition of the action server for the process.
+- **```RCLCPP_COMPONENTS_REGISTER_NODE(TurtleActionServer)```** Register node for composition by providing the class that defines the process.
 
 
 Do not forget to check the callback implementation for more context and info on the usage of feedback, result and goal related operations, also to check the links of differnt functions implemented to achieve the execution of the goal. 
@@ -1419,6 +1420,19 @@ Now, it is time to pass to the *action client*, for this purpose we will use the
 - **```send_goal_options.feedback_callback = std::bind(&TurtleActionClient::feedback_callback, this, _1, _2);```** Link feedback callback to get updates on how it is the process going.
 - **```send_goal_options.result_callback = std::bind(&TurtleActionClient::result_callback, this, _1);```** Link result callback that will be used to obtain the final result of the profcess when it is completed or cancelled.
 - **```this->client_ptr_->async_send_goal(goal_msg, send_goal_options);```** Send goal in a asynchronous way and wait for future result, the rest of the process should be carried on the server and the results and feedback must be received with the proper callbacks.
+- **```rclcpp_action::Client<RegularMove>::SharedPtr client_ptr_;```** Definition for the client action that will be used in the program (keep in mind that we are using the alias for the action to make the code cleaner)
+- **```const GoalHanlderRegularMode::SharedPtr & goal_handle```** Corresponds to the handler for the goal in different operation types, and will be the first argument for the callbacks related with feedback and response.
+- **```if(!goal_handle)```** In the case of the response callback, it can be used to confirm the status of the goal (in other words, to check if the goal was accepted or not by the server). 
+- **```const GoalHandlerREgularMove::WrappedResult & result```** Corresponds to the arg passed to the result callback to interprate the result (and related methods of the status of it). 
+- **```rclcpp_action::ResultCode::SUCCEEDED```** The result comes with a code that indicate the status, it can be SUCCEEDED, ABORTED and CANCELED, to obtain it, you need to access the attribute **code** of the **WrappedResult**.
+- **```result.result->...```** The WrappedResult isn't properly the result of the operation, then, you need to access to the **result** attribute and after that check the element of interest of the *action result*.
+
+One important aspect in the composition for this case is thatm as we do not have a main, the **rclcpp** is initializated inside the classes (*TurtleActionServer* and *TurtleActionClient*), and shutdown when the process is over. Also, do not forget the macro for the node composition, and consider the proper *CMake commands to make the composition available, you can check the part for this action nodes in the [CMakeListst.txt](/m02_ros2_communication/m02_ros2_with_cpp/CMakeLists.txt) file. But the key part for registerin a node is:
+
+```CMake
+add_library(<lib_element> src/<base_file>.cpp)
+rclcpp_components_register_node(<lib_element> "<namespace>::<class>")
+```
 
 With that said, we can start running the nodes and check, remember to build and source the workspace, then you can use:
 
@@ -1432,6 +1446,20 @@ Here we do not need to pass arguments to the client, as we defined random genera
 
 
 TODO: Add info of running nodes of turtle action with C++
+
+### More about composition:
+
+What if I told you... that you can create composed version of the nodes we have created in the lessons of **rclcpp** and communication? We can implement this to achieve a more optimized communication and also to consider components that are able to be called by using the *ros2 cli commands*.
+
+Let's start by checking the components available in your machine, for that you can run:
+
+```bash
+    ros2 component types
+```
+
+You may see something like the picture below, but do not worry if you have less or more, as it can vary according your installation and the packages you have been using, for example, if you have built and sourced the Turtle Action Example from the last lesson, you should be able to see it.
+
+TODO: Add image of component types.
 
 
 # ROSDEP: Managing dependencies
