@@ -1461,6 +1461,66 @@ You may see something like the picture below, but do not worry if you have less 
 
 TODO: Add image of component types.
 
+Before running components, you will need to run the **component_container** node, you can do it by executing:
+
+```bash
+    ros2 run rclcpp_components component_container
+```
+
+Now, you should be able to list the running *components* when running:
+
+```bash
+    ros2 component list
+```
+
+TODO: Add image of ComponentManger running
+
+Then, we are now capable of running the actions we made as components, for that you can run:
+
+```bash
+    ros2 component load /ComponentManager m02_ros2_with_cpp TurtleActionServer
+```
+
+Once again, list the components, and the action server for the turtle to make drawings of regular polygons should appear. Do not forget to have running our frindly *turtle1* in **turtlesim**.
+
+TODO: Add image of TurtleActionServer component running
+
+After that, you can run the **component** of the action client:
+
+```bash
+    ros2 component load /ComponentManager m02_ros2_with_cpp TurtleActionServer
+```
+
+And for a brief moment, you should be able to see the two components (and also the *turtle1* moving according the random goal).
+
+TODO: Add image of TurtleActionClient componetn and turtle1.
+
+For unloading the components, you can use:
+
+```bash
+    ros2 component unload /ComponentManager 1 2
+```
+
+Some other important points to keep in consideration that you are able to make with components is:
+
+- Remap container name and namespace:
+
+```bash
+    ros2 run rclcpp_components component_container --ros-args -r __node:=NewContainerName -r __ns:=/NewNamespace
+```
+
+- Remap component name:
+
+```bash
+    ros2 component load /ComponentManager m02_ros2_with_cpp TurtleActionServer --node-name PolygonServer
+```
+
+- Remap component namespace:
+
+```bash
+    ros2 component load /ComponentManager m02_ros2_with_cpp TurtleActionServer --node-namespace /turtlesim
+```
+
 
 # ROSDEP: Managing dependencies
 
