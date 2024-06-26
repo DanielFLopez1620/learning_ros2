@@ -23,6 +23,8 @@ find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
+include_directories(include)
+
 #  Test specifications
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -151,6 +153,21 @@ target_link_libraries(intra_com_2_nodes rclcpp::rclcpp ${std_msgs_TARGETS})
 add_executable(intra_com_1_node src/intra_com_1_node.cpp)
 target_link_libraries(intra_com_1_node rclcpp::rclcpp ${std_msgs_TARGETS})
 
+# Adding int64_pub component
+add_library(int64_pub_component SHARED
+  src/int64_pub_comp.cpp)
+target_compile_definitions(int64_pub_component
+  PRIVATE "MO2_ROS2_WITH_CPP_BUILDING_DLL")
+ament_target_dependencies(int64_pub_component
+  "rclcpp"
+  "rclcpp_components"
+  "std_msgs")
+rclcpp_components_register_nodes(int64_pub_component "example_comp::IntPub")
+set(node_plugins "${node_plugins}example_comp::IntPub;$<TARGET_FILE:int64_pub_component>}\n")
+
+set(libs
+  int64_pub_component)
+
 # Adding targets to the libraries
 install(TARGETS
   pub_int64
@@ -170,6 +187,7 @@ install(TARGETS
 install(TARGETS
   turtle_action_server
   turtle_action_client
+  int64_pub_component
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
