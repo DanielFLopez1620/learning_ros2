@@ -165,8 +165,21 @@ ament_target_dependencies(int64_pub_component
 rclcpp_components_register_nodes(int64_pub_component "example_comp::IntPub")
 set(node_plugins "${node_plugins}example_comp::IntPub;$<TARGET_FILE:int64_pub_component>}\n")
 
+# Adding int64_sub component
+add_library(int64_sub_component SHARED
+  src/int64_sub_comp.cpp)
+target_compile_definitions(int64_sub_component
+  PRIVATE "MO2_ROS2_WITH_CPP_BUILDING_DLL")
+ament_target_dependencies(int64_sub_component
+  "rclcpp"
+  "rclcpp_components"
+  "std_msgs")
+rclcpp_components_register_nodes(int64_sub_component "example_comp::IntSub")
+set(node_plugins "${node_plugins}example_comp::IntSub;$<TARGET_FILE:int64_sub_component>}\n")
+
 set(libs
-  int64_pub_component)
+  int64_pub_component
+  int64_sub_component)
 
 # Adding targets to the libraries
 install(TARGETS
@@ -188,6 +201,7 @@ install(TARGETS
   turtle_action_server
   turtle_action_client
   int64_pub_component
+  int64_sub_component
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
