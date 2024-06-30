@@ -153,6 +153,9 @@ target_link_libraries(intra_com_2_nodes rclcpp::rclcpp ${std_msgs_TARGETS})
 add_executable(intra_com_1_node src/intra_com_1_node.cpp)
 target_link_libraries(intra_com_1_node rclcpp::rclcpp ${std_msgs_TARGETS})
 
+# Create ament index resource for library
+set(node_plugins "")
+
 # Adding int64_pub component
 add_library(int64_pub_component SHARED
   src/int64_pub_comp.cpp)
@@ -176,6 +179,31 @@ ament_target_dependencies(int64_sub_component
   "std_msgs")
 rclcpp_components_register_nodes(int64_sub_component "example_comp::IntSub")
 set(node_plugins "${node_plugins}example_comp::IntSub;$<TARGET_FILE:int64_sub_component>}\n")
+
+# Adding exam_srv component
+add_library(exam_srv_component SHARED
+  src/exam_srv_comp.cpp)
+target_compile_definitions(exam_srv_component
+  PRIVATE "M02_ROS2_WITH_CPP_BUILDING_DLL")
+ament_target_dependencies(exam_srv_component
+  "rclcpp"
+  "rclcpp_components")
+target_link_libraries(exam_srv_component "${cpp_typesupport_target}")
+rclcpp_components_register_nodes(exam_srv_component "example_comp::ExamServer")
+set(node_plugins "${node_plugins}example_comp::ExamServer;<TARGET_FILE:exam_srv_component>\n")
+
+# Adding exam_cli component
+add_library(exam_cli_component SHARED
+  src/exam_cli_comp.cpp)
+target_compile_definitions(exam_cli_component
+  PRIVATE "M02_ROS2_WITH_CPP_BUILDING_DLL")
+ament_target_dependencies(exam_cli_component
+  "rclcpp"
+  "rclcpp_components")
+  target_link_libraries(exam_cli_component "${cpp_typesupport_target}")
+rclcpp_components_register_nodes(exam_cli_component "example_comp::ExamClient")
+set(node_plugins "${node_plugins}example_comp::ExamClient;<TARGET_FILE:exam_cli_component>\n")
+
 
 set(libs
   int64_pub_component
@@ -212,6 +240,11 @@ install(DIRECTORY
   launch config include
   DESTINATION share/${PROJECT_NAME}
 )
+
+file(GENERATE
+  OUTPUT
+  "${CMAKE_CURRENT_BINARY_DIR}/test_ament_index/$<CONFIG>/share/ament_index/resource_index/node_plugin/${PROJECT_NAME}"
+  CONTENT "${node_plugins}")
 
 # -------------------------------- Ament final configs------------------------
 
