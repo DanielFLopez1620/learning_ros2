@@ -207,7 +207,9 @@ set(node_plugins "${node_plugins}example_comp::ExamClient;<TARGET_FILE:exam_cli_
 
 set(libs
   int64_pub_component
-  int64_sub_component)
+  int64_sub_component
+  exam_srv_component
+  exam_cli_component)
 
 # Adding targets to the libraries
 install(TARGETS
@@ -230,6 +232,8 @@ install(TARGETS
   turtle_action_client
   int64_pub_component
   int64_sub_component
+  exam_srv_component
+  exam_cli_component
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
