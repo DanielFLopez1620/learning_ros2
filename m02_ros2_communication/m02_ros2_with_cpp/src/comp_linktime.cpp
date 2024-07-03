@@ -26,10 +26,27 @@ int main(int argc, char* argv[])
 
     for(auto lib : libraries)
     {
-
+        RCLCPP_INFO(logger, "Loading library %s", lib.c_str());
+        auto loader = std::make_unique<class_loader::ClassLoader>(lib);
+        auto classes = loader->getAvailableClasses<rclcpp_components::NodeFactory>();
+        for (auto ecl : classes)
+        {
+            RCLCPP_INFO(logger, "Creating instance of: %s", ecl.c_str());
+            auto node_fact = loader->createInstance<rclcpp_components::NodeFactory>(ecl);
+            auto wrapper = node_fact->create_node_instance(options);
+            auto node = wrapper.get_node_base_interface();
+            node_wrappers.push_back(wrapper);
+            st_exec.add_node(node);
+        }
+        loaders.push_back(std::move(loader));
     }
 
-    st_exec.spin()
+    st_exec.spin();
+
+    for (auto wrapper : node_wrappers)
+    {
+        st_exec.remove_node(wrapper.get_node_base_interface());
+    }
 
     rclcpp::shutdown();
 
