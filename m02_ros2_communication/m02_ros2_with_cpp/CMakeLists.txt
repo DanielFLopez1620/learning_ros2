@@ -204,12 +204,44 @@ ament_target_dependencies(exam_cli_component
 rclcpp_components_register_nodes(exam_cli_component "example_comp::ExamClient")
 set(node_plugins "${node_plugins}example_comp::ExamClient;<TARGET_FILE:exam_cli_component>\n")
 
+# Adding comp_manual executable
+add_executable(comp_manual
+  src/comp_manual.cpp)
+target_link_libraries(comp_manual
+  int64_pub_component
+  int64_sub_component
+  exam_srv_component
+  exam_cli_component)
+ament_target_dependencies(comp_manual
+  "rclcpp")
 
+# Adding comp_linktime executable
+add_executable(comp_linktime
+  src/comp_linktime.cpp)
 set(libs
   int64_pub_component
   int64_sub_component
   exam_srv_component
   exam_cli_component)
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  set(libs
+    "-Wl,--no-as-needed"
+    ${libs}
+    "-Wl,--as-needed")
+endif()
+target_link_libraries(comp_linktime ${libs})
+ament_target_dependencies(comp_linktime
+  "class_loader"
+  "rclcpp"
+  "rclcpp_components")
+
+# Adding comp_dlopen executable
+add_executable(comp_dlopen
+  src/comp_dlopen.cpp)
+ament_target_dependencies(comp_dlopen
+  "class_loader"
+  "rclcpp"
+  "rclcpp_components")
 
 # Adding targets to the libraries
 install(TARGETS
@@ -224,6 +256,9 @@ install(TARGETS
   turtle_challenge
   intra_com_2_nodes
   intra_com_1_node
+  comp_manual
+  comp_linktime
+  comp_dlopen
   DESTINATION lib/${PROJECT_NAME})
 
 # Adding targets for actions

@@ -8,6 +8,13 @@
 
 #define COMP_DLOPEN_LOGGER_NAME "comp_dlopen"
 
+
+/*
+    ros2 run m02_ros2_with_cpp comp_dlopen `ros2 pkg prefix m02_ros2_with_cpp
+    `/lib/libint64_pub_component.so `ros2 pkg prefix m02_ros2_with_cpp`
+    /lib/libint64_sub_component.so
+*/
+    
 int main(int argc, char* argv[])
 {
     setvbuf(stdout, NULL, _IONBF, BUFSIZ);
