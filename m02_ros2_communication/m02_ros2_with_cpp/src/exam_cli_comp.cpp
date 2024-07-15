@@ -10,7 +10,7 @@
 #include "m02_ros2_with_cpp/srv/answer.hpp" // Exam question service
 
 // ---------------------- CUSTOM PACKAGE DEPENDENCIES -------------------------
-#include "m02_ros2_with_cpp/exam_cli_comp.hpp" 
+#include "m02_ros2_with_cpp/exam_cli_comp.hpp"  // Client prototype import
 
 // ---------------------- NAMESPACE TO CONSIDER -------------------------------
 using namespace std::chrono_literals;
@@ -80,5 +80,6 @@ namespace example_comp
     }
 }
 
-// Register component
+// Register component, acts like entry point to make the component discoverable
+// to be loaded
 RCLCPP_COMPONENTS_REGISTER_NODE(example_comp::ExamClient)
