@@ -1521,6 +1521,57 @@ Some other important points to keep in consideration that you are able to make w
     ros2 component load /ComponentManager m02_ros2_with_cpp TurtleActionServer --node-namespace /turtlesim
 ```
 
+### More examples related with composition:
+
+In this package, there are some examples provided for components by converting the examples we made previosly with the integer publisher and subscriber, and the exam server, this examples are listed below:
+
+- [IntPub | int64_pub_comp.cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/int64_pub_comp.cpp)
+- [IntSub | int64_sub_comp.cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/int64_sub_comp.cpp)
+- [ExamSrv | exam_srv_comp.cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/exam_srv_comp.cpp)
+- [ExamCli | exam_cli_comp.cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/exam_cli_comp.cpp)
+
+They are shorter implementations of thir counterparts (check the codes comments for more info on the implementation and do not forget to consider the headers present in the [include](/m02_ros2_communication/m02_ros2_with_cpp/include/) dir), while they implement a differet construction and compilation structure in the [CMakeLists.txt](/m02_ros2_communication/m02_ros2_with_cpp/CMakeLists.txt) file, where the process is made based on library additio, like the next example based on the IntPub component:
+
+```CMake
+    add_library(int64_sub_component SHARED
+        src/int64_sub_comp.cpp)
+    target_compile_definitions(int64_sub_component
+        PRIVATE "MO2_ROS2_WITH_CPP_BUILDING_DLL")
+    ament_target_dependencies(int64_sub_component
+        "rclcpp"
+        "rclcpp_components"
+        "std_msgs")
+    rclcpp_components_register_nodes(int64_sub_component            
+        "example_comp::IntSub")
+    set(node_plugins "${node_plugins}example_comp::IntSub;
+        $<TARGET_FILE:int64_sub_component>}\n")
+
+    (...)
+
+    target_link_libraries(comp_manual
+        int64_pub_component
+        ...)
+```
+
+To use this components, make sure you have compiled your workspace and sourced the install directory, then, when you list the components (```ros2 compontent types```), you should be able to see the components of the package **m02_ros2_with_cpp**:
+
+TODO: Add image of m02_ros2_with_cpp_components
+
+After this, you shoul be able to use the **ComponentManager** and add this new components:
+
+```bash
+    ros2 run rclcpp_components component_container # Terminal 1
+    ros2 component load /ComponentManager m02_ros2_with_cpp example_comp::IntPub  # Terminal 2
+    ros2 component load /ComponentManager m02_ros2_with_cpp example_comp::IntSub # Terminal 2
+```
+TODO: Add custom components of integer pub/sub subscription
+
+
+But... what if I told you... that there are more options of composition different form the **component_container**? This options do not allow to list the components with the *ros2 cli* tools but, they can be handy when you want to include components from the run time process or when you want to specify a path to consider them, the options we have here are:
+
+- **Manual Composition:** Illustrated by the example of the file [comp_manual.cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/comp_manual.cpp), and this process implies considereing the class itself (by adding the headers and consider their implementations) for instancing objects of the component classes of interest to a thread executor and sping them.
+
+- **Linktime Composition:** Present in the example of the file [comp_linktime.cpp]()
 
 # ROSDEP: Managing dependencies
 
