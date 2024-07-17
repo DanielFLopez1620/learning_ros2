@@ -1569,9 +1569,79 @@ TODO: Add custom components of integer pub/sub subscription
 
 But... what if I told you... that there are more options of composition different form the **component_container**? This options do not allow to list the components with the *ros2 cli* tools but, they can be handy when you want to include components from the run time process or when you want to specify a path to consider them, the options we have here are:
 
-- **Manual Composition:** Illustrated by the example of the file [comp_manual.cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/comp_manual.cpp), and this process implies considereing the class itself (by adding the headers and consider their implementations) for instancing objects of the component classes of interest to a thread executor and sping them.
+- **Manual Composition:** Illustrated by the example of the file [comp_manual.cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/comp_manual.cpp), and this process implies considering the class itself (by adding the headers and consider their implementations) for instancing objects of the component classes of interest to a thread executor and sping them.
 
-- **Linktime Composition:** Present in the example of the file [comp_linktime.cpp]()
+TODO: Add image of manual composition execution
+
+- **Linktime Composition:** Present in the example of the file [comp_linktime.cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/comp_linktime.cpp).which aims to generate the composition at link time by cosnidering a node factory and class loader implementation in the source code, while passing some libreries as args in the [CMakeList.txt](/m02_ros2_communication/m02_ros2_with_cpp/CMakeLists.txt) file for a future linking process.
+
+TODO: Add image of linktime composition
+
+- ** DLOpen Compositon:** Developed in the [comp_dlopen.cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/comp_dlopen.cpp) file, it is oriented for usage in collaboration of a ros2 cli interfaces to load the path to certain libraries, for example, the execution is made with:
+
+```bash
+    ros2 run m02_ros2_with_cpp comp_dlopen `ros2 pkg prefix m02_ros2_with_cpp `/lib/libint64_pub_component.so `ros2 pkg prefix m02_ros2_with_cpp` /lib/libint64_sub_component.so
+```
+
+TODO: Add image of dlopen composition
+
+### Launches and components: 
+
+Just as nodes, you can launch components, but the interface change, as you will have to import the **ComposableNodeContainer** and **ComposableNode** present in the **actions** and **descriptions** from **launch_ros** respectively, and the call is like this:
+
+```Python
+
+import launch
+from launch_ros.actions import ComposableNodeContainer
+from launch_ros.descriptions import ComposableNode
+
+def generate_launch_description():
+    container = ComposableNodeContainer(
+        name='<container_name>',
+        namespace='<namespace_name>',
+        package='rclcpp_components',
+        executable='component_container',
+        composable_node_descriptions=[
+            ComposableNode(
+                package="<package_of_component>",
+                plugin="<namespace_of_component>::<name_of_component>",
+                name="<final_component_name>"
+            ),
+
+            # ...
+        ],
+        output='screen',
+    )
+
+    return launch.LaunchDescription([container])
+
+```
+
+If you already have a container running, you can load components too with **LoadComposableNodes**:
+
+```Python
+
+from launch_ros.actions import LoadComposableNodes
+
+# ...
+
+def generate_launch_description():
+
+    # ...
+
+    load_composable_nodes = LoadComposableNodes(
+        target_container='<name_of_container>',
+        composable_node_descriptions=[
+            ComposableNode(
+                package="<package_of_component>",
+                plugin='<namespace_of_component>::<component_name>',
+                name="<final_component_name>",
+            ),
+
+        ],
+    )
+    # ...
+```
 
 # ROSDEP: Managing dependencies
 
