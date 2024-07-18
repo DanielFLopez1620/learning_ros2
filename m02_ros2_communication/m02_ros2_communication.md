@@ -1617,7 +1617,8 @@ def generate_launch_description():
 
 ```
 
-If you already have a container running, you can load components too with **LoadComposableNodes**:
+If you already have a container running, you can load components too with **LoadComposableNodes**, just keep in mind that the target container is compatible 
+and do not forget namespaces and names of your components:
 
 ```Python
 
@@ -1641,7 +1642,29 @@ def generate_launch_description():
         ],
     )
     # ...
+
 ```
+
+## Node Options:
+
+During some time we have talked about composition and nodes, but we haven't talked about the **NodeOptions** config we have provided in almost every example of composition. This configuration encapsulates some options for the node initialization and we usually use just the defaults, but... let's explore some of them, even we have checked one of them:
+
+- **use_intra_process_comms:** We have already checked that one of the advantages of using composition is having more effective nodes, this can be made with intra process communication and zero copy. Remember that this is a boolean attribute.
+- **start_parameter_services:** When it is set to true, allows the option to have a parameter services that let a dynamic reconfiguration of parameters at time.
+- **start_parameter_event_publisher:** When it is true, it manage and starts events related with the notifiycation of the change of a parameter.
+- **enable_topic_statistics:** Enables the collection of statisticz like message age, lost messages...
+- **use_global_arguments:** To specify whether to use or not global command-line args.
+- **allow_undeclared_parameters:** When it is true, allows for a runtime parameter declaration.
+- **automatically_declare_parameters_from_overrides:** 
+- **parameter_overrides:** Allows the option to incorporate some params and overwrite them (not boolean and you should pass a container with the parameters to change), for example, ```rclcpp::NodeOptions().parameter_overrides({rclcpp::Parameter("name", "Dan)});```.
+- **arguments:** For passing directly terminal commands, for example, ```rclcpp::NodeOptions().arguments({"--ros-args", "-r", "__node:=new_name_node"});```.
+- **parameter_file:** In case you have a .yaml with the params you want to use for the project of your interest, it is made with: ```rclcpp::NodeOptions().parameter_file("path/file.yaml");```
+- **context:** Set the context of the node.
+- **parameter_event_qos** Encapsulation of Quality of Servic for the node (more info on QoS in the next lessons).
+
+
+
+
 
 # ROSDEP: Managing dependencies
 

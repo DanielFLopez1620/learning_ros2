@@ -39,6 +39,10 @@ int main(int argc, char* argv[])
 
     // Vector that should contain the paths to the library of interest
     std::vector<std::string> libraries = { "", };
+    
+    // The reason it is in blank, it is becasuse the libraries will be linked
+    // in the CMake file, passed as a 'lib' group that contains the composition
+    // cases we have developed.
 
     // For each oriented to iterate throuhg available libraries.
     for(auto lib : libraries)
