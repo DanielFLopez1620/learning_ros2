@@ -1662,8 +1662,7 @@ During some time we have talked about composition and nodes, but we haven't talk
 - **context:** Set the context of the node.
 - **parameter_event_qos** Encapsulation of Quality of Servic for the node (more info on QoS in the next lessons).
 
-
-
+For more info, check the docummentation on [NodeOptions | Foxy API](https://docs.ros2.org/foxy/api/rclcpp/classrclcpp_1_1NodeOptions.html#aa7491d3f2d3b960bbe42dd7045879a38).
 
 
 # ROSDEP: Managing dependencies

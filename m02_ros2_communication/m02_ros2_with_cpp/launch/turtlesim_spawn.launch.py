@@ -1,5 +1,5 @@
+# ---------------------------- Launch dependencies ----------------------------
 from launch_ros.actions import Node
-
 from launch import LaunchDescription
 from launch.actions import (EmitEvent, ExecuteProcess, LogInfo, 
                             RegisterEventHandler)
@@ -9,12 +9,21 @@ from launch.events import Shutdown
 from launch.substitutions import (EnvironmentVariable, FindExecutable,
                                     LocalSubstitution)
 
+# ----------------------------- Launch structure ------------------------------
 def generate_launch_description():
+    """
+    Script oriented to spawn turtles in the turtlesim space by considering 
+    event handlers, substitions and calls.
+    """
+    
+    # Adding turtlesim node
     turtlesim_node = Node(
         package='turtlesim',
         executable='turtlesim_node',
         name='turtlesim_node'
     )
+
+    # Add process to call via service the spawn of a new turtle.
     spawn_turtle = ExecuteProcess(
         cmd=[[
             FindExecutable(name='ros2'),
@@ -24,8 +33,12 @@ def generate_launch_description():
         ]],
         shell=True
     )
+
+    # List and return events, nodes, processes and configurations.
     return LaunchDescription([
         turtlesim_node,
+        
+        # At the start of the node, log and spawn a new turtle.
         RegisterEventHandler(
             OnProcessStart(
                 target_action=turtlesim_node,
@@ -35,6 +48,8 @@ def generate_launch_description():
                 ]
             )
         ),
+
+        # When receiving spawn log, reflect the log with additional info
         RegisterEventHandler(
             OnProcessIO(
                 target_action=spawn_turtle,
@@ -44,6 +59,8 @@ def generate_launch_description():
                 )
             )
         ),
+
+        # When the spawn is succesfully completed, change the background
         RegisterEventHandler(
             OnExecutionComplete(
                 target_action=spawn_turtle,
@@ -76,6 +93,8 @@ def generate_launch_description():
                 ]
             )
         ),
+
+        # When exiting program (by Ctrl + C), log exit message
         RegisterEventHandler(
             OnProcessExit(
                 target_action=turtlesim_node,
@@ -87,6 +106,8 @@ def generate_launch_description():
                 ]
             )
         ),
+
+        # When shutting down launch process, log message
         RegisterEventHandler(
             OnShutdown(
                 on_shutdown=[LogInfo(
