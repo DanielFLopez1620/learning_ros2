@@ -243,6 +243,10 @@ ament_target_dependencies(comp_dlopen
   "rclcpp"
   "rclcpp_components")
 
+# Adding param_check node
+add_executable(param_check src/param_check.cpp)
+ament_target_dependencies(param_check rclcpp)
+
 # Adding targets to the libraries
 install(TARGETS
   pub_int64
@@ -259,6 +263,7 @@ install(TARGETS
   comp_manual
   comp_linktime
   comp_dlopen
+  param_check
   DESTINATION lib/${PROJECT_NAME})
 
 # Adding targets for actions
