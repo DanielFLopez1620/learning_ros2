@@ -1664,6 +1664,44 @@ During some time we have talked about composition and nodes, but we haven't talk
 
 For more info, check the docummentation on [NodeOptions | Foxy API](https://docs.ros2.org/foxy/api/rclcpp/classrclcpp_1_1NodeOptions.html#aa7491d3f2d3b960bbe42dd7045879a38).
 
+# More on parameters
+
+Another topic we cannot left apart is monitoring of parameters, no matter if it is from the same node or another, getting updates on the parameter allow you to understand possible changes made, get notified about changes made by collaborators or algorithms and keep note on the parameters you are working with.
+
+A basic monitor is implemented in the C++ node file called [param_check.cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/param_check.cpp), some key notes about it is:
+
+- ```this->declare_parameter("<name>", "value");``` Do not forget that you create params like that.
+- ```std::shared_ptr<rclcpp::ParameterEventHandler> param_handler_;``` Declaration of a ParameterEventHandler, the need of using a parameter event handler is that it will allow the usage of callbacks for them.
+- ```param_handler_ = std::make_shared<rclcpp::ParameterEventHandler>(this);``` Definition and instance of a ParameterEventHandler.
+- ```auto <lambda_callback> = [this] (const rclcpp::Parameter & p) { /* ... */}``` Lambda function that pass the class context and also considers the Parameter as an argument.
+- ```p.get_name()``` Get parameter name (Considered inside the previous lambda context presented).
+- ```p.get_type_name()``` Get type of the parameter (Considered inside the previous lambda context presented).
+- ```p.as_string()``` Obtain the parameter readed as a string (there is also option for double, int, char and arrays).
+- ```<callback_connection> = param_handler_->add_parameter_callback(<param_name>, <lambda_callback>, <param_node_name>)``` Linkage of the callback defined previously to be called when the parameter receives and 
+update.
+
+After you have build the package, and sourced the install directory, you should be able to run the node with:
+
+```bash
+    ros2 run m02_ros2_with_cpp param_check
+```
+
+At once, nothing is happening, because you haven't changed the default parameter of the file, called 'desired_num', you can set a new param and watch the following action:
+
+```bash
+    ros2 param set /parameter_storage desired_num 2.0
+```
+
+TODO: Add image of parameter checker node with desired num.
+
+Do not forget to consider the namespace or node name of the param, and the proper name of the param when setting a param. Also, in the implementation we have added the param 'your_name' for a previous example on parameters (code present in [saying_hi.cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/saying_hi.cpp)), if you run it, you will see that the value 'ROS User' is almost every five seconds:
+
+```bash
+    ros2 run m02_ros2_with_cpp saying_hi
+```
+
+TODO: Add image of parameter checker node with your name.
+
 
 # ROSDEP: Managing dependencies
 
