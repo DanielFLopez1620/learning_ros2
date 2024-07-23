@@ -1214,7 +1214,7 @@ When you are ready (and you have build and source the packages), you can use the
     ros2 run m02_ros2_with_py turtle_action_srv 
     ros2 run m02_ros2_with_py turtle_action_cli 5
 
-TODO: Add git for demo of turtle action with py
+![turtle_action_py_gif](/m02_ros2_communication/resources/turtle_action_py.gif)
 
 ## C++ implementation of an action server and action client
 
@@ -1365,8 +1365,7 @@ And if you have doubts... that intra process communication isn't available for o
 ros2 topic list 
 ros2 topic echo /random_flt
 ```
-
-TODO: Add image of running nodes of intra communication
+![intra_2_nodes](/m02_ros2_communication/resources/intra_comms_2_nodes.png)
 
 But this isn't the only example we can have for *intra process communication* as we can generate the communication with one node and itself, or the same node in different instances. This is demonstrated in with a ASCII incrementer in the [intra_com_1_node.cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/intra_com_1_node.cpp) file, that also uses a unique_ptr (and some features presented recently) but it has the implementation of a subscriber and a publisher inside the same constructor definition. Some things (additional to the ones mentioned in the previous example) are:
 
@@ -1445,7 +1444,9 @@ ros2 run m02_ros2_with_cpp turtle action_cli # Terminal 3
 Here we do not need to pass arguments to the client, as we defined random generators for the purpose of the request sending. Now, enjoy watching your turtle making geometric moves while receiving feedbacks by using composable nodes.
 
 
-TODO: Add info of running nodes of turtle action with C++
+![turtle_action_cpp_gif](/m02_ros2_communication/resources/turtle_action_cpp.gif)
+
+Just keep in mind thatif the random value obtained and the lenght proposed are too big, well the turtle may crash. You can add the modifications if you want, like for example, chning the beginning angle, teleporting the turtleto a proper position or anything you can think.
 
 ### More about composition:
 
@@ -1457,9 +1458,9 @@ Let's start by checking the components available in your machine, for that you c
     ros2 component types
 ```
 
-You may see something like the picture below, but do not worry if you have less or more, as it can vary according your installation and the packages you have been using, for example, if you have built and sourced the Turtle Action Example from the last lesson, you should be able to see it.
+You may see something like the picture below, but do not worry if you have less or more, as it can vary according your installation and the packages you have been using, for example, if you have built and sourced the Turtle Action Example from the last lesson, you should be able to see it, and you may be able to see future components we will talk about in our **m02_ros2_with_cpp** package.
 
-TODO: Add image of component types.
+![ros2_component_types](/m02_ros2_communication/resources/ros2_component_types.png)
 
 Before running components, you will need to run the **component_container** node, you can do it by executing:
 
@@ -1472,8 +1473,7 @@ Now, you should be able to list the running *components* when running:
 ```bash
     ros2 component list
 ```
-
-TODO: Add image of ComponentManger running
+![component_container_running](/m02_ros2_communication/resources/component_container_running_void.png)
 
 Then, we are now capable of running the actions we made as components, for that you can run:
 
@@ -1483,7 +1483,7 @@ Then, we are now capable of running the actions we made as components, for that 
 
 Once again, list the components, and the action server for the turtle to make drawings of regular polygons should appear. Do not forget to have running our frindly *turtle1* in **turtlesim**.
 
-TODO: Add image of TurtleActionServer component running
+![component_turtle_srv](/m02_ros2_communication/resources/component_turtle_srv.png)
 
 After that, you can run the **component** of the action client:
 
@@ -1493,7 +1493,7 @@ After that, you can run the **component** of the action client:
 
 And for a brief moment, you should be able to see the two components (and also the *turtle1* moving according the random goal).
 
-TODO: Add image of TurtleActionClient componetn and turtle1.
+![component_turtle_srv](/m02_ros2_communication/resources/component_turtle_cli.png)
 
 For unloading the components, you can use:
 
@@ -1555,7 +1555,7 @@ They are shorter implementations of thir counterparts (check the codes comments 
 
 To use this components, make sure you have compiled your workspace and sourced the install directory, then, when you list the components (```ros2 compontent types```), you should be able to see the components of the package **m02_ros2_with_cpp**:
 
-TODO: Add image of m02_ros2_with_cpp_components
+![m02_ros2_with_cpp_component](/m02_ros2_communication/resources/ros2_component_types.png)
 
 After this, you shoul be able to use the **ComponentManager** and add this new components:
 
@@ -1564,26 +1564,24 @@ After this, you shoul be able to use the **ComponentManager** and add this new c
     ros2 component load /ComponentManager m02_ros2_with_cpp example_comp::IntPub  # Terminal 2
     ros2 component load /ComponentManager m02_ros2_with_cpp example_comp::IntSub # Terminal 2
 ```
-TODO: Add custom components of integer pub/sub subscription
+![component_int_subpub](/m02_ros2_communication/resources/component_int_pubsub.png)
 
 
 But... what if I told you... that there are more options of composition different form the **component_container**? This options do not allow to list the components with the *ros2 cli* tools but, they can be handy when you want to include components from the run time process or when you want to specify a path to consider them, the options we have here are:
 
 - **Manual Composition:** Illustrated by the example of the file [comp_manual.cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/comp_manual.cpp), and this process implies considering the class itself (by adding the headers and consider their implementations) for instancing objects of the component classes of interest to a thread executor and sping them.
 
-TODO: Add image of manual composition execution
+![comp_manual](/m02_ros2_communication/resources/comp_manual.png)
 
 - **Linktime Composition:** Present in the example of the file [comp_linktime.cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/comp_linktime.cpp).which aims to generate the composition at link time by cosnidering a node factory and class loader implementation in the source code, while passing some libreries as args in the [CMakeList.txt](/m02_ros2_communication/m02_ros2_with_cpp/CMakeLists.txt) file for a future linking process.
 
-TODO: Add image of linktime composition
+![comp_linktime](/m02_ros2_communication/resources/comp_linktime.png)
 
 - ** DLOpen Compositon:** Developed in the [comp_dlopen.cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/comp_dlopen.cpp) file, it is oriented for usage in collaboration of a ros2 cli interfaces to load the path to certain libraries, for example, the execution is made with:
 
 ```bash
     ros2 run m02_ros2_with_cpp comp_dlopen `ros2 pkg prefix m02_ros2_with_cpp `/lib/libint64_pub_component.so `ros2 pkg prefix m02_ros2_with_cpp` /lib/libint64_sub_component.so
 ```
-
-TODO: Add image of dlopen composition
 
 ### Launches and components: 
 
@@ -1692,7 +1690,7 @@ At once, nothing is happening, because you haven't changed the default parameter
     ros2 param set /parameter_storage desired_num 2.0
 ```
 
-TODO: Add image of parameter checker node with desired num.
+![param_change_num](/m02_ros2_communication/resources/change_param_num.png)
 
 Do not forget to consider the namespace or node name of the param, and the proper name of the param when setting a param. Also, in the implementation we have added the param 'your_name' for a previous example on parameters (code present in [saying_hi.cpp](/m02_ros2_communication/m02_ros2_with_cpp/src/saying_hi.cpp)), if you run it, you will see that the value 'ROS User' is almost every five seconds:
 
@@ -1700,7 +1698,7 @@ Do not forget to consider the namespace or node name of the param, and the prope
     ros2 run m02_ros2_with_cpp saying_hi
 ```
 
-TODO: Add image of parameter checker node with your name.
+![param_change_name](/m02_ros2_communication/resources/change_param_name.png)
 
 
 # ROSDEP: Managing dependencies
@@ -1785,3 +1783,4 @@ In case your library isn't present in a rosdistro, you can suggest or add it you
 
 - ROS2 Plugins Tutorial: [Humble](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries/Pluginlib.html)
 
+TODO: Add image of parameter checker node with your name.
