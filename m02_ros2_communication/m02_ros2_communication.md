@@ -1782,5 +1782,3 @@ In case your library isn't present in a rosdistro, you can suggest or add it you
 - ROS2 Composable Nodes: [Humble](https://docs.ros.org/en/humble/Tutorials/Intermediate/Writing-a-Composable-Node.html)
 
 - ROS2 Plugins Tutorial: [Humble](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries/Pluginlib.html)
-
-TODO: Add image of parameter checker node with your name.

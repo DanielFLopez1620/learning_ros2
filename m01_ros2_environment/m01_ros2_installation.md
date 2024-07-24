@@ -4,6 +4,7 @@ All the installation methods can be found in the official site of [ROS2 Humble](
 
 1. Make sure you have set locale:
 
+```bash
     locale  # check for UTF-8
 
     sudo apt update && sudo apt install locales
@@ -12,9 +13,11 @@ All the installation methods can be found in the official site of [ROS2 Humble](
     export LANG=en_US.UTF-8
 
     locale  # verify settings
+```
 
 2. Configure sources:
 
+```bash
     sudo apt install software-properties-common 
     sudo add-apt-repository universe # Check ubuntu universe in enabled
 
@@ -22,17 +25,22 @@ All the installation methods can be found in the official site of [ROS2 Humble](
     sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg # Get ROS2 GPG Key
 
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null # Add repository to source lists
+```
 
 3. Install ROS2 (Desktop recommended):
 
+```bash
     sudo apt update
     sudo apt upgrade
     sudo apt install ros-humble-desktop
+```
 
 4. Set up the environment:
 
+```bash
     source /opt/ros/humble/setup.bash # First time
     echo "/opt/ros/humble/setup.bash" >> ~./bashrc # Add configuration permanently
+```
 
 # Troubleshooting:
 
