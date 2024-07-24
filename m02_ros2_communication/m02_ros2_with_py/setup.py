@@ -34,6 +34,8 @@ setup(
             'set_bool_cli = m02_ros2_with_py.set_bool_cli:main',
             'saying_hi = m02_ros2_with_py.saying_hi:main',
             'turtle_challenge = m02_ros2_with_py.turtle_challenge:main',
+            'turtle_action_srv = m02_ros2_with_py.turtle_action_srv:main',
+            'turtle_action_cli = m02_ros2_with_py.turtle_action_cli:main'
         ],
     },
 )

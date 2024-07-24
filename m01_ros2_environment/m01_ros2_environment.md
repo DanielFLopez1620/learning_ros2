@@ -12,21 +12,29 @@ A workspace is where you develop using ROS2, it can be the underlay (the core RO
 
 When you want to install packages, you can run:
 
+```bash
     sudo apt install ros-<distro>-<package> # In our case, the distro is humble
+```
 
 To access to the ROS2 commands and to get access to run packages installed on the machine, you will need to run on a new terminal:
 
+```bash
     source /opt/ros/<distro></distro>/setup.bash
+```
 
 If you do not like to run commands periodically, you can add it to your ./bashrc:
 
+```bash
     echo "source /opt/ros/<distro>/setup.bash" >> ./bashrc
+```
 
 ## Environment variables:
 
 ROS2 have several variables configurated that are need for running its process, so they must be set up properly. To check them you can run:
 
+```bash
     printenv | grep -i ROS
+```
 
 Some of this variable are the **ROS_VERSION** (which indicates that you are using ROS2), **ROS_PYTHON_VERSION** (related with the usage of python (3)) and **ROS_DISTRO** (if 'humble' is not here, you should have to change the distro to follow the following modules).
 
@@ -38,7 +46,9 @@ One of the simplest implementations, and you may ask... Why a turtle? The answer
 
 Before we start, make sure the turtle is with you and is installed, you use:
 
+```bash
     sudo apt-get install ros-humble-turtlesim
+```
 
 ## Packages and nodes:
 
@@ -48,11 +58,15 @@ A **packages** is a collection of *nodes* and the content related to them like l
 
 To check the information of a package or packages, the command is **ros2 pkg**, for example, if you want to check the executables of a packages you can use:
 
+```bash
     ros2 pkg executables turtlesim
+```
 
 The output in terminal, should mention some options like *draw_square*, *mimic*, *turtle_teleop_key* and *turtlesim_node*... Yeah, they are executables, but how do I run them? For that you will need another command, in this case **ros2 run**:
 
+```bash
     ros2 run turtlesim turtlesim_node
+```
 
 The previous command, should have opened a new window, like this one:
 
@@ -70,11 +84,15 @@ With this executable you can play with your friend, by using the key arrows. Thi
 
 There is a tool that let you see how the communication between nodes works, it is called **rqt**. As you may recall, first, we need to install it:
 
+```bash
     sudo apt-get install ~nros-humble-rqt*
+```
 
 The '*' at the end of the command means that we want to install all the rqt plugins or related packages. To test it (make sure you have some nodes running, for example, the turtlesim_node and the turtlesim_teleop), you can run:
 
+```bash
     rqt
+```
 
 The display will look like this: 
 
@@ -96,11 +114,15 @@ Before we move on, make sure you close (Ctrl+C) all the nodes.
 
 Nodes are the basic unit and they have the ability to communicate with other nodes, for executing a node, remember that you will need:
 
+```bash
     ros2 run <package_name> <executable_name>
+```
 
 But here we do not know the node of the name, just the executable that invokes it, for that you can run:
 
+```bash
     ros2 node list
+```
 
 If you run this, maybe there won't be output. So try to run it after having nodes like the executables in *turtlesim* and check the results.
 
@@ -108,11 +130,15 @@ If you run this, maybe there won't be output. So try to run it after having node
 
 There would be cases where you want to change the name of the node, for that we use **remapping**:
 
+```bash
     ros2 run turtlesim turtlesim_node --ros-args --remap __node:=new_turtle
+```
 
 This will generate another turtlesim window, independent from the preovios one. Here you can check the info of the node, for that you can use:
 
+```bash
     ros2 node info /new_turtle
+```
 
 After the command you should be able to wath the subscribers, publishers, clients and servers of the custom name *turtlesim* you invoke.
 
@@ -129,17 +155,23 @@ The main basic communication for ROS2, it is based in four parts:
 
 For the next, make sure you are running the *turtlesim_node* and the *turtle_teleop_key*, also you will need *rqt*:
 
+```bash
     ros2 run turtlesim turtlesim_node # Terminal 1
     ros2 run turtlesim turtle_teleop_key # Terminal 2
     rqt_graph # Terminal 3
+```
 
 In the *rqt_graph* window (with the options: Plugin > Introspection > Node graph) you can be able to watch the node communication. And this is the reason you can control the turtle by using the keyboard, because the topic you are using is **/turtle1/cmd_vel**. But this isn't the only topic here, to check more topics just run in a new terminal:
 
+```bash
     ros2 topic list
+```
 
 It will enumerate the topics that are currently available, so if you need more details you can type:
 
+```bash
     ros2 topic list -t
+```
 
 This flag add the option to get the message type, so you can use it to create a communication. But you can also, check them with *rqt* by unchecking the box *Hide:*.
 
@@ -156,11 +188,15 @@ Now, let's take a look to other important commands of *ros2 topic*:
 
 In some cases, you will need extra help for understanding messages and topics, for example, do you know what is cmd_vel? Well, you can check that answer by knowing the type and then search the definition:
 
+```bash
     ros2 interface show geometry_msgs/msg/Twist
+```
 
 To close, this subsection, let's publish a velocity command to the turtle, for this you can use:
 
+```bash
     ros2 topic pub --once /turtle1/cmd_vel geometry_msgs/msg/Twist "{linear: {x: 2.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 1.8}}"
+```
 
 # Services, another perspective:
 
@@ -168,26 +204,36 @@ It is a different type of communication based on the roles of the client and the
 
 Let's play with our turtle friends to get to know more about services, Make sure you run the *turtlesim* node and the *turtle_teleop_key* node. In this section, we will use the commands of **ros2 service**, first let's list all services available.
 
+```bash
     ros2 service list
+```
 
 ![Services](/m01_ros2_environment/resources/service.png)
 
 Now, you need to understand them, so you can take advantage of them, the services have two parts the **request** (the info you provide to the server) and the **response** (the result of processing the info provided). Also, they have different types, and as you can guess, you can use:
 
+```bash
     ros2 service type <service_name>
     ros2 service list -t # Is another option to get the type
+```
 
 Another option is to search a service by its type, for that the command is:
 
+```bash
     ros2 service find <type_service_name>
+```
 
 And if you need more details on the type, you can run the command:
 
+```bash
     ros2 interface show <type_service_name>
+```
 
 Here it should display a text divided by "---" which is the indicator/separator between request and response. Finally, you can also play with services in the terminal by calling the corresponding server with the appropiate information, for example, if you want to create another turtle you can use:
 
+```bash
     ros2 service call /spawn  turtlesim/srv/Spawn "{x:2, y:5, theta:0.5, name:'Dan'}"
+```
 
 ![spawn_turtle](/m01_ros2_environment/resources/new_turtle.png)
 
@@ -197,28 +243,38 @@ Not everything needs to be configuration, but you will need a way to define some
 
 After you have run the turtle nodes, let's check the list of params of this nodes:
 
+```bash
     ros2 param list
+```
 
 ![ros2_param_list](/m01_ros2_environment/resources/ros2_param_list.png)
 
 Know, as in programming a certain languages, you can **get** or **set** this parameters, but you need to know before hand how they work and which values do they use.
 
+```bash
     ros2 param get <node_name> <param_name>
     ros2 param set <node_name> <param_name> <new_value>
+```
 
 The more visible params with *turtlesim* are the colors of the background, as you may know, colors can work with different formats, in case of this background we use RGB (Red, Green, Blue) with a range of 0-255 (integer) for each one. So, try to play with the colors of the turtlesim to get one of your favorite colors, for example:
 
+```bash
     ros2 param set /turtlesim background_g 255
+```
 
 But, this is not all, you can save the params and use them later, this process is called **dump** and **load**, the format supported for storing and loading parameters are the **.yaml** files. After you modify some parameters (and make sure everything is still working), you an try:
 
+```bash
     ros2 param dump /turtlesim > my_params.yaml
     # Close all and re-run the nodes
     ros2 param load my_params.yaml
+```
 
 Another possibility is to load the params in the moment you run the node, for that, you can use:
 
+```bash
     ros2 run turtlesim turtlesim_node --ros-args --params-file my_params.yaml
+```
 
 # When something goes wrong...
 
@@ -226,7 +282,9 @@ There would be case when you will need some help, you can find resources online 
 
 However, you should try **ros2doctor** at some point, for those cases when the ROS2 setup is not working as expected, as it check the platform, version, network, env and system, then it informs you about warnings and reason for the issues. For running you just use:
 
+```bash
     ros2 doctor
+```
 
 If everthing seems to be right, you should see a:
 
@@ -238,7 +296,9 @@ If you received a warn, it could have the form of
 
 For getting a report, you can use:
 
+```bash
     ros2 doctor --report
+```
 
 # Using data with ROS2
 
@@ -246,30 +306,41 @@ There would be times when you need to make tests, to make sure everything works 
 
 That is why we have **ros2 bag**, which is a command line tool, it is used to record, save and reproduce data. As always, let's use our favorite turtle companion:
 
+```bash
     ros2 run turtlesim turtlesim_node
     ros2 run turtlesim turtle_teleop_key
+```
 
 Then, create a directory for your **bag files**:
 
+```bash
     mkdir <your_bag_dirs>
     cd <your_bag_dirs>
+```
 
 Select a topic to save, and start recording, note that you can stop recording by using Ctrl + C.
 
+```bash
     ros2 bag record /turtle1/cmd_vel
+```
 
 In the case you want to record every topic, you just need to pass the **-a** flag. Now, to make sure you recorded the data, assign a file, you can use
 
+```bash
     ros2 bag record -o turtle_info /turtle1/cmd_vel /turtle1/pose # Ctrl+ C when you are done.
+```
 
 If you want to check the information of a bag file, you can use:
 
+```bash
     ros2 bag info turtle_info
+```
 
 Now, if you need to make some test with the same info, you just use the recorded data, you can play it with:
 
+```bash
     ros2 bag play turtle_info
-
+```
 
 # Resources 
 
