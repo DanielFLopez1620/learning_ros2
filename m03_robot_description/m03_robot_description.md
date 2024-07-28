@@ -2,6 +2,10 @@
 
 Here we are going to explore the aspects needed to generate a robot description that can be used for visualization and simulation. We will cover topics related with **tf2**, **urdf**, **sdf**, and other related.
 
+# RVIZ2
+
+TODO: Add info of visualization tool of ROS2 before entering topic.
+
 # TF2
 
 A transform is the basics of understating the system of a robot, it gives you the option to calculate the relations of the different parts of your robot. It can be a mobile robot, like turtlebot3, or a industrial robot, like Universal Robots Manipulators. 
@@ -87,7 +91,7 @@ For checking if it is working, on another terminal you can run:
 
 ![static_py_broad](/m03_robot_description/resources/static_py_broad.png)
 
-## Using a tf broadcaster:
+### Using a tf broadcaster:
 
 Well, a static frame doesn't seems to be interesting, as it doesn't move, but what if we broadcast the transform of the turtle (respective to the world), then we can track its movements, and we can achieve that with a pretty similar focus as the static broadcaster.
 
@@ -151,7 +155,7 @@ You can obtain the results below:
 
 ![turtle_py_broad](/m03_robot_description/resources/turtle_py_broad.png)
 
-## Using a tf listener:
+### Using a tf listener:
 
 If you remember from the previous module, when you have broadcaster (or a publisher), you will need someone listening (or subscribing) to that info to make usage of it in a node. That's what we are going to do here, as we will now listen to the transforms of the turtle.
 
@@ -204,7 +208,7 @@ After you have built it, you can run it with the command below, then you you can
 
 ![static_py_list](/m03_robot_description/resources/turtle_py_listener.png)
 
-## Adding a frame
+### Adding a frame
 
 Sometimes you will need addition frames to make possible some functions of the program, and they can be fixed or dynamic (as the broadcaster cases that were presented before). As you add more frames, will add complexity to the transformation tree, so you will need to consider proper implementations of your frames. If you remember, at the end of the module, we presented you a form to check the tranform tree with:
 
@@ -323,6 +327,11 @@ After this, we are ready to test it:
 
 You can check the results of the tf2 tree in the file: [frames_dyn_lettuce.pdf](/m03_robot_description/frames_dyn_lettuce.pdf).
 
+## TF2 with C++:
+
+TODO: Add cpp codes for static and dynamic broadcaster, listener and frame of tf2.
+TODO: Add explanation of those codes.
+
 # URDF: Unified Robot Description.
 
 URDF is the tool that relates with transforms in order to describe our robot_model that can be used for visualization (status of motors, sensors info, position in the world, and more) and simulation (for those cases when you do not have a robot or want to test it with different environments).
@@ -352,10 +361,7 @@ It is an useful tool for visual representation of a robot, and for adding collis
 
 ```XML
         <visual>
-            <cylinder length="0.6" radius="0.2"/>
-            <box size="0.6 0.1 0.2"/>
-            <sphere radius="0.2"/>
-            <mesh filename="package://my_package/meshes/patr.dae"/>
+            <cylinder leng ="package://my_package/meshes/patr.dae"/>
         </visual>
         <collision>
             <cylinder length="0.6" radius="0.2"/>
