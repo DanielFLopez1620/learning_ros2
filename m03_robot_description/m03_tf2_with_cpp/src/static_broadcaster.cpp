@@ -11,12 +11,12 @@ public:
     explicit StaticFramePublisher(char * tfs[])
         : Node("static_turtle_tf2_broadcaster")
     {
-        tf_static_broad_ = std::make_shared<tf2_ros::StaticBroadcaster>(this);
+        tf_static_broad_ = std::make_shared<tf2_ros::StaticTransformBroadcaster>(this);
 
         this->make_transforms(tfs);
     }
 private:
-    void make_transforms(char * tfs)
+    void make_transforms(char * tfs[])
     {
         geometry_msgs::msg::TransformStamped transf;
 

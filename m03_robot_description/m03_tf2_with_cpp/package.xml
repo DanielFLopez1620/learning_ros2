@@ -3,9 +3,11 @@
 <package format="3">
   <name>m03_tf2_with_cpp</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="dfelipe.lopez@gmail.com">dan1620</maintainer>
-  <license>TODO: License declaration</license>
+  <description>
+    Tf2 example package with C++ codes
+  </description>
+  <maintainer email="dfelipe.lopez@gmail.com">DanielFLopez1620</maintainer>
+  <license>BSD 3-Clause License</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
@@ -13,6 +15,8 @@
   <depend>tf2</depend>
   <depend>tf2_ros</depend>
   <depend>turtlesim</depend>
+  <depend>launch</depend>
+  <depend>launch_ros</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
