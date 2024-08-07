@@ -34,9 +34,20 @@ ament_target_dependencies(
   turtlesim
 )
 
+add_executable(turtle_listener src/turtle_listener.cpp)
+ament_target_dependencies(
+    turtle_listener
+    geometry_msgs
+    rclcpp
+    tf2
+    tf2_ros
+    turtlesim
+)
+
 install(TARGETS
   static_broadcaster
   turtle_broadcaster
+  turtle_listener
   DESTINATION lib/${PROJECT_NAME}  
 )
 
