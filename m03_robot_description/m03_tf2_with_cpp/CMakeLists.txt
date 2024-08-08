@@ -44,10 +44,19 @@ ament_target_dependencies(
     turtlesim
 )
 
+add_executable(lettuce_frame src/lettuce_frame.cpp)
+ament_target_dependencies(
+    lettuce_frame
+    geometry_msgs
+    rclcpp
+    tf2_ros
+)
+
 install(TARGETS
   static_broadcaster
   turtle_broadcaster
   turtle_listener
+  lettuce_frame
   DESTINATION lib/${PROJECT_NAME}  
 )
 
