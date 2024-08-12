@@ -33,11 +33,10 @@ public:
         spawner_ = this->create_client<turtlesim::srv::Spawn>("spawn");
 
         cmd_vel_pub_ = this->create_publisher<geometry_msgs::msg::Twist>(
-            "explorer/cmd_vel", 1);
+            "follower/cmd_vel", 1);
 
         timer_ = this->create_wall_timer(1s, 
             std::bind(&TurtleListener::on_timer, this));
-        
     }
 private:
     void on_timer()
@@ -82,35 +81,40 @@ private:
             }
             else
             {
-                if (spawner_->service_is_ready())
-                {
-                    auto request = std::make_shared<turtlesim::srv::Spawn::Request>();
-                    request->x = 4.0;
-                    request->y = 2.0;
-                    request->theta = 0.0;
-                    request->name = "follower";
+                RCLCPP_INFO(this->get_logger(), "Succesfully spawned turtle");
+                turtle_spawned_ = true;
+            }
+        }
+        else
+        {
+            if (spawner_->service_is_ready())
+            {
+                auto request = std::make_shared<turtlesim::srv::Spawn::Request>();
+                request->x = 4.0;
+                request->y = 2.0;
+                request->theta = 0.0;
+                request->name = "follower";
 
-                    using ServiceResponseFuture = 
-                        rclcpp::Client<turtlesim::srv::Spawn>::SharedFuture;
-                    
-                    auto resp_rec_callback = [this](ServiceResponseFuture future)
-                    {
-                        auto result = future.get();
-                        if(strcmp(result->name.c_str(), "follower") == 0)
-                        {
-                            turtle_srv_is_ready_ = true;
-                        }
-                        else
-                        {
-                            RCLCPP_ERROR(this->get_logger(), "Spawn didn't work");
-                        }
-                    };
-                    auto result = spawner_->async_send_request(request, resp_rec_callback);
-                }
-                else
+                using ServiceResponseFuture = 
+                    rclcpp::Client<turtlesim::srv::Spawn>::SharedFuture;
+                
+                auto resp_rec_callback = [this](ServiceResponseFuture future)
                 {
-                    RCLCPP_INFO(this->get_logger(), "Service is not ready");
-                }
+                    auto result = future.get();
+                    if(strcmp(result->name.c_str(), "follower") == 0)
+                    {
+                        turtle_srv_is_ready_ = true;
+                    }
+                    else
+                    {
+                        RCLCPP_ERROR(this->get_logger(), "Spawn didn't work");
+                    }
+                };
+                auto result = spawner_->async_send_request(request, resp_rec_callback);
+            }
+            else
+            {
+                RCLCPP_INFO(this->get_logger(), "Service is not ready");
             }
         }
     }

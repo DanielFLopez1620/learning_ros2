@@ -16,7 +16,7 @@ def generate_launch_description():
             executable='turtle_broadcaster',
             name='original_broadcaster',
             parameters=[
-                {'turtlename': 'follower'}
+                {'turtlename': 'turtle1'}
             ]
         ),
         DeclareLaunchArgument(
@@ -28,7 +28,7 @@ def generate_launch_description():
             executable='turtle_broadcaster',
             name='broadcaster2',
             parameters=[
-                {'turtlename': 'turtle2'}
+                {'turtlename': 'follower'}
             ]
         ),
         Node(
@@ -39,4 +39,5 @@ def generate_launch_description():
                 {'target_frame': LaunchConfiguration('target_frame')}
             ]
         ),
+        
     ])

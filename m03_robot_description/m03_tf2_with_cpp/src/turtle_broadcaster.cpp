@@ -17,7 +17,7 @@ public:
     TurtlePoseBroad()
         : Node("turtle_tf2_frame_publisher")
     {
-        turtlename_ = this->declare_parameter<std::string>("turtlename", "follower");
+        turtlename_ = this->declare_parameter<std::string>("turtlename", "turtle");
 
         tf_broad_ = 
             std::make_unique<tf2_ros::TransformBroadcaster>(*this);
@@ -47,9 +47,9 @@ private:
         tf2::Quaternion q;
         q.setRPY(0, 0, msg->theta);
         t_stamp.transform.rotation.x = q.x();
-        t_stamp.transform.rotation.x = q.y();
-        t_stamp.transform.rotation.x = q.z();
-        t_stamp.transform.rotation.x = q.w();
+        t_stamp.transform.rotation.y = q.y();
+        t_stamp.transform.rotation.z = q.z();
+        t_stamp.transform.rotation.w = q.w();
 
         tf_broad_->sendTransform(t_stamp);
     }
