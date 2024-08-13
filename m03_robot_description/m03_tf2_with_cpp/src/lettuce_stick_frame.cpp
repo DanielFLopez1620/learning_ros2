@@ -26,7 +26,7 @@ private:
         double x = now.seconds() * M_PI;
 
         geometry_msgs::msg::TransformStamped t_stamp;
-        t_stamp.header.stamp = now();
+        t_stamp.header.stamp = now;
         t_stamp.header.frame_id = "turtle1";
         t_stamp.child_frame_id = "lettuce1";
         t_stamp.transform.translation.x = 10 * sin(x);

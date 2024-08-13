@@ -52,11 +52,31 @@ ament_target_dependencies(
     tf2_ros
 )
 
+add_executable(lettuce_stick_frame src/lettuce_stick_frame.cpp)
+ament_target_dependencies(
+    lettuce_stick_frame
+    geometry_msgs
+    rclcpp
+    tf2_ros
+)
+
+add_executable(turtle_listen_time src/turtle_listen_time.cpp)
+ament_target_dependencies(
+    turtle_listen_time
+    geometry_msgs
+    rclcpp
+    tf2
+    tf2_ros
+    turtlesim
+)
+
 install(TARGETS
   static_broadcaster
   turtle_broadcaster
   turtle_listener
   lettuce_frame
+  lettuce_stick_frame
+  turtle_listen_time
   DESTINATION lib/${PROJECT_NAME}  
 )
 
