@@ -70,6 +70,16 @@ ament_target_dependencies(
     turtlesim
 )
 
+add_executable(turtle_time_travel src/turtle_time_travel.cpp)
+ament_target_dependencies(
+    turtle_time_travel
+    geometry_msgs
+    rclcpp
+    tf2
+    tf2_ros
+    turtlesim
+)
+
 install(TARGETS
   static_broadcaster
   turtle_broadcaster
@@ -77,6 +87,7 @@ install(TARGETS
   lettuce_frame
   lettuce_stick_frame
   turtle_listen_time
+  turtle_time_travel
   DESTINATION lib/${PROJECT_NAME}  
 )
 
