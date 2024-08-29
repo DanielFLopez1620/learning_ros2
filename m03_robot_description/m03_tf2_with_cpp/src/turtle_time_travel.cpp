@@ -1,62 +1,94 @@
-#include <chrono>
-#include <functional>
-#include <memory>
-#include <string>
+// ------------------------------ REQUIRED STANDARD HEADERS --------------------
+#include <chrono>     // Time management with different precisions
+#include <functional> // For functions and hash related
+#include <memory>     // Dynamic memory management
+#include <string>     // String utilities
 
-#include "rclcpp/rclcpp.hpp"
-#include "tf2/exceptions.h"
-#include "tf2_ros/transform_listener.h"
-#include "tf2_ros/buffer.h"
+// ------------------------------ ROS2 RELATED HEADERS ------------------------
+#include "rclcpp/rclcpp.hpp"             // ROS2 Client Library for C++
+#include "tf2/exceptions.h"              // Transform exceptions
+#include "tf2_ros/transform_listener.h"  // Transform listener
+#include "tf2_ros/buffer.h"              // Transform buffer
 
-#include "geometry_msgs/msg/transform_stamped.hpp"
-#include "geometry_msgs/msg/twist.hpp"
+// ----------------------------- ROS2 MSGS DEPENDENCIES -----------------------
+#include "geometry_msgs/msg/transform_stamped.hpp"   // Tf with time stamped
+#include "geometry_msgs/msg/twist.hpp"               // Velocity command
 
-#include "turtlesim/srv/spawn.hpp"
+// ----------------------------- ROS2 SRVS DEPENDENCIES -----------------------
+#include "turtlesim/srv/spawn.hpp"   // Service to create new turtles
 
-using namespace std::chrono_literals;
+// ----------------------------- NAMESPACES CONSIDERATIONS --------------------
+using namespace std::chrono_literals;  // For time user defined literals
 
-class TurtleListener : public rclcpp::Node
+class TurtleTimeTravelListener : public rclcpp::Node
 {
 public:
-    TurtleListener()
-        : Node("turtle_tf2_frame_listener"),
+    /**
+     * User defined constructor that initialize the node with the name 
+     * turtle_tf2_time_travel_listener, declares a target frame, a transform buffer, 
+     * a turtle spawner server client and a cmd_vel publisher to create the
+     * transform listener linked to a timer callback.
+     */
+    TurtleTimeTravelListener()
+        : Node("turtle_tf2_time_travel_listener"),
           turtle_srv_is_ready_(false),
           turtle_spawned_(false)
     {
+        // Consider declared parameter for the name
         target_frame_ = this->declare_parameter<std::string>("target_frame",
             "turtle1");
         
+        // Buffer that has current time information
         tf_buf_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
 
+        // Instance transform listener that considers a pointer to the buffer
         tf_listen_ = std::make_shared<tf2_ros::TransformListener>(*tf_buf_);
 
+        // Instance a spawner server client
         spawner_ = this->create_client<turtlesim::srv::Spawn>("spawn");
 
+        // Instance a cmd_vel publisher to create follower of tfs
         cmd_vel_pub_ = this->create_publisher<geometry_msgs::msg::Twist>(
             "follower/cmd_vel", 1);
 
+        // Implement timer with the proper callback
         timer_ = this->create_wall_timer(1s, 
-            std::bind(&TurtleListener::on_timer, this));
+            std::bind(&TurtleTimeTravelListener::on_timer, this));
     }
 private:
+    /**
+     * Callback for the timer that will lookup for the transform between the 
+     * turtles, then interpret the distance and make the other turtle follow 
+     * the first one, but based on a previous time.
+     * 
+     * If the turtle that follows the first one doesn't extis, it will spawn a
+     * new one.s
+     */
     void on_timer()
     {
+        // Obtain and assign names of the transform of interest
         std::string fromFrameRel = target_frame_.c_str();
         std::string toFrameRel = "follower";
 
+        // Check if the spawn service is ready
         if(turtle_srv_is_ready_)
         {
+            // Check if the follower turtle spawned
             if(turtle_spawned_)
             {
+                // Declare stamped transform
                 geometry_msgs::msg::TransformStamped t_stamp;
 
                 try
                 {
-                    rclcpp::Time when = this->get_clock()->now() - rclcpp::Duration(5, 0);
+                    // Look up for transform as soon as it is available
+                    rclcpp::Time when = 
+                        this->get_clock()->now() - rclcpp::Duration(5, 0);
                     t_stamp = tf_buf_->lookupTransform(
                         toFrameRel, fromFrameRel, when, 250ms);
                     
-                    // You can also reconsider additional args in the next orders:
+                    // For the previous lookup, you can also reconsider 
+                    // additional args in the next orders:
                     // 1. Target Frame
                     // 2. The time to transfor to
                     // 3. Source frame
@@ -66,6 +98,7 @@ private:
                 }
                 catch(const tf2::TransformException & ex)
                 {
+                    // Display message in case of error for tfs look up
                     RCLCPP_INFO(
                         this->get_logger(), "Could find transform between"
                         "%s to %s: %s", toFrameRel.c_str() , 
@@ -74,39 +107,48 @@ private:
                     return;
                 }
 
+                // Declare twist message for velocity commands
                 geometry_msgs::msg::Twist msg;
 
+                // Assign rotation based  on the x and y distance of the tfs
                 static const double scaleRotationRate = 1.0;
                 msg.angular.z = scaleRotationRate * atan2(
                     t_stamp.transform.translation.y,
                     t_stamp.transform.translation.x);
 
+                // Assing linear velocity based on Pitagoras Theorem scaled
                 static const double scaleForwardSpeed = 0.5;
                 msg.linear.x = scaleForwardSpeed * sqrt(
                     pow(t_stamp.transform.translation.x, 2) +
                     pow(t_stamp.transform.translation.y, 2));
 
+                // Publish velocity command
                 cmd_vel_pub_->publish(msg);
             }
             else
             {
+                // Log to show that turtle was spawned
                 RCLCPP_INFO(this->get_logger(), "Succesfully spawned turtle");
                 turtle_spawned_ = true;
             }
         }
         else
         {
+            // If the service is ready...
             if (spawner_->service_is_ready())
             {
+                // Make the request to spawn a turtle in the given position
                 auto request = std::make_shared<turtlesim::srv::Spawn::Request>();
                 request->x = 4.0;
                 request->y = 2.0;
                 request->theta = 0.0;
                 request->name = "follower";
 
+                // Create future response
                 using ServiceResponseFuture = 
                     rclcpp::Client<turtlesim::srv::Spawn>::SharedFuture;
                 
+                // Lambda for checking that the turtle was created
                 auto resp_rec_callback = [this](ServiceResponseFuture future)
                 {
                     auto result = future.get();
@@ -119,6 +161,8 @@ private:
                         RCLCPP_ERROR(this->get_logger(), "Spawn didn't work");
                     }
                 };
+
+                // Send request to spawn turtle with verification
                 auto result = spawner_->async_send_request(request, resp_rec_callback);
             }
             else
@@ -127,20 +171,30 @@ private:
             }
         }
     }
+    // Declare flags of service
     bool turtle_srv_is_ready_;
     bool turtle_spawned_;
+
+    // Declare string for parameter
+    std::string target_frame_;
+    
+    // Declare ROS related private attributes for service, timer, publisher, tf
     rclcpp::Client<turtlesim::srv::Spawn>::SharedPtr spawner_{nullptr};
     rclcpp::TimerBase::SharedPtr timer_{nullptr};
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub_{nullptr};
     std::shared_ptr<tf2_ros::TransformListener> tf_listen_{nullptr};
     std::unique_ptr<tf2_ros::Buffer> tf_buf_;
-    std::string target_frame_;
 };
 
 int main(int argc, char * argv[])
 {
+    // Initialize ROS2 Client Library for C++
     rclcpp::init(argc, argv);
-    rclcpp::spin(std::make_shared<TurtleListener>());
+
+    // Spin node by using shared pointer
+    rclcpp::spin(std::make_shared<TurtleTimeTravelListener>());
+    
+    // When spin ends, shutdown and close
     rclcpp::shutdown();
     return 0;
 }

@@ -31,9 +31,9 @@ class TurtleListener : public rclcpp::Node
 public:
     /**
      * User defined constructor that initialize the node with the name 
-     * turtle_tf2_frame_lister, declares a target frame, a transform buffer, 
+     * turtle_tf2_frame_listener, declares a target frame, a transform buffer,
      * a turtle spawner server client and a cmd_vel publisher to create the
-     * transform listerner linked to a timer callback.
+     * transform listener linked to a timer callback.
      */
     TurtleListener()
         : Node("turtle_tf2_frame_listener"),
@@ -57,14 +57,14 @@ public:
         cmd_vel_pub_ = this->create_publisher<geometry_msgs::msg::Twist>(
             "follower/cmd_vel", 1);
 
-        // Implement timer with it sproper callback
+        // Implement timer with it proper callback
         timer_ = this->create_wall_timer(1s, 
             std::bind(&TurtleListener::on_timer, this));
     }
 private:
     /**
      * Callback for the timer that will lookup for the transform between the 
-     * turtles, then interpret the distnace and make the other turtle follow 
+     * turtles, then interpret the distance and make the other turtle follow 
      * the first one.
      * 
      * If the turtle that follows the first one doesn't extis, it will spawn a
@@ -94,7 +94,7 @@ private:
                 }
                 catch(const tf2::TransformException & ex)
                 {
-                    // Display message in case of error for tfs loop up
+                    // Display message in case of error for tfs look up
                     RCLCPP_INFO(
                         this->get_logger(), "Could find transform between"
                         "%s to %s: %s", toFrameRel.c_str() , 
@@ -133,7 +133,7 @@ private:
             // If the service is ready....
             if (spawner_->service_is_ready())
             {
-                // Make the request to spawn a turtle in the givne position
+                // Make the request to spawn a turtle in the given  position
                 auto request = 
                     std::make_shared<turtlesim::srv::Spawn::Request>();
                 request->x = 4.0;
@@ -176,7 +176,7 @@ private:
     // Declare string for parameter
     std::string target_frame_;
 
-    // Declare ros related private attributes for service, timer, publisher, tf
+    // Declare ROS related private attributes for service, timer, publisher, tf
     rclcpp::Client<turtlesim::srv::Spawn>::SharedPtr spawner_{nullptr};
     rclcpp::TimerBase::SharedPtr timer_{nullptr};
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_pub_{nullptr};

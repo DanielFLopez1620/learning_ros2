@@ -27,19 +27,22 @@ public:
     /**
      * User defined constructor that initialize the node under the name 
      * "fixed_lettuce_tf2_broadcaster", declare a broadcaster and a timer
-     * linked with a callback.
+     * linked with a callback to publish the tf.
      */
     LettuceFrameBroadcaster() 
         : Node("fixed_lettuce_tf2_broadcaster")
     {
+        // Declare a transform broadcaster
         tf_broad_ = std::make_shared<tf2_ros::TransformBroadcaster>(this);
+        
+        // Timer that will be linked with the publish and brodcast of the tf
         timer_ = this->create_wall_timer(
             250ms, std::bind(&LettuceFrameBroadcaster::broad_callback, this));
     }
 
 private:
     /**
-     * Callback that takes place when a timer specifies it, to broadcast a 
+     * Callback that takes place when a timer request it, to broadcast a 
      * transform that stays fixed relative to the turtle1
      */
     void broad_callback()
