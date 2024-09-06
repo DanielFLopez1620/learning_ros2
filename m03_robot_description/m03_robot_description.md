@@ -42,6 +42,55 @@ Now, let's move to the practice part, we will begin with Python, this practice i
 
 The practice with turtlesim will make on making frames and tfs with both Python and C++ on ROS2, the objective program will be to create a turtle chaser in different cases.
 
+## TF2 with C++:
+
+Let's begin by creating the package we will use:
+
+```bash
+ros2 pkg create --build-type ament_cmake --license BSD-Clause3 --dependencies geometry_msgs rclcpp tf2 tf2_ros turtlesim -- m03_tf2_with_cpp
+```
+
+The dependencies required for using tf2 are:
+
+- **goemetry_msgs:** For geometric interfaces, like poses, twists and related.
+- **rclcpp:** ROS2 Client Library for C++.
+- **tf2_ros:** Transform library for ROS
+- **tf2:** Trasnform library
+- **turtlesim:** Oriented to playing with 2D turtles
+
+Once, we have set up things, we will proceed to explain how to use the transform with C++, then the codes used are based on the [TF2 Tutorial Documentation](https://docs.ros.org/en/humble/Tutorials/Intermediate/Tf2/Tf2-Main.html), so if you need more information do not doubt to check them.
+
+### Using a static TF broadcaster:
+
+You can understand a transform broadcaster as a continious publisher of a transforms
+that relates to components of a robot, two objects in a world or the world with an object.
+
+Here the focus is to talk about a static tf broadcaster, which, can be used to describe the relationship between a robot base and sensors (LIDARs, cameras, IMUs...) or non moving parts (like sensors supports, chassis, protections...), do not forget this as we will use related terms when designing our robots.
+
+In C++, to create a static transform broadcaster you will need the following libraries:
+
+- **geometry_msgs/msg/transform_stamped.hpp** : To use transforms messages that has attached a stamp in the header for time considerations.
+- **tf2/Linearath/Quaternion.h** : Rotations in ROS works with Quaternions rather than RPY system, then we import the quaternion to make the conversions. If you do not know about Quaternions, after this module you will find information about them.
+- **tf2_ros/static_transform_broadcaster** : Header that has the information for using the definiton of the static transform broadcaster.
+
+The code for this definition is [static_broadcaster.cpp](/m03_robot_description/m03_tf2_with_cpp/src/static_broadcaster.cpp), which is commented so go aand check it out, but we would like to make some additional highlights of commands presented in the code:
+
+- **```tf_static_broad_ = std::make_shared<tf2_ros::StaticTransformBroadcaster>(this);```** : Declaration of a static broadcaster by using a shared pointer and consider the node class itself.
+
+- **```geometry_msgs::msg::TransformStamped transf```** : Instance of a stamped transform, its attributes are *header* with *stamp* (time of creation or considered time for the TF) and *frame_id* (name of the parent frame), *child_frame_id* (which is the name of the child frame), *transform* which has *translation* (considered in 3 components in meters whihc are x, y and z) and *rotation* (considerred as a quaternion in terms of x, y, z and w) 
+
+- **```<quaternion>.setRPY( <r>, <p>, <y>);```** : If you use RPY system, you can create the coordinates in quaternions by using the *setRPY* method.
+
+### Using a dynamic TF broadcaster:
+
+### Using a TF listener:
+
+### Adding a Frame:
+
+### Using timeouts:
+
+### Using time traivel:
+
 ## TF2 with Python:
 
 Let's start creating a new package for Python:
