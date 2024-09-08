@@ -75,13 +75,59 @@ In C++, to create a static transform broadcaster you will need the following lib
 
 The code for this definition is [static_broadcaster.cpp](/m03_robot_description/m03_tf2_with_cpp/src/static_broadcaster.cpp), which is commented so go aand check it out, but we would like to make some additional highlights of commands presented in the code:
 
+- **```std::shared_ptr<tf2_ros::StaticTransformBroadcaster> tf_static_broad;```** Instance of a static tf brodcaster by considering a
+shared pointer.
+
 - **```tf_static_broad_ = std::make_shared<tf2_ros::StaticTransformBroadcaster>(this);```** : Declaration of a static broadcaster by using a shared pointer and consider the node class itself.
 
 - **```geometry_msgs::msg::TransformStamped transf```** : Instance of a stamped transform, its attributes are *header* with *stamp* (time of creation or considered time for the TF) and *frame_id* (name of the parent frame), *child_frame_id* (which is the name of the child frame), *transform* which has *translation* (considered in 3 components in meters whihc are x, y and z) and *rotation* (considerred as a quaternion in terms of x, y, z and w) 
 
 - **```<quaternion>.setRPY( <r>, <p>, <y>);```** : If you use RPY system, you can create the coordinates in quaternions by using the *setRPY* method.
 
+What will the code do? Well, it will create a custom transform between two origins, where the first one is the **world** (the parent) and the second one with a user provided name. Why the parent is **world**, becasue it is the base origin for all the applications of ROS and simulation, it is the [0,0,0] coordinate and that is the reason we add in the code we compare the name of the transform to check avoid repetitive parent names.
+
+```C++
+if (strcmp(argv[1], "world") == 0)
+{
+    RCLCPP_INFO(logger, "Cannot name child as parent, with name 'world'");
+    return 1;
+}
+```
+
+After you have build the package, you can run this code with:
+
+```bash
+# ros2 run m03_tf2_with_cpp static_broadcaster child_name x y z roll pitch yaw
+ros2 run m03_tf2_with_cpp static_broadcaster new_tf 1.0 2.0 0.0 0.0 0.0 0.0
+```
+
+You may not notice anything at first,  but if you list the topics, you may notice the **/tf_static** topic, and if you subscribe or make an echo you should notice something like this:
+
+
+```bash
+ros2 topic list
+ros2 topic echo /tf_static
+```
+
+[TODO: Add image of echo tf_static]
+
+Also, you can do something interesting if you do not like just watching raw info, you can use **RVIZ2** to check the tfs, for that you can run:
+
+rviz2 -d m03_tf2_with_cpp/rviz/tf_static_view.rviz
+
+The option added with *-d* is to link a file to configure a path to obtain a config file for RVIZ and get the visualization of the panels already set up for a specific situation. The result of the transforms is:
+
+![tf_static_rviz2](/m03_robot_description/resources/rviz2_tf_static.png)
+
+In the image, you can watch the two origins **world** and **new_tf** and the calculation of the tf which is represented by the yellow arrow that connects both. Also, do not forget that for origins, we have that XYZ come in the order of RGB, which means, red axis is X axis, green is Y axis and blue is Z axis. 
+
 ### Using a dynamic TF broadcaster:
+
+You may also have the situation where the TFs move, for example, in the case of rotation of parts attached to motors or articulations of a robot. For this cases, you need a continious broadcasting to know details about the robot position and states, then let's check the implementation in C++.
+
+For now, and going on, we will use our favorite turtle friends for the tutorial, and do not worry, every turtle was treated in a peaceful and nice way.
+
+For using the turtles with TFs we need to broadcast according a origin,  and you guess right, according to the **world** frame, then for each turtle must be a broadcater, but this doesn't mean that if we have 9 turtles we need 9 different source files for the nodes, as we will take advantage of the parameters.z
 
 ### Using a TF listener:
 
