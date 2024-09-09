@@ -94,6 +94,26 @@ if (strcmp(argv[1], "world") == 0)
 }
 ```
 
+Then, do not forget to modify the **CMakeLists.txt**:
+
+```CMake
+add_executable(static_broadcaster src/static_broadcaster.cpp)
+ament_target_dependencies(
+  static_broadcaster
+  geometry_msgs
+  rclcpp
+  tf2
+  tf2_ros
+)
+...
+
+install(TARGETS
+  static_broadcaster
+  ...
+  DESTINATION lib/${PROJECT_NAME}  
+)
+```
+
 After you have build the package, you can run this code with:
 
 ```bash
@@ -113,7 +133,7 @@ ros2 topic echo /tf_static
 
 Also, you can do something interesting if you do not like just watching raw info, you can use **RVIZ2** to check the tfs, for that you can run:
 
-rviz2 -d m03_tf2_with_cpp/rviz/tf_static_view.rviz
+rviz2 -d m03_tf2_with_cpp/rviz/static_tf_view.rviz
 
 The option added with *-d* is to link a file to configure a path to obtain a config file for RVIZ and get the visualization of the panels already set up for a specific situation. The result of the transforms is:
 
@@ -127,7 +147,67 @@ You may also have the situation where the TFs move, for example, in the case of 
 
 For now, and going on, we will use our favorite turtle friends for the tutorial, and do not worry, every turtle was treated in a peaceful and nice way.
 
-For using the turtles with TFs we need to broadcast according a origin,  and you guess right, according to the **world** frame, then for each turtle must be a broadcater, but this doesn't mean that if we have 9 turtles we need 9 different source files for the nodes, as we will take advantage of the parameters.z
+For using the turtles with TFs we need to broadcast according a origin,  and you guess right, according to the **world** frame, then for each turtle must be a broadcater, but this doesn't mean that if we have 9 turtles we need 9 different source files for the nodes, as we will take advantage of the parameters.
+
+The node we will be using comes from the source file called [turtle_broadcaster.cpp](/m03_robot_description/m03_tf2_with_cpp/src/turtle_broadcaster.cpp). At first, we need to change some libraries and include new libraries:
+
+- **tf2_ros/transform_braodcaster.h:** For a broadcast of dynamic transforms, it will replace the static transform broadcaster library we presented previously.
+
+- **turtlesim/msg/pose.hpp:** As we will be playing with turtles in turtlesim, we need to subscribe to the */pose* topic of the turtles to broadcast the correspoding transforms, and we will need this message from the turlesim package.
+
+Now, you can check the full code on the specified file, but some additional highlight (different from the ones mentioned in the static broadcaster) are:
+
+- **```using namespace std::placeholders;```** : Included to manage the argument placement in a shorter way for the callbacks, for example, to simply use _1 instaed of std::placeholders::_1
+- **```turtle_name = this->declare_parameter<std::string>("turtlename", "turtle");```** : As we mentioned before, in order to make the broadcaster usable with different turtles, we can take advantages of parameters, here we declare a std::string parameter with a default "turtle" value.
+- **```rclcpp::Subscription<turtlesim::msg::Pose>::SharedPtr subs;```** : Instance of a suscription that uses pose messages of the turtlesim declared by using a shared pointer.
+- **```subs_ = this->create_subscription<turtlesim::msg::Pose>(topic_name, 10, std::bind(TurtlePoseBroad::handle_turtle_pose, this, _1));```** Create the subscription for the given topic that in the code is created by the combination of the parameter and the /pose addition, and link the callback to create the transform based on the posed received.
+- **```t_stamp.child_fram_id = turtlename_.c_str();```** For the stamped transform the child frame name, the string parameter is used to keep unique names.
+- **```t_stamp.transform.translation.x = msg->x```** As the transforms is based on the x,y position of the turtle, therefore dynamic, for the traslational arguments we use the received x/y positions.
+- **```q.setRPY(0,0, msg->theta);```** As we are in a plane, the angular movement comes from the Z axis, in the pose, it is the corresponding to the theta position, which is reinterpreted and converted to quaternion here.
+
+After this, do not forget to edit the **CMakelist.txt** file:
+
+```CMake
+
+add_executable(turtle_broadcaster src/turtle_broadcaster.cpp)
+ament_target_dependencies(
+  turtle_broadcaster
+  geometry_msgs
+  rclcpp
+  tf2
+  tf2_ros
+  turtlesim
+)
+...
+
+install(TARGETS
+  turtle_broadcaster
+  ...
+  DESTINATION lib/${PROJECT_NAME}  
+)
+
+```
+
+You can run this node (after building with colcon and sourcing) with:
+
+```bash
+ros2 run turtlesim turtlesim_node # Terminal 1
+ros2 run m03_tf2_with_cpp turtle_broadcaster --ros-args --param turtlename:=turtle1 # Terminal 2
+```
+
+Again, at once you should only watch the turtlesim world, and nothing more, but if you use RVIZ to watch the TFs, you should be able to see it, you can run:
+
+```bash
+rviz2 -d m03_tf2_with_cpp/rviz/dynamic_tf_view.rviz
+```
+
+![turtle1_broadcast_dyn](/m03_robot_description/resources/rviz2_turtle1_broad_1.png)
+
+And if you start playing with the turtle teleop, you should see in RVIZ
+the tfs moving along with the turtle.
+
+![turtle1_broadcast_dyn2](/m03_robot_description/resources/rviz2_turtle1_broad_2.png)
+
 
 ### Using a TF listener:
 
