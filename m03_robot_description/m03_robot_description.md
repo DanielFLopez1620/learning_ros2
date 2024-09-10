@@ -129,7 +129,7 @@ ros2 topic list
 ros2 topic echo /tf_static
 ```
 
-[TODO: Add image of echo tf_static]
+TODO: Add image of echo tf_static
 
 Also, you can do something interesting if you do not like just watching raw info, you can use **RVIZ2** to check the tfs, for that you can run:
 
@@ -203,13 +203,62 @@ rviz2 -d m03_tf2_with_cpp/rviz/dynamic_tf_view.rviz
 
 ![turtle1_broadcast_dyn](/m03_robot_description/resources/rviz2_turtle1_broad_1.png)
 
-And if you start playing with the turtle teleop, you should see in RVIZ
-the tfs moving along with the turtle.
+And if you start playing with the turtle teleop, you should see in RVIZ the origins and tf moving along with the turtle.
 
 ![turtle1_broadcast_dyn2](/m03_robot_description/resources/rviz2_turtle1_broad_2.png)
 
+Now, as we will have to run the broadcaster and specify the parameter for each turtle we create, we can use a *launch.py* file to make it easier, like this one:
+
+```Python
+from launch import LaunchDescription
+from launch.substitutions import LaunchConfiguration
+from launch_ros.actions import Node
+
+def generate_launch_description():
+    return LaunchDescription([
+
+        Node(
+            package='turtlesim',
+            executable='turtlesim_node',
+            name='turtle_node'
+        ),
+
+        Node(
+            package='m03_tf2_with_cpp',
+            executable='turtle_broadcaster',
+            name='original_broadcaster',
+            parameters=[
+                {'turtlename': 'turtle1'}
+            ]
+        ),
+    ])
+```
 
 ### Using a TF listener:
+
+A listener is needed when you want to follow up the movements of transforms and origins, in this case, we will use it to make sure a turtle follows another one by connecting the listener to the cmd_vel topic.
+
+This example is located in the file [turtle_listener.cpp](/m03_robot_description/m03_tf2_with_cpp/src/turtle_listener.cpp), and as always, you can check the commented code, but do not forget some additional considerations presented below:
+
+- **```#include "tf2/exceptions.h"```** : Used to consider proper exceptions that may happen if no relation between the transforms is found or other problems related with tf2.
+
+- **```include "tf2_ros/transform_listener.h```** : To use a transform listener in C++
+
+- **```include "turtlesim/srv/spawn.hpp```** We will need to spawn a turtle to follow another one, so we have to import the corresponding service.
+
+- **```using namespace std::chrono_literals;```** To use user-defined suffixes related with time from the chrono library.
+
+- **```target_frame_ = this->declare_parameter<std::string>("target_frame", "turtle1");```** : As we will follow one turtle, we must know its name to select the correct transform, and we use it like a parameter to allow changes to follow different turtles with different nodes.
+
+- **```rclcpp::Client<turtlesim::srv::Spawn>SharedPtr spawner_{nullptr};```** : Instance of a service client that uses the Spawn service from turtlesim.
+
+- **```spawner_ = this->create_client<turtlesim::srv::Spawn>("spawn");```** : Definition of a client that will be used to spawn one single turtle which future mission would be to follow another one, it is defined by using a shared pointer.
+
+- **```rclcpp::TimerBase::SharedPtr timer_{nullptr};```** : Instance of a timer by using a shared pointer.
+
+- **```timer_ = this->create_wall_timer(1s, std::bind(&TurtleTimeTravelListener::on_timer, this))```** : Definition of a timer that will be used to make the turtle follow another turtle, by calling the on_timer member function to do that task.
+
+->
 
 ### Adding a Frame:
 
