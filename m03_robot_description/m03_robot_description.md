@@ -258,7 +258,99 @@ This example is located in the file [turtle_listener.cpp](/m03_robot_description
 
 - **```timer_ = this->create_wall_timer(1s, std::bind(&TurtleTimeTravelListener::on_timer, this))```** : Definition of a timer that will be used to make the turtle follow another turtle, by calling the on_timer member function to do that task.
 
-->
+- **```try {...} catch(const tf2::TransformException & ex) {...}```** : As we will handle look up in the transforms we should check for exception in the transform is not found or the calculation cannot be done, for that purpose, you can use the ```tf2::TransformException```.
+
+- **```t_stamp = tf_buf_->lookupTransform(toFrameRel, fromFrameRel, now, 250ms);```** : The lookup will search for a transform that relates the to specified frames, in this case, in the present time with a timeout. We use the transform buffer to save the calculated transform if everything goes right.
+
+- **```msg.angular.z = scaleRotationRate * atan2(t_stamp.transform.traslation.y, t_stamp.transform.traslation.x);```** : We will publish an angular movement to point directly to the position of the turtle we are following, for that we use the relation of x and y in arctangent squared.
+
+- **```msg.linear.x = scaleForwardSpeed * sqrt(pow(t_stamp.transform.translation.x,2) + pow(t_stamp.transform.traslation.y,2));```** : For the linear movement we will consider the pythagorean theorem and launch the movement underscaled.
+
+- **```auto result = spwaner->async_send_request(request, resp_rec_callbac)```** : If the turtle follower hasn't been created it will end up with this command that considers a ```request``` to spawn a turtle, and a lambda function ```resp_rec_callback``` to check if the response was recieved.
+
+After this, do not forget to include the source file in the **CMakeLists.txt** and compile it: 
+
+```CMake
+add_executable(turtle_listener src/turtle_listener.cpp)
+ament_target_dependencies(
+    turtle_listener
+    geometry_msgs
+    rclcpp
+    tf2
+    tf2_ros
+    turtlesim
+)
+
+install(TARGETS
+  ...
+  turtle_listener
+  DESTINATION lib/${PROJECT_NAME}  
+)
+```
+
+With that said, it is moment to proceed to the execution, for this case, we will use a launch file, as we need to broadcast the position (in tf terms) of two turtles, and listen to the first one we created the launch file called [tf2_demo.launch.py](/m03_robot_description/m03_tf2_with_cpp/launch/tf2_demo.launch.py), which content is:
+
+```Python
+from launch import LaunchDescription
+from launch.substitutions import LaunchConfiguration
+from launch.actions import DeclareLaunchArgument
+from launch_ros.actions import Node
+
+def generate_launch_description():
+    """
+    Script oriented to luanch the turtlesim node, and create the broadcaster
+    and listener for turtle 1 and the "follower" turtle which is going to be 
+    spawned during the launch execution.
+    """
+    return LaunchDescription([
+
+        Node(
+            package='turtlesim',
+            executable='turtlesim_node',
+            name='turtle_node'
+        ),
+
+        Node(
+            package='m03_tf2_with_cpp',
+            executable='turtle_broadcaster',
+            name='original_broadcaster',
+            parameters=[
+                {'turtlename': 'turtle1'}
+            ]
+        ),
+
+        DeclareLaunchArgument(
+            'target_frame', default_value='turtle1',
+            description='Target frame name.'
+        ),
+
+        Node(
+            package='m03_tf2_with_cpp',
+            executable='turtle_broadcaster',
+            name='broadcaster2',
+            parameters=[
+                {'turtlename': 'follower'}
+            ]
+        ),
+
+        Node(
+            package='m03_tf2_with_cpp',
+            executable='turtle_listener',
+            name='listener',
+            parameters=[
+                {'target_frame': LaunchConfiguration('target_frame')}
+            ]
+        ),    
+    ])
+```
+
+Make sure you have build the package, and you can run:
+
+```bash
+ros2 launch m03_tf2_with_cpp tf2_demo.launch.py
+```
+
+TODO: Add image of pending launch
 
 ### Adding a Frame:
 
