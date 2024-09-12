@@ -133,7 +133,9 @@ TODO: Add image of echo tf_static
 
 Also, you can do something interesting if you do not like just watching raw info, you can use **RVIZ2** to check the tfs, for that you can run:
 
+```bash
 rviz2 -d m03_tf2_with_cpp/rviz/static_tf_view.rviz
+```
 
 The option added with *-d* is to link a file to configure a path to obtain a config file for RVIZ and get the visualization of the panels already set up for a specific situation. The result of the transforms is:
 
@@ -353,6 +355,44 @@ ros2 launch m03_tf2_with_cpp tf2_demo.launch.py
 TODO: Add image of pending launch
 
 ### Adding a Frame:
+
+You can add frames that are based on the already existing frames, for example, have you ever played minecraft? If you remember you can ride over a pig and drive it by using a rod with a carrot, you can consider that the frame /carrot is linearly separed of the frame /pig. And that's what we plan to do here, but with a turtle and a lettuce (I think lettuces is what turtles eat, well that was the first suggestion of google :O).
+
+First, we will create a static frame separated from the turtle by using a broadcaster, for that reason, go and check the code and comments in [lettuce_frame.cpp](/m03_robot_description/m03_tf2_with_cpp/src/lettuce_frame.cpp), some additional notes on the code are:
+
+- **```tf_broad_ = std::make_shared<tf2_ros::TransformBroadcaster>(this)```** : For creating frames, we need broadcasters, and as we did in the static and dynamic broadcaster, we will have to do something similar here.
+
+- **```timer_ = this->create_wall_timer(250ms, std::bind(&LettuceFrameBroadcaster::broad_callback, this));```** : The timer links a callback for make the dynamic broadcaster.
+
+- **```t_stamp.header.frame_id = "turtle1";```** : Here our parent won't be the /world, rather the first turtle (or any other turtle), which means you can nest transforms, but remember you can have many childs with one parent but no multiple parents and one child frame.
+
+
+Remember to add the executable to your CMakeLists.txt, 
+```CMake
+add_executable(lettuce_frame src/lettuce_frame.cpp)
+ament_target_dependencies(
+    lettuce_frame
+    geometry_msgs
+    rclcpp
+    tf2_ros
+)
+
+...
+
+install(TARGETS
+  ...
+  lettuce_frame
+  DESTINATION lib/${PROJECT_NAME}  
+)
+```
+
+In this case, we will also use a launch for considering the broadcast of the turtles and having one follower turtle, the launch in this case is [lettuce_fix_frame.launch.py](/m03_robot_description/m03_tf2_with_cpp/launch/lettuce_fix_frame.launch.py).
+
+```bash
+ros2 launch m03_tf2_with_cpp lettuce_fix_frame_launch.py
+```
+
+TODO: Add image of lettuce fix frame.
 
 ### Using timeouts:
 
