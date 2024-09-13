@@ -394,9 +394,84 @@ ros2 launch m03_tf2_with_cpp lettuce_fix_frame_launch.py
 
 TODO: Add image of lettuce fix frame.
 
-### Using timeouts:
+Second, you can have dynamic frames, for example, what if the stick and the rod are very long and the wind make it spin everywhere in the map? Well, that is the case of the code [lettuce_stick_frame.cpp](/m03_robot_description/m03_tf2_with_cpp/src/lettuce_stick_frame.cpp), which is a modification of the previous show code to make some circular based movements according the time, for that reason, the only changes with the previous code (besides node and variable names) are:
 
-### Using time traivel:
+- **```double x = now.seconds() * M_PI;```** : By considering the stamped time, we multiply it by a constant (PI) for make a changing factor according time in terms of a circle.
+
+- **```t_stamp.transform.traslation.x = 10 * sin(x);```** : The dynamic part will come along with a math relation of a circle in the x component and y component given by sine and cosine. But always keeping the same orientation.
+
+After you check the code, and make sure you have added the executable to the **CMakeListst.txt**:
+
+```CMake
+add_executable(lettuce_stick_frame src/lettuce_stick_frame.cpp)
+ament_target_dependencies(
+    lettuce_stick_frame
+    geometry_msgs
+    rclcpp
+    tf2_ros
+)
+
+...
+
+install(TARGETS
+  ...
+  lettuce_stick_frame
+  DESTINATION lib/${PROJECT_NAME}  
+)
+```
+
+You can use the launch file [lettuce_dyn_frame.launch.py](/m03_robot_description/m03_tf2_with_cpp/launch/lettuce_dyn_frame.launch.py) to make the execution in a proper way.
+
+```bash
+ros2 launch m03_tf2_with_cpp lettuce_dyn_frame.launch.py
+```
+
+TODO: Add image of lettuce_dyn_frame.launch.py
+
+Just as a warning, the thing maybe go a little crazy with the turtles as the dynamic frame is moving a lot even when you do not move the turtle1.
+
+### Using timeouts and time travel:
+
+When using loopup transform, you can do more than just searching it at the current time, let's take a look at the options we can make with **LookupTransform**:
+
+```C++
+tf_stamped = tf_buffer_->lookupTransform(target_frame, source_frame, time, timeout, ...);
+```
+
+For the previous lookup, you can also reconsider additional args in the next orders:
+
+1. Target Frame
+2. The time to transfor to
+3. Source frame
+4. The time at which source frame will be evaluated
+5. Frame that does not change over time
+6. Time to wait for the target frame to become available
+
+The previosly means that you can generate timeout listeners just to wait or implement a later action according to the past, which is illustrated in the code [turtle_listen_time.cpp](/m03_robot_description/m03_tf2_with_cpp/src/turtle_listen_time.cpp) which only modification form the original litener is the increase of the timeout. But you can also make **time_travels** as in the example code [turtle_time_travel.cpp](/m03_robot_description/m03_tf2_with_cpp/src/turtle_time_travel.cpp).
+
+In this case, after you add the proper exectuable info in the **CMakeListst.txt** and build your package, you can run both examples and see what happen, here we do not add a photo as at first instance the turtle movement can be similar but the functionality is different, so do not doubt to experiment with them.
+
+For running with the tfs timeout, you can execute:
+
+```bash
+ros2 launch m03_tf2_with_cpp tf2_time_demo.launch.py
+```
+
+For running with the tfs time travel, you can execute:
+
+```bash
+ros2 launch m03_tf2_with-cpp tf2_time_travel.launch,py
+```
+
+You may be wondering why to have two launches that look almost the same, and you will be right, you could simply have added an argument to change the node name. Try to do it and remember the lessons learned on module 2 about launch files.
+
+### Debugging
+
+### Quaternion Fundamentals
+
+### Message Filter
+
+For now, this is all related to TF2 with CPP, now you can decide if check the paralelism between tf2 with Python and tf2 with CPP, or go further and check about URDF.
 
 ## TF2 with Python:
 
@@ -526,7 +601,7 @@ The code for this section is [turtle_listener.py](/m03_robot_description/m03_tf2
 - **```TransformException```** : Exception that can be handled when using tfs, usually related with no relationship found of target and source frame.
 
 For more orientations, check the comments present in the code and also the documentation. Once you end the node, remember to add the proper entrypoint at the **setup.py** file.
-
+<tf_stamp>
 ```Python
     'turtle_listen = m03_tf2_with_py.turtle_listener:main',
 ```
@@ -574,6 +649,7 @@ Sometimes you will need addition frames to make possible some functions of the p
 
 If you do it, while running the last launch we made, you can discover that the transforms are:
 
+## TF2 with C++:
 ```bash
     ros2 launch m03_tf2_with_py tf2_demo.launch.py
 ```
@@ -682,11 +758,6 @@ After this, we are ready to test it:
 ```
 
 You can check the results of the tf2 tree in the file: [frames_dyn_lettuce.pdf](/m03_robot_description/frames_dyn_lettuce.pdf).
-
-## TF2 with C++:
-
-TODO: Add cpp codes for static and dynamic broadcaster, listener and frame of tf2.
-TODO: Add explanation of those codes.
 
 # URDF: Unified Robot Description.
 
