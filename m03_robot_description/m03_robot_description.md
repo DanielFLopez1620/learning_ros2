@@ -469,6 +469,8 @@ You may be wondering why to have two launches that look almost the same, and you
 
 ### Quaternion Fundamentals
 
+ros2 param set /rpy_to_quaternion_publisher pitch 0.3
+
 ### Message Filter
 
 For now, this is all related to TF2 with CPP, now you can decide if check the paralelism between tf2 with Python and tf2 with CPP, or go further and check about URDF.

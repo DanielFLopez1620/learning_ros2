@@ -90,6 +90,16 @@ ament_target_dependencies(
     turtlesim
 )
 
+add_executable(rpy_guide_for_viz src/rpy_guide_for_viz.cpp)
+ament_target_dependencies(
+    rpy_guide_for_viz
+    geometry_msgs
+    rclcpp
+    tf2
+    tf2_ros
+    turtlesim
+)
+
 
 install(TARGETS
   static_broadcaster
@@ -100,6 +110,7 @@ install(TARGETS
   turtle_listen_time
   turtle_time_travel
   turtle_listen_debug
+  rpy_guide_for_viz
   DESTINATION lib/${PROJECT_NAME}  
 )
 
