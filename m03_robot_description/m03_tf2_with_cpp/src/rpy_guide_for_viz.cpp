@@ -27,7 +27,7 @@ public:
 
         // Set a timer to periodically broadcast the transform
         timer_ = this->create_wall_timer(
-            std::chrono::milliseconds(100), std::bind(&RPYToQuaternionPublisher::broadcast_transform, this));
+            std::chrono::seconds(2), std::bind(&RPYToQuaternionPublisher::broadcast_transform, this));
     }
 
 private:
