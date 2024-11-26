@@ -40,3 +40,106 @@ Before moving on to the installation, let's make clear some keywords and names:
 - **Container format:** Combination of the namespaces, control groups and UnionFS into a wrapper called a container format.
 
 - **OCI:** Which comes from Open Container Initiative, it is a lightweight, open-governance structure that is intended to create open industry standards around container formats and runtimes, which have two formats: The Runtime Specification and the Image Specification.
+
+- **Images:** Read-only templates that allow to produces containers during runtime, which can be created from multiple lyers.
+
+- **Registries:** Holds Docker images, which can be public or private, so you can access and download/upload images. The public registry for Docker is called *Docker Hub*.
+
+- **Index:** Manages user accounts, permission, searches, tagging and so on on the public web interface of a Docker registry.
+
+- **Container:** They run images and contain everything that is required to run a certain application.
+
+- **Repository:** A collection of images tracked by a control system (GUIDs).
+
+# Installation
+
+As this repository is intended to work with Debian/Ubuntu for ROS 2 usage, we will focus on the installation with only these systems. For the official installation, I encourage you to check the [Docker Documentation Installation for Ubuntu](https://docs.docker.com/engine/install/ubuntu/).
+
+Make sure you have 64-bit architecture and you have a kernel aboute 3.8 on Debian systems, you can check this with:
+
+~~~bash
+uname -i # Architecture
+uname -r # Kernel
+~~~
+
+Also, you muss have an appropiate storage backend (by default it is the *device-mapper* in Ubuntu) and support for *cgroups* and *namespaces*, check it with the following commands:
+
+~~~bash
+grep device-mapper /proc/devices # Storage backend for Ubuntu
+grep -i namespaces /boot/config-6.9.3-76060903-generic # Check namespaces for my kernel version
+grep -i cgroups /boot/config-6.9.3-76060903-generic # Check cgroups for my kernel version
+~~~
+
+We will show the commands for installation as November 2024, so keep in mind this can change for future Docker releases:
+
+1. Uninstall previous Docker packages that may get conflicts:
+
+~~~bash
+for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do sudo apt-get remove $pkg; done
+~~~
+
+2. Add Docker repositories for apt installation
+
+~~~bash
+# Add Docker's official GPG key:
+sudo apt-get update
+sudo apt-get install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the repository to Apt sources:
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+~~~
+
+3. Install with apt:
+
+~~~bash
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+~~~
+
+4. Create the docker group and add user:
+
+~~~bash
+sudo groupadd docker
+sudo usermod -aG docker $USER
+~~~
+
+5. Test Docker with a Hello World:
+
+~~~bash
+docker run hello-world
+~~~
+
+If you get errors, I encourage you to check the [post-installation step](https://docs.docker.com/engine/install/linux-postinstall/) for Linux. 
+
+Also, you can use the [Get Docker Script](https://get.docker.com/) for the Docker Engine installation for systems like CentOS, Fedora, Debian, Ubuntu and Raspbian. You can do it with:
+
+~~~bash
+curl -fsSL get.docker.com -o get-docker.sh
+sudo sh get-docker.sh
+~~~
+
+We will start soon to learn more about Docker, in case you have questions, a good start can be to check the Docker manual:
+
+~~~bash
+man docker
+man docker-ps
+~~~
+
+And of course, do not forget to check the Docker Documentation for the [CLI references](https://docs.docker.com/reference/cli/docker/), with this said, let's begin our Docker journey.
+
+# Docker containers and CLI tools:
+
+Docker objective is to run containers, so our first steps are going to be related in how to start, stop, list, delete... them, which will be related with applications like CI/CD (Continious Integration / Continious Deployment), PaaS (Platform as a Service) and others.
+
+- Cheking version
+
+~~~bash
+docker version
+~~~
+
