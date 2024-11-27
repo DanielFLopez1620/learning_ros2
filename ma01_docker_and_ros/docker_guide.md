@@ -137,9 +137,57 @@ And of course, do not forget to check the Docker Documentation for the [CLI refe
 
 Docker objective is to run containers, so our first steps are going to be related in how to start, stop, list, delete... them, which will be related with applications like CI/CD (Continious Integration / Continious Deployment), PaaS (Platform as a Service) and others.
 
-- Cheking version
+- **Cheking version:** Here you do not use --version, prefer to use:
 
 ~~~bash
 docker version
 ~~~
+
+- **Listing and searching images:** As mentioned earlier, the images come from [Docker Hub](https://hub.docker.com/) mainly, then you can search for them only. However, you can run a search in the terminal. Keep in mind that when listing the images, the convention may be ```<user>/<name>```
+
+~~~bash
+# docker search [options] <keyword>
+docker search --limit 10 ros
+~~~
+
+![docker_search_ros](/ma01_docker_and_ros/resources/docker_search_ros.png)
+
+~~~bash
+# If you need help, you can use --help in all the docker commands.
+docker search --help
+~~~
+
+- **Pulling an image:** If you found an image that may be useful for you, then the next step is to bring it locally. This process (like in git) is called *pull*. Just make sure you are connected to internet through the Docker Client.
+
+~~~bash
+# docker pull [options] NAME[:TAG|@DIGEST]
+docker pull ros:latest
+~~~
+
+- **Listing images:** To print what images you have locally installed or that were created manually.
+
+~~~bash
+# docker images [options] <name>:<tag>
+docker images
+~~~
+
+- **Running images:** With the image present in your system, you can use them to start containers and see what happens with the logging. This process will merge the layers, allocate a unique ID to the container, allocate a filesystem (mounting a read/write lyer for the container), allocate a bridge network and assign a IP.
+
+~~~bash
+# docker run [options] <image> [command] [args...]
+# Options:
+#     -i : Interactive (STDIN mode)
+#     -t : Allocate pseudo-tty and attaches it to the standard input
+docker container run -i -t --name con_ubuntu ubuntu /bin/bash
+~~~
+
+![docker_run_ubuntu](/ma01_docker_and_ros/resources/docker_run_ubuntu.png)
+
+~~~bash
+# To exit of a contair use Ctrl + D or type exit
+$ exit
+
+# To deatch the container you can press Ctrl + P + Q
+~~~
+
 
