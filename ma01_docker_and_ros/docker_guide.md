@@ -140,54 +140,108 @@ Docker objective is to run containers, so our first steps are going to be relate
 - **Cheking version:** Here you do not use --version, prefer to use:
 
 ~~~bash
-docker version
+    docker version
 ~~~
 
 - **Listing and searching images:** As mentioned earlier, the images come from [Docker Hub](https://hub.docker.com/) mainly, then you can search for them only. However, you can run a search in the terminal. Keep in mind that when listing the images, the convention may be ```<user>/<name>```
 
 ~~~bash
-# docker search [options] <keyword>
-docker search --limit 10 ros
+    # docker search [options] <keyword>
+    docker search --limit 10 ros
 ~~~
 
 ![docker_search_ros](/ma01_docker_and_ros/resources/docker_search_ros.png)
 
 ~~~bash
-# If you need help, you can use --help in all the docker commands.
-docker search --help
+    # If you need help, you can use --help in all the docker commands.
+    docker search --help
 ~~~
 
 - **Pulling an image:** If you found an image that may be useful for you, then the next step is to bring it locally. This process (like in git) is called *pull*. Just make sure you are connected to internet through the Docker Client.
 
 ~~~bash
-# docker pull [options] NAME[:TAG|@DIGEST]
-docker pull ros:latest
+    # docker pull [options] NAME[:TAG|@DIGEST]
+    docker pull ros:latest
 ~~~
 
-- **Listing images:** To print what images you have locally installed or that were created manually.
+- **Listing images:** To print what images you have locally installed or that were created manually. A expanded note can be found on [docker image ls | Docker Docs](https://docs.docker.com/engine/reference/commandline/image_ls/)
 
 ~~~bash
-# docker images [options] <name>:<tag>
-docker images
+    # docker image ls [options] <name>:<tag>
+    # docker images [options] <name>:<tag>
+    docker image list
 ~~~
 
-- **Running images:** With the image present in your system, you can use them to start containers and see what happens with the logging. This process will merge the layers, allocate a unique ID to the container, allocate a filesystem (mounting a read/write lyer for the container), allocate a bridge network and assign a IP.
+- **Running images:** With the image present in your system, you can use them to start containers and see what happens with the logging. This process will merge the layers, allocate a unique ID to the container, allocate a filesystem (mounting a read/write lyer for the container), allocate a bridge network and assign a IP. For info on the flags and options, check the [docker container run | Docker Docs](https://docs.docker.com/reference/cli/docker/container/run/).
 
 ~~~bash
-# docker run [options] <image> [command] [args...]
-# Options:
-#     -i : Interactive (STDIN mode)
-#     -t : Allocate pseudo-tty and attaches it to the standard input
-docker container run -i -t --name con_ubuntu ubuntu /bin/bash
+    # docker container run [options] <image> [command] [args...]
+    # docker run [options] <image> [command] [args...]
+    # Options:
+    #     -i : Interactive (STDIN mode)
+    #     -t : Allocate pseudo-tty and attaches it to the standard input
+    #     -rm : Remove container after it exits
+    docker container run -i -t --rm --name con_ubuntu ubuntu /bin/bash
 ~~~
 
 ![docker_run_ubuntu](/ma01_docker_and_ros/resources/docker_run_ubuntu.png)
 
 ~~~bash
-# To exit of a contair use Ctrl + D or type exit
-$ exit
+    # To exit of a contair use Ctrl + D or type exit
+    $ exit
 
-# To deatch the container you can press Ctrl + P + Q
+    # To deatch the container you can press Ctrl + P + Q
 ~~~
 
+**NOTE:** A container can be referred by three ways: Name, short ID or container ID.
 
+- **Listing containers:** To check running/available containers. You can check more of the command listed below on [docker container ls | Docker Docs](https://docs.docker.com/reference/cli/docker/container/ls/)
+
+~~~bash
+    # docker container ls [options]
+    # docker ps [options]
+    # Options:
+    #     -a : List running and stopped coniners
+    #     -q : Obtain only containers ID
+    #     -l : Last created
+    docker container ls -a
+~~~
+
+- **Logging containers:** To look at the logs, you can specify the logs of a certain the container (STDOUT/STDERR).Check more info on [docker container log | Docker Docs](https://docs.docker.com/engine/reference/commandline/container_logs/). You can use the commando shown below or navigate to the file **```/var/lib/docker/containers/<container_id>/...```**
+
+~~~bash
+    # docker container log [options] <container>
+    docker container log con_ubuntu
+~~~
+
+- **Stopping a container:** At this point you may be wondering how to stop a container you accidentally exit, check the  next command for this, and do not forget to learn more about it in [docker container stop | Docker Docs](https://docs.docker.com/engine/reference/commandline/container_stop/).
+
+~~~bash
+    # docker container stop [options] <container> <containers...>
+    # docker stop [options] <container> <containers...>
+    docker container stop con_ubuntu # Make sure it is running
+~~~
+
+- **Stopping all the containers:** For those moments of desesperations, you can use the following command:
+
+~~~bash
+    docker container stop $(docker container list -q)
+~~~
+
+- **Delete containers:** Once you stopped a container, thre may be a possibilty yo do not need it more, then you can use the *rm* alike from Docker Cli, more info on [docker container rm | Docker Guides](https://docs.docker.com/engine/reference/commandline/container_rm/). Keep in mind that the container have to be stopped before deleting.
+
+~~~bash
+    # docker container rm [options] <container> 
+    # docker rm [options] <container>
+    # Options:
+    #       -f : To forcefully remove a container without stopping it first
+    docker container rm con_ubuntu
+~~~
+
+- **Forcing deletion of containers:** If you encounter that you need to stop a container before deleting it, and you have to do it for all the containers in your machine, you can run:
+
+~~~bash
+    docker container stop $(docker container ls -q)
+    docker container rm $(docker container ls -aq)
+~~~
+    
