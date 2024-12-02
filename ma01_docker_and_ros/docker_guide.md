@@ -266,12 +266,63 @@ docker container prune
 docker container run --restart=always -d -i -i --name con_ubuntu_2 ubuntu /bin/bash
 ~~~
 
-- **Getting privileged access in containers:** You may be familiar with superusers (sudo and related commands), for example, when doing installations from *apt* in Ubuntu. However, by default, Dockers start with limited capabilities and you may need privileged access to be able to generate some actions.
+- **Getting privileged access in containers:** You may be familiar with superusers (sudo and related commands), for example, when doing installations from *apt* in Ubuntu. However, by default, Dockers start with limited capabilities and you may need privileged access to be able to generate some actions. Of course, this relates with security issues that you will have to consider. Start by checking the [runtime privilege and linux capabilities | Docker Docs](https://docs.docker.com/engine/containers/run/#runtime-privilege-and-linux-capabilities).
 
 ~~~bash
 # docker container run --privileged [options] <image> [commands] [args...]
 docker container run --privileged -i -t --name con_ubuntu_3 ubuntu /bin/bash
+
+# docker container run --cap-drop=<consideration> [options] <image> [command] [args...]
+#     --cap-drop=CHOWN : Prevent usage of chown
+docker container run --cap-drop=CHOWN -i -t --name con_ubuntu_4 ubuntu /bin/bash
 ~~~
+
+- **Accessing host device inside a container:** 
+
+Docker allow the option to run a container with access to the device (host), for this process the flag ```--device``` exists.  Just make sure to provide the access to the desired path and avoid to give permission to confidential information or important part of your disks.
+
+~~~bash
+# docker container run --device=<HostDevice>:<DeviceMapping>:<Permissions> [options] <image> [command] [args...]
+docker container run --device=/dev/sdc:/dev/xvdc -i -t --name con_ubuntu_5 ubuntu /bin/bash
+~~~
+
+- **Injecting a new process into a running container:**
+Curiosity about the container calls, and you may need to see inside it. In this cases, you can use ```exec``` for including process in your running containers. More info on [docker container exec](https://docs.docker.com/engine/reference/commandline/container_exec/)
+
+~~~bash
+# docker exec [options] <container> <command> [args...]
+docker container exec -it con_ubuntu_4  /bin/bash
+~~~
+
+- **Reading container metadata:**
+This process is called inspection, and as you may suppose, the command for this is ```inspect```. For more info, go and check [docker container inspect](https://docs.docker.com/engine/reference/commandline/container_inspect/).
+
+~~~bash
+#docker container inspect [options] <container> [containers....]
+# Options:
+#     --f='{{.NetworkSettings.IPAdress}}' : Get ip of container
+docker container inspect con_ubuntu_5
+~~~
+
+- **Labeling and filtering containers:**
+When you have a lot of images and containers, adding a label may be useful to keep track of them easily, as they can be used for filtering/selection purposes. It is only made by adding the option ```--label``` when running the container. This can be added with inspections too.
+
+~~~bash
+# docker contianer run --label <label> [options] <image> [command]
+docker run --label ubuntu.current=jellyfish --name con_ubuntu_6 ubuntu
+
+# Then filter with label and check
+docker containeer ls -a --filter label=ubuntu.current=jellyfish
+~~~
+
+- **Reaping a zombie inside a container:**
+This is not about an apocalypsis, rather when a process states in a transient state whie it is dead but the entry in the process table is kept until the parent process reads this and exits it. This removal process is called *reaping*. For this, you may have heard of ```systemd``` and ```init```. In Docker, this also happens, and you have to take attention to them. Consider the next example:
+
+~~~bash
+# docker container run --init [options] <images> [command] [args...]
+docker container run --name con_ubuntu_7 --rm --init ubuntu pstree -p
+~~~
+
 
 
 
