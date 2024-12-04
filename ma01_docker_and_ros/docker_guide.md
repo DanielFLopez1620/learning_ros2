@@ -323,8 +323,48 @@ This is not about an apocalypsis, rather when a process states in a transient st
 docker container run --name con_ubuntu_7 --rm --init ubuntu pstree -p
 ~~~
 
+# Working with Docker Images:
 
+We have explored about containers, however we will change the focus on the Docker images as they are the essentila building blocks of the containerization paradigm (and are the base for creating containers). And if you do not find a image with the requierements you are searching, you can create your own.
 
+### Image based on a container:
 
+When we start a container, it mounts a read/write layer which is destroyed if we do not save it. Then, you can use ```docker container commit``` to save the layer and create a new image based on a running or stopped container. The command is shown below:
+
+~~~bash
+# docker container commit [options] <container> [repository[:tag]]
+docker container commit --author "Dan" --message "mod-ubuntu" con_ubuntu_5 committed_ubuntu
+~~~
+
+You can even track changes (like when using Git) for the images considered. You can do it with the ```docker container diff``` command:
+
+~~~bash
+# docker container diff
+docker diff commited_ubuntu
+~~~
+
+For more information you can check:
+
+- [docker container commit | Docker Docs](https://docs.docker.com/engine/reference/commandline/container_commit/)
+
+### Logging for Docker Image Registry
+
+There would be times you will publish your images to the public or share them in a private way, for both cases you will need a Docker registry (if you do not want to depend on sending all the files each time some friend calls your for a copy). To push an image to a public repository, you must log in to a Docker registry and you must have the ownership of the repostitory. In this cases we use ```docker login``` and ```docker logout```:
+
+~~~bash
+docker login
+# It should ask for your username (DockerID) and password, or sent you to a web page to validate your credentials.
+
+docker logout
+# If you want to sign out
+~~~
+
+You can use your Docker ID from [DockerHub](https://hub.docker.com/) or use a registry from [Gitlab](https://about.gitlab.com/)
+
+For more information, you can check:
+
+- [docker container login | Docker Docs](https://docs.docker.com/engine/reference/commandline/login/)
+- [docker container logout | Docker Docs](https://docs.docker.com/engine/reference/commandline/logout/)
+- [Docker credential helpers | Github](https://github.com/docker/docker-credential-helpers)
 
     
