@@ -367,4 +367,57 @@ For more information, you can check:
 - [docker container logout | Docker Docs](https://docs.docker.com/engine/reference/commandline/logout/)
 - [Docker credential helpers | Github](https://github.com/docker/docker-credential-helpers)
 
-    
+### Publishing an image to a registry:
+
+When you have an image, you can push (like in Github) to DockerHub (or other Docker image registry service) with the command ```docker image push```.
+
+~~~bash
+# docker image push [options] <name>[:<tag>]
+# docker push [options] <name>[:<tag>]
+~~~
+
+After this, you can go to your account and check the changes, where you should find your new image pushed. Also, you can try to publish your images to a locally hosted registry if you provide the URL (with the proper port) to it.
+
+You can find more information on:
+
+- [docker image push | Docker Docs](https://docs.docker.com/engine/reference/commandline/image_push/)
+
+### Reviewing the history of an image:
+
+The command ```docker image history``` is an analogy to the ```git log``` and ```git diff``` commands, so let's check it out:
+
+~~~bash
+# docker image history [options] <image>
+docker image history ubuntu
+~~~
+
+If you are searching for commits message, you can use our old friend ```docker image inspect``` with filters to achieve it:
+
+~~~bash
+docker image inspect --format='{{.Comment}} ubuntu_con_5
+~~~
+
+For more information you can check:
+
+- [docker image history | Docker Docs](https://docs.docker.com/engine/reference/commandline/image_history/)
+
+## Removing an image:
+
+You may know about ```rm``` command and his dangerous ```rm -rf```... Well, Docker also have options to remove images when providing the short ID, long ID, image digests or image name (along with tag or just the latest will be deleted), with the command ```docker image rm``` and it also have a force option with the flag ```-f```.
+
+~~~bash
+# docker image rm [options] <image> [images...]
+docker image rm ubuntu
+~~~
+
+Be careful when using ```-f``` because if you delete a image with a container spawned, you will end up with dangling images. If you get in the need of deleting every container and image, please stop them first and you can try:
+
+~~~bash
+docker container stop $(docker container ls -q)
+docker container rm $(docker container ls -a -q)
+docker image rm $(docker image ls -q)
+~~~
+
+For more information, you can check:
+
+- [docker image rm | Docker Docs](https://docs.docker.com/engine/reference/commandline/image_rm/)
