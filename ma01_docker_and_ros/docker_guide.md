@@ -327,6 +327,8 @@ docker container run --name con_ubuntu_7 --rm --init ubuntu pstree -p
 
 We have explored about containers, however we will change the focus on the Docker images as they are the essentila building blocks of the containerization paradigm (and are the base for creating containers). And if you do not find a image with the requierements you are searching, you can create your own.
 
+## Working with CLI Tools:
+
 ### Image based on a container:
 
 When we start a container, it mounts a read/write layer which is destroyed if we do not save it. Then, you can use ```docker container commit``` to save the layer and create a new image based on a running or stopped container. The command is shown below:
@@ -401,7 +403,7 @@ For more information you can check:
 
 - [docker image history | Docker Docs](https://docs.docker.com/engine/reference/commandline/image_history/)
 
-## Removing an image:
+### Removing an image:
 
 You may know about ```rm``` command and his dangerous ```rm -rf```... Well, Docker also have options to remove images when providing the short ID, long ID, image digests or image name (along with tag or just the latest will be deleted), with the command ```docker image rm``` and it also have a force option with the flag ```-f```.
 
@@ -421,3 +423,101 @@ docker image rm $(docker image ls -q)
 For more information, you can check:
 
 - [docker image rm | Docker Docs](https://docs.docker.com/engine/reference/commandline/image_rm/)
+
+### Exporting an image:
+
+You can export images with tarballs to pass them to other people that may not have permission to use public images or images hosted in a Docker registry. For this exits the command ```docker image save```, so let's check it out:
+
+~~~bash
+# docker iamge save [-output=<tarfile>] <image> [images...]
+docker image save --output=saved_ubuntu.tar con_ubuntu_6
+~~~
+
+You can export the container filesystem by providing the next command:
+
+~~~bash
+docker container export --output=saved_ubuntu.tar <container_id>
+~~~
+
+For more information you can find: 
+
+- [docker image save | Docker Docs]()
+
+### Importing an image:
+
+A colleague passed you an tarball image, you aren't going to uncompress it with ```tar``` command (Here we do not do that). Rather we will use ```docker image import```, the command info is shown below:
+
+~~~bash
+# docker image import [options] <file/url> [repository:[tag]]
+docker image import saved_ubuntu.tar ubuntu:imported
+~~~
+
+For more information you can check:
+
+- [docker image import | Docker Docs](https://docs.docker.com/engine/reference/commandline/image_import/)
+
+## Working with a Dockerfile:
+
+**Dockerfiles** are text-based build instruction that eneable the definition of the conent of the Docker image and automate the image creation. After the images are created with a **Dockerfile**, the are considered to be immutable.
+
+
+### Building an image with a Dockerfile:
+
+The format of a *Dockerfile* consist of a instruction with its arguments, where the instruction is generally in uppercase (but it is not case sensitive):
+
+~~~
+INSTRUCTION arguments
+~~~
+
+The instructions are evaluated in order, from top to botton, to form the layers of the container. Some of the instructions are:
+
+- **FROM:** The first instruction as it is set for considering a base image, if the image is provided without tag. Then the *latest* is considered.
+
+~~~Dockerfile
+# Some options for FROM instruction
+FROM <image>
+FROM <image>:<tag>
+FROM [registry_hostname[:port]/[user/](respository_name:version)]
+~~~
+
+- **RUN:** Refers to run a command in the shell or an executable.
+
+~~~Dockerfile
+# Like the sh -c option
+RUN <command> [params...]
+
+# Executable
+RUN <exectuable> [params...]
+~~~
+
+- **LABEL:** Give a label to an image
+
+- **CMD:** Provide a default executable while starting a container. But only CMD instruction will be honored/considered in a Dockerfile, so use it wisely.
+
+~~~Dockerfile
+CMD <executable> [params...]
+CMD [params...]
+CMD <command> [params...]
+~~~
+
+First, let's create a directory to work
+
+~~~bash
+mkdir docker_ws
+cd docker_ws
+~~~
+
+Second, create a file and open it for writing:
+
+~~~bash
+mkdir docker_example
+cd docker_example
+code Dockerfile # If you are not using VS Code, use nano or vim
+~~~
+
+Third, let's add the content to the file:
+
+~~~Dockerfile
+FROM ubuntu
+
+~~~
