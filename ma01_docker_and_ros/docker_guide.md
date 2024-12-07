@@ -500,24 +500,108 @@ CMD [params...]
 CMD <command> [params...]
 ~~~
 
-First, let's create a directory to work
+- **ENTRYPOINT:** Allow to configure the container as an executable, and can only be used once per Dockerfile.
+
+~~~Dockerfile
+ENTRYPOINT <executable> [params...]
+ENTRYPOINT <command> [params...]
+~~~
+
+- **EXPOSE:** Exposes network port on the contaier.
+
+~~~Dockerfile
+EXPOSE <port> [<port>] [...]
+~~~
+
+- **ENV:** It habdles environment variables, by creting a ```key``` linked to a ```value```. It will persist while the container is running.
+
+~~~Dockerfile
+ENV <key> <value>
+~~~
+
+- **ADD:** Copies and then passes a file from a source (base OS) to the destintation (inside Docker container). The source can be a URL.
+
+~~~Dockerfile
+ADD <source> <destination>
+ADD ["<source>" ... "<destination">] # If there are white spaces present
+~~~
+
+- **COPY:** Similar to ```ADD``` but focused only in files.
+
+~~~Dockerfile
+COPY ["<source>" ... "<destination>"]
+~~~
+
+- **VOLUME:** Creates a mount point with the given name and flag for mounting a external (outside container) volumen.
+
+~~~Dockerfile
+VOLUME ["<path/to/desired/volume>"]
+~~~
+
+- **USER:** Set a user for the instructions that are present below this one. So, do not forget to consider the proper permissions and workflow after this decision.
+
+~~~Dockerfile
+USER <username>/<UID>
+~~~
+
+- **WORKDIR:** Set a working directory for a ```RUN```, ```CMD``` or ```ENTRYPOINT``` command.
+
+~~~Dockerfile
+WORKDIR <path>
+~~~
+
+- **ONBUILD:** Adds trigger instructions to the image that will be executed later.
+
+~~~Dockerfile
+ONBUILD [instructions]
+~~~
+
+Now we are ready to give it a try...
+
+First, let's create a directory to work:
 
 ~~~bash
-mkdir docker_ws
-cd docker_ws
+mkdir docker_examples
+cd docker_examples
 ~~~
 
 Second, create a file and open it for writing:
 
 ~~~bash
-mkdir docker_example
-cd docker_example
+mkdir 01_first_dockerfile
+cd 01_first_dockerfile
 code Dockerfile # If you are not using VS Code, use nano or vim
 ~~~
 
 Third, let's add the content to the file:
 
 ~~~Dockerfile
+# Base image
 FROM ubuntu
 
+# Adding personal info
+LABEL maintainer="DanielFLopez1620"
+
+# Add a command
+CMD ["echo",  "Hello from inside the container"]
 ~~~
+
+Fourth, you can build the image, just make sure you are in the directory of the Dockerfile.
+
+~~~bash
+docker image build .
+~~~
+
+Finally, you can add it to your repositories (remeber to be loggued in your current session) with:
+
+~~~bash
+docker image build -t 01_first_dockerfile_try .
+~~~
+
+For more information you can check:
+
+- [Builder | Docker Docs](https://docs.docker.com/engine/reference/builder/)
+
+### Usage case with ROS
+
+We are in a repository to learn about robotics... so why do not give it a try with Docker...?
