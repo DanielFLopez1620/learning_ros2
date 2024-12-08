@@ -604,4 +604,104 @@ For more information you can check:
 
 ### Usage case with ROS
 
-We are in a repository to learn about robotics... so why do not give it a try with Docker...?
+We are in a repository to learn about robotics... so why do not give it a try with Docker...? It can be useful when you need to work with a different distro or you may need an isolated set up that is easily replicable for your robotic project... no matter the option, you can try to create your own Dockerfile for robotics.
+
+
+For this, we will create a custom container for ROS 2 Humble, that can work with a brief ROS2 Comms example.
+
+
+~~~Dockerfile
+# Use ROS 2 Humble base image
+FROM ros:humble
+
+# Set up the working directory in the container
+WORKDIR /workspace
+
+# Install dependencies for ROS 2 and your package
+RUN apt-get update && apt-get install -y \
+    ros-humble-ament-cmake \
+    ros-humble-rclcpp \
+    ros-humble-std-msgs \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy your ROS 2 workspace into the container
+COPY ./ros2_ws /workspace
+
+# Install the ROS 2 workspace dependencies
+RUN . /opt/ros/humble/setup.sh && \
+    colcon build --symlink-install
+
+# Source the ROS 2 setup script and the workspace setup script
+CMD . /opt/ros/humble/setup.sh && \
+    . /workspace/install/setup.sh && \
+    ros2 run <your_package_name> <your_node_name>
+~~~
+
+# Integrating DevContainers... 
+
+(For later...)
+
+~~~Dockerfile
+# Our footprint the Open Source Robotics Foundation image for ROS 2 humble
+FROM docker.io/osrf/ros:humble-desktop-full
+
+# Add maintainer info
+LABEL maintainer="DanielFLopez1620 <dfelipe.lopez@gmail.com"
+
+# Argument for user
+ARG USERNAME=ros2_user
+
+# User Identifier (1000 - 10000 for application accounts)
+ARG USER_UID=1000 
+
+# Group identifier (100 + for the user's group)
+ARG USER_GID=$USER_UID
+
+# Create the user and give proper permissions
+RUN groupadd --gid $USER_GID $USERNAME \
+    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
+    && apt-get update \
+    && apt-get install -y sudo \
+    && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
+    && chmod 0440 /etc/sudoers.d/$USERNAME
+
+# Update system package
+RUN apt-get update && apt-get upgrade -y
+
+# Install python package manager
+RUN apt-get install -y python3-pip
+
+# Set enviromental variable for calling shell
+ENV SHELL /bin/bash
+
+# Configure Colcon Mixin
+RUN colcon mixin remove default
+RUN colcon mixin add default https://raw.githubusercontent.com/colcon/colcon-mixin-repository/master/index.yaml
+RUN colcon mixin update default
+
+# Install Gazebo
+RUN apt-get update && apt-get install -y ros-$ROS_DISTRO-ros-gz
+
+# Setup CycloneDDS
+RUN apt-get update && apt-get install -y ros-$ROS_DISTRO-rmw-cyclonedds-cpp
+
+# Install TurtleBot3
+RUN apt-get update && apt-get install -y ros-$ROS_DISTRO-turtlebot3*
+
+# Configure User
+USER $USERNAME
+RUN echo "source /opt/ros/humble/setup.bash" >> /home/ros2_user/.bashrc
+RUN echo "source /home/ros2_user/ws/install/setup.bash || echo 'Workspace not Ready. Run colcon build at /home/ros2_user/ws'" >> /home/ros2_user/.bashrc
+RUN echo "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp" >> /home/ros2_user/.bashrc
+RUN echo "export TURTLEBOT3_MODEL=burger" >> /home/ros2_user/.bashrc
+RUN echo "export GAZEBO_MODEL_PATH=$GAZEBO_MODEL_PATH:/opt/ros/$ROS_DISTRO/share/turtlebot3_gazebo/models" >> /home/ros2_user/.bashrc
+
+CMD ["/bin/bash"]
+~~~
+
+
+For more information I encourage you to check the projects of [JuanCSUCoder]() which have more field than me on Docker, and you may enjoy them:
+
+- [Flatboat](https://github.com/JuanCSUCoder/FlatBoatProject) : A tool for integrating Docker, Kubernetes and DevContainers into the ROS / ROS 2 workflow.
+
+- [RobotEn](https://github.com/JuanCSUCoder/RobotEn) : Docker and devcontainer environments for your ROS / ROS 2 projects.
