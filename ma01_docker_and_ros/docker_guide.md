@@ -625,16 +625,14 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy your ROS 2 workspace into the container
-COPY ./ros2_ws /workspace
+COPY ./ros_ex_ws /workspace
 
 # Install the ROS 2 workspace dependencies
 RUN . /opt/ros/humble/setup.sh && \
     colcon build --symlink-install
 
 # Source the ROS 2 setup script and the workspace setup script
-CMD . /opt/ros/humble/setup.sh && \
-    . /workspace/install/setup.sh && \
-    ros2 run <your_package_name> <your_node_name>
+CMD ["/bin/bash"]
 ~~~
 
 # Integrating DevContainers... 
