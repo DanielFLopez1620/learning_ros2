@@ -70,7 +70,7 @@ class IntPub : public rclcpp::Node
 		message.data = (rand() % (ul - ll + 1) + ll) + 0.5;
 
 		// Log and publish info
-		RCLCPP_INFO(this->get_logger(), "Publishing (%ld): %ld", count_ ,message.data);
+		RCLCPP_INFO(this->get_logger(), "Publishing (%ld): %f", count_ ,message.data);
 		publisher_->publish(message);
 
 		this->count_++;

@@ -456,6 +456,35 @@ For more information you can check:
 
 - [docker image import | Docker Docs](https://docs.docker.com/engine/reference/commandline/image_import/)
 
+### Configuring a private registry
+
+You do not need to have your Dockerfiles in Dockerhub if you think they are confidential or they aren't ready. Here we will create our own private registry too.
+
+Let's build our example number 2 (more info in the section about Dockerfiles that you can find some lessons below) and run it:
+
+~~~bash
+# Make sure to be in the 02_ros_docker_example directory
+docker image build -t ros_2_humble_ex .
+docker container run -i -t -d -p 5000:5000 ros_2_humble_ex
+~~~
+
+The next step is to add a proper tag and push it to the local registry, which can be accessed at *localhost* or *127.0.0.1*.
+
+~~~bash
+docker tag ros_2_humble_ex localhost:5000/ros_2_humble_ex
+~~~
+
+Then, you can make the push to the registry, by using:
+
+~~~bash
+docker image push localhost:5000/ros_2_humble_ex
+~~~
+
+For more information, you can check on:
+
+- [Docker Registry | Github](https://github.com/docker-archive/docker-registry)
+
+
 ## Working with a Dockerfile:
 
 **Dockerfiles** are text-based build instruction that eneable the definition of the conent of the Docker image and automate the image creation. After the images are created with a **Dockerfile**, the are considered to be immutable.
@@ -607,7 +636,7 @@ For more information you can check:
 We are in a repository to learn about robotics... so why do not give it a try with Docker...? It can be useful when you need to work with a different distro or you may need an isolated set up that is easily replicable for your robotic project... no matter the option, you can try to create your own Dockerfile for robotics.
 
 
-For this, we will create a custom container for ROS 2 Humble, that can work with a brief ROS2 Comms example.
+For this, we will create a custom container for ROS 2 Humble, that can work with a brief ROS2 Comms example, in this case a simple floating numbers publisher:
 
 
 ~~~Dockerfile
@@ -617,7 +646,7 @@ FROM ros:humble
 # Set up the working directory in the container
 WORKDIR /workspace
 
-# Install dependencies for ROS 2 and your package
+# Install dependencies for ROS 2
 RUN apt-get update && apt-get install -y \
     ros-humble-ament-cmake \
     ros-humble-rclcpp \
@@ -627,13 +656,38 @@ RUN apt-get update && apt-get install -y \
 # Copy your ROS 2 workspace into the container
 COPY ./ros_ex_ws /workspace
 
-# Install the ROS 2 workspace dependencies
+# Install the ROS 2 workspace dependencies and build the workspace
 RUN . /opt/ros/humble/setup.sh && \
+    rosdep update && \
+    rosdep install --from-paths src --ignore-src -r -y && \
     colcon build --symlink-install
 
 # Source the ROS 2 setup script and the workspace setup script
+# Set the entrypoint to source the workspace and run the ROS 2 node
+ENTRYPOINT ["/bin/bash", "-c", "source /opt/ros/humble/setup.bash && source /workspace/install/setup.bash && ros2 run brief_rclcpp float_pub"]
+
+# Expose necessary ports for ROS 2
+EXPOSE 11311 
+
+# Bash call
 CMD ["/bin/bash"]
 ~~~
+
+The example is present in the [02_ros_docker_example_dir](/ma01_docker_and_ros/docker_examples/02_ros_docker_example/), so make sure to be in that location and run:
+
+~~~bash
+docker image build -t ros_2_humble_ex .
+docker container run -i -t ros_2_humble_ex
+~~~
+
+After you run it, you should see in the terminal log messages of random numbers being published. If you check in a terminal of your local PC, you can subscribe to the topic.
+
+~~~bash
+ros2 topic list # /num_flt64 must appear
+ros2 topic echo /num_flt64
+~~~
+
+This example was simple but validates the idea that we can use ROS 2 with Docker and we can manage and connect them over the network.
 
 # Integrating DevContainers... 
 
