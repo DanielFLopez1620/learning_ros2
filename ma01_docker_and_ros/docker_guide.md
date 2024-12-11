@@ -485,6 +485,70 @@ For more information, you can check on:
 - [Docker Registry | Github](https://github.com/docker-archive/docker-registry)
 
 
+### Automated builds with Github
+
+Yeah, you can automate processes with Docker and containers, but let's start by configuring Docker with your Github Account.
+
+TODO: Add automated builds
+
+### Creating a custom base image
+
+It is better to use the Docker tools to create a image that reflects your requirements. However, there would be cases were you may select to use a custom-build image, one of the options is to use ```debootstrap``` as it can create any Debian-based system. You can install it with:
+
+~~~bash
+sudo apt install debootstrap
+~~~
+
+For the demostration, we will create a Xenial Ubuntu (18.04) version. So, let's consider the next script:
+
+~~~bash
+# Dir for the container
+mkdir xenial
+
+# Install xenial
+sudo deboostrap xenial ./xenial
+
+# Check the installation
+ls ./xenial
+
+# Expor as an image
+sudo tar -C xenial/ -c . docker image import - xenial
+
+# Search for the xenial image
+docker image ls
+~~~
+
+You can do this process with other debian images that are available in. For more information, check:
+
+- [Debootstrap | Debian](https://wiki.debian.org/Debootstrap)
+
+- [Base Images | Docker Docs](https://docs.docker.com/articles/baseimages/)
+
+### Minimal image using scratch base image:
+
+The image presented in the previous lesson is pretty big and , unless you are working with full capacities of the OS, it is not recommended as containers aims for modularization and installing just the required items for an application to run. For this you can select the binaries of a image or use Docker's reserved image (scratch image).
+
+For this you need that the Docker daemon is running and it has access to the *gcc* and *scratch image*. Prepare the next files:
+
+-  A *demo.c* C file:
+
+~~~C
+#include <stdio.h>
+
+void main()
+{
+    printf("Displaying a C Demo\n");
+}
+~~~
+
+- A Dockerfile that interact with the *scratch* image:
+
+~~~Dockerfile
+FROM scratch
+ADD demo /
+CMD ["/demo"]
+~~~
+
 ## Working with a Dockerfile:
 
 **Dockerfiles** are text-based build instruction that eneable the definition of the conent of the Docker image and automate the image creation. After the images are created with a **Dockerfile**, the are considered to be immutable.
