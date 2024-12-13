@@ -537,7 +537,7 @@ For this you need that the Docker daemon is running and it has access to the *gc
 
 void main()
 {
-    printf("Displaying a C Demo\n");
+    printf("Hello World from a Docker!\n");
 }
 ~~~
 
@@ -545,9 +545,48 @@ void main()
 
 ~~~Dockerfile
 FROM scratch
-ADD demo /
-CMD ["/demo"]
+ADD hello_world /
+CMD ["/hello_world"]
 ~~~
+
+Then you will need to move to the proper folder (in this case the [04_docker_from_scratch](/ma01_docker_and_ros/docker_examples/04_docker_from_scratch/) example) and follow the next steps:
+
+1, Build the executable using a gcc:7.2 runtime container:
+
+~~~bash
+docker container run --rm -v ${PWD}:/src -w /src gcc:7.2 gcc -static -o hello_world src/hello_world.c
+~~~
+
+2. Verify the binary creation
+
+~~~bash
+ls -al
+# Check for a hello_world executable
+file -b hello_world
+~~~
+
+3. Build the scratch image based on the Dockerfile:
+
+~~~bash
+docker image build -t hello_world_scratch .
+~~~
+
+4. Run the container and watch the message:
+
+~~~bash
+docker container run --rm hello_world_scratch
+~~~
+
+This is how you can manage Dockers without additional layers from the base image. Just keep in mind that you will need to add all the binaries or aspect required for the app to work from the *scratch.*
+
+For more information you can check:
+
+- [Scratch | Docker Hub](https://hub.docker.com/_/scratch/)
+- [Base Images | Docker Docs](https://docs.docker.com/articles/baseimages/)
+
+### Building images in multiple stages
+
+As we did in the previous lesson, we had two processes one for compiling with *gcc* and the other for running the image. This can be replace with multistage build which allows to orchestrate complex building stages in a single Dockerfile with intermediate stages
 
 ## Working with a Dockerfile:
 
