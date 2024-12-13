@@ -586,7 +586,76 @@ For more information you can check:
 
 ### Building images in multiple stages
 
-As we did in the previous lesson, we had two processes one for compiling with *gcc* and the other for running the image. This can be replace with multistage build which allows to orchestrate complex building stages in a single Dockerfile with intermediate stages
+As we did in the previous lesson, we had two processes one for compiling with *gcc* and the other for running the image. This can be replace with multistage build which allows to orchestrate complex building stages in a single Dockerfile with intermediate stages.
+
+Let's consider the [05_docker_multistage](/ma01_docker_and_ros/docker_examples/05_docker_multistage/) which contian a C file and a Dockerfile with the next contents:
+
+~~~C
+#include <stdio.h>
+
+void main()
+{
+    printf("Hello from a multistaged Docker\n");
+}
+~~~
+
+~~~Dockerfile
+# Stage 1
+FROM gcc:7.2 AS compiler
+COPY src /src
+RUN gcc -static -o /src/hello_multistaged /src/hello_mutistaged.c && strip -R .comment -s /src/hello_multistaged
+
+# Stage 2
+FROM scratch
+COPY --from=compiler /src/hello_multistaged .
+CMD ["./hello_multistaged"]
+~~~
+
+As you may notice,each stage is divided by a From, and to consider other stages info, for example, during ```COPY``` instruction you hsoul dspecify the ```FROM``` origin of the file/biary/dir to consider.
+
+For running the exmaple, make sure you are in the example dir, and run:
+
+1. Build the image
+
+~~~bash
+docker image build -t hello_multistaged .
+~~~
+
+2. After a succesful build, run the container:
+
+~~~bash
+docker container run -rm hello_multistaged
+~~~
+
+For more information, you can check at Docker Hub: 
+
+- [Scratch images | Docker Hub](https://hub.docker.com/_/scratch/)
+
+### Visualizing hierarchy of images:
+
+Sometimes you need a graph to understand what is going on, that is the reason **[Graphviz](https://graphviz.org/)** and **[nate/dockviz](https://hub.docker.com/r/nate/dockviz/)** appeared. Before making anything, confirm you have it installed:
+
+~~~bash
+sudo apt install graphviz
+~~~
+
+Then, you can use the **nate/dockviz** to visualize the hierarchy:
+
+~~~bash
+docker run -it --rm -v /var/run/docker.sock:/var/run/docker.sock nate/dockviz images -t
+~~~
+
+You should see somthing like the next phto (if you have run the previous two examples):
+
+![docker_hierarchy](/ma01_docker_and_ros/resources/docker_hierarchy_view.png)
+
+For more information, check:
+
+- [DockerViz | Github](https://github.com/justone/dockviz)
+
+## Considering newtwork and data management:
+
+...
 
 ## Working with a Dockerfile:
 
