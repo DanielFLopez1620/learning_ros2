@@ -655,7 +655,68 @@ For more information, check:
 
 ## Considering newtwork and data management:
 
-...
+Some applications require to work from outside the docker, share data, communicate, and so on. So the focus will be to understand the network management of a Docker container and the data uses with Docker.
+
+### Introduction on Docker network
+
+When a Docker starts it creates a virtual Ethernet bridge with the name **docker0**, which can be checked using your net tools on the machine, for example:
+
+~~~bash
+ifconfig
+~~~
+
+But you can get direct info on it by considering:
+
+~~~bash
+ip addr show docker0
+~~~
+
+The IP and network data (domain and ranges) are chosen pseudo-randomly based on the RFC1018. This process allow the communication between containers and local machine (if set up properly). Then you can check the ip on a Docker with:
+
+~~~bash
+docker container run --rm -it ubuntu
+
+# And then inside the container
+apt update
+apt install net-tools iproute2
+ip a
+ifconfig 
+~~~
+
+In the ```ip a``` results you should see the ```eth0@if<n>``` where the ```<n>``` is the interface index to identify the host. Also, you should be able to see that the ip is based on **172.17.0.0/16** which is the subdomain it is able to cover.
+
+
+Another important thing to consider is the pair creation of the virtual ethernet (veth), where it ties one to the end of the **veth** to the Docker0 and the other pair to the new created eth0 interface. This host end of the **veth** interface usually receives a name based on ```veth + <hex_of_7_digits> + @ + <interface_id>```, which can be checked with ```ip addr``` too.
+
+Now, let's experiment more with the Docker networks. This time taking advantage of the Linux Ethernet bridge administration command ```brctl```:
+
+~~~bash
+docker container run --rm -it --network=host ubuntu
+
+# And then inside the container
+apt update
+apt install bridge-utils
+
+# Check interfaces 
+brctl show
+
+~~~
+
+This command should list the avaialble interfaces and the bridge present in your container. But also, as you can see next, it creates **iptables** with they proper rules in the Docker host:
+
+~~~bash
+# Run in your machine}
+sudo iptables -t nat -L -n
+~~~
+
+Focus your attetion in the **POSTROUTING** section, where the rule is set up for data exchange on the **docker0** apparently, which also allows for connections with the external world.
+
+You can experiment with **ping** and **traceroute** to check connectivity and redirections with a Docker container, for example, the adress 8.8.8.8.
+
+For more info you can check:
+
+- [RFC1928 | IETF](https://datatracker.ietf.org/doc/html/rfc1918)
+- [Network | Docker Docs](https://docs.docker.com/network/)
 
 ## Working with a Dockerfile:
 
