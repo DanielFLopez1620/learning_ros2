@@ -657,7 +657,7 @@ For more information, check:
 
 Some applications require to work from outside the docker, share data, communicate, and so on. So the focus will be to understand the network management of a Docker container and the data uses with Docker.
 
-### Introduction on Docker network
+### Introduction to Docker network
 
 When a Docker starts it creates a virtual Ethernet bridge with the name **docker0**, which can be checked using your net tools on the machine, for example:
 
@@ -717,6 +717,40 @@ For more info you can check:
 
 - [RFC1928 | IETF](https://datatracker.ietf.org/doc/html/rfc1918)
 - [Network | Docker Docs](https://docs.docker.com/network/)
+
+### External access to the container:
+
+Docker aims to enable microservice architecture in a very lightweight. This means that Docker is able to exchange data, but (by default) there is no path to connect with the external world and no info specified to be forwarded outside. However, there is a solution to this problem, that can be used with ```docker container run``` command.
+
+The flag ```-p``` (or publish) allows to publish all exposed ports to random ports. Or you can specify a pair, for example, ```8080:8080```. But let's go through a practical view:
+
+1. Create a container an expose the port 80
+
+~~~bash
+# Terminal 1
+# docker container run -p <host_port>:<container_port>
+docker container run -i -t -p 80:80 ubuntu
+~~~
+
+2. Review the port mapping with the command ```docker container port```
+
+~~~bash
+# Terminal 2
+# docker container port <id>
+docker container port <ubuntu_container_id>
+~~~
+
+![docker_container-ports](/ma01_docker_and_ros/resources/docker_container_ports.png)
+
+3. According to the selected port you can try to configure actions and manage the usage of them. Keep in mind to use the ports properly, and consider security issues in these cases.
+
+Remember that with ```iptables``` you can check the NAT rules for the Docker, here you should be able to watch the mapping of the ports:
+
+~~~bash
+sudo iptables -t nat -L -n
+~~~
+
+![iptables_docker_ports](/ma01_docker_and_ros/resources/docker_container_iptables_ports.png)
 
 ## Working with a Dockerfile:
 
