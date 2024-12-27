@@ -752,6 +752,83 @@ sudo iptables -t nat -L -n
 
 ![iptables_docker_ports](/ma01_docker_and_ros/resources/docker_container_iptables_ports.png)
 
+Before moving on, let's clarify additional aspects of the ```-p``` flag of the ```docker container run``` command, as it has other options additional to the ```<host_port>:<container-port>``` option we described previously:
+
+- ```<container-port>```: This allow the Docker Engine to select the Docker host port which can be in the range of 32768 to 61000.
+
+- ```<ip>:<host_port>:<container_port>``` : Add a particular IP interface of the Docker host.
+
+- ```<ip>::<container_port>``` Allow Docker Engine selection of the port while providing a particual IP interface.
+
+For more information you can check:
+
+- [Networking | Docker Docs](https://docs.docker.com/engine/userguide/networking/)
+
+- [Binding | Docker Docs](https://docs.docker.com/engine/userguide/networking/default_network/binding/)
+
+### Attaching containers to a host network: 
+
+To make this happen, you just need to add the argument ```--net=host``` when running a container, as will this attach the Docker host's network stack:
+
+~~~bash
+docker container run -it --rm --net=host ubuntu 
+
+# Once inside the Docker
+apt update
+apt install iproute2
+ip address
+
+# Check and compare with the address of your machine
+~~~
+
+As shown next the machine (on the left) share network data with the container (on the right:)
+
+![docker_net_host_comparison](/ma01_docker_and_ros/resources/docker_net_host_comp.png)
+
+For more information you can check the ```docker run ``` command and network info on containers:
+
+- [docker container run | Docker Docs](https://docs.docker.com/reference/cli/docker/container/run/)
+
+- [Networking | Docker Docs](https://docs.docker.com/engine/userguide/networking/)
+
+### Containers without networks
+
+Let's start by listing the available network configurations on Docker:
+
+~~~bash
+docker network ls
+~~~
+
+![docker_network_ls](/ma01_docker_and_ros/resources/docker_network_ls.png)
+
+In this case, our interest goes with ```none``` as this option only creates the loopback interface for the container and nothing more. This is useful when requiring isolation of the network.
+
+Just make sure you do not really need a connection to the network, consider the next example:
+
+~~~bash
+docker container run -it --rm --net=none ubuntu
+
+# If you try updating, you will not be able 
+apt update
+~~~
+
+If you check the interface of a container with **none** net configuration, you shoul only see the loopback.
+
+### IPs and multiple containers:
+
+There would be cases when you need to share data between the containers or divide the processes/service to accomplish tasks, even this may require sharing the same IP adress.
+
+For these cases, Docker allow the option to inherit the IP address to the services and other containers.
+
+~~~bash
+docker container run -itd --name=network_tester ubuntu
+docker container exec network_tester apt update
+docker container exec network_tester apt install -y iproute2
+docker container exec network_tester ip addresss
+~~~
+
+...
+
 ## Working with a Dockerfile:
 
 **Dockerfiles** are text-based build instruction that eneable the definition of the conent of the Docker image and automate the image creation. After the images are created with a **Dockerfile**, the are considered to be immutable.
