@@ -820,12 +820,86 @@ There would be cases when you need to share data between the containers or divid
 
 For these cases, Docker allow the option to inherit the IP address to the services and other containers.
 
+1. Run a Ubuntu container and prepare the network commands to check ip:
+
 ~~~bash
 docker container run -itd --name=network_tester ubuntu
 docker container exec network_tester apt update
 docker container exec network_tester apt install -y iproute2
-docker container exec network_tester ip addresss
 ~~~
+
+2. Run another ubuntu container that inherits from the first one, install *iproute2* to check network set up.
+
+~~~bash
+docker container run -itd --net container:network_tester --name=network_comp ubuntu
+docker container exec network_comp apt update
+docker container exec network_comp apt install -y iproute2
+~~~
+
+3. Compare networks between the containers:
+
+~~~bash
+# Terminal 1
+docker container exec network_tester ip addr
+# Terminal 2
+docker container exec network_comp ip addr
+~~~
+
+![docker_network_comp](/ma01_docker_and_ros/resources/docker_network_comp.png)
+
+As you can check, the containers share the *eth0* configuration. This trick (also known as a default bridge) is used when you want to orchestrate containers by sharing the IP adress, for example, with [Kubernetes](http://kubernetes.io/).
+
+
+When using **exec** ensure thatthe container is running, otherwise you may not execute the command properly.
+
+### User-defined bridge network
+
+The bridge presented in the previous subtitle has a problem, it allow connections by using IP but not the containers' names.
+
+As the IP is assigned on the container start up, it may present problems when you require orchestration. So Docker introduced capabilities related with user-defined netwokrs to solve these situations.
+
+The features it includes are service discovery through an embedded DNS server, DNS-based load balancing, subnet configurations for the bridge and the option to manually assign IP adresses to the containers in the bridge subnet.
+
+Let's present the step an develop an example:
+
+1. Create a bridge using the ```docker network create```:
+
+~~~bash
+# docker network create <name>
+docker network create custom_net
+~~~
+
+2. You can inspect the network, and take your attention to the *IP* and the subnet:
+
+~~~bash
+docker network inpect custom_net
+
+~~~
+
+![docker_inspect_custom_net](/ma01_docker_and_ros/resources/docker_inspect_custom_net.png)
+
+3. Once you have identified the subnet, you can check the Docker host interface and **iptable**
+
+~~~bash
+ifconfig # Or 'ip addr' if you prefer so
+
+sudo iptables -t nat -L -n
+~~~
+
+In the case of the PC where I try this, the results were:
+
+![docker_network_ip_comm](/ma01_docker_and_ros/resources/docker_network_ip_comm.png)
+
+In the **iptables** note that the NAT **Postrouting** rule has been added for the subnet.
+
+If you want to use a certain IP when configuring your own network, you can use:
+
+~~~bash
+# docker network create <name> --subnet <ip>/<domain>
+docker network create sixteen --subnet 16.16.1.1
+~~~
+
+### Discover and load balance in containers
 
 ...
 
