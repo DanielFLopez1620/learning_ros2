@@ -901,7 +901,50 @@ docker network create sixteen --subnet 16.16.1.1
 
 ### Discover and load balance in containers
 
-...
+You can generate various type of typologies with containers, even taking advantages of the network configurations by the default and user-defined bridges. Other useful tools for these purposes can be the service discovery throug an embedded DNS server and a DNS-based load balancing.
+
+Let's say you have two Docker Containers, called *srv1* and *srv2*, that use the same network alias:
+
+~~~bash
+# docker container run [options] <image>
+#    --network-alias : Helps to group multiple containers and load balance using the embedded DNS, which provides a round-robin load balancing.
+#    --net : Allows to use a certain Docker network configuration (can be user-defined, must exists beforehand)
+docker container run -itd --name srv1 --network-alias common_alias --net custom_net ubuntu
+docker container run -itd --name srv2 --network-alias common_alias --net custom_net ubuntu
+~~~
+
+Then, you can proceed to checkout the IP addresses:
+
+~~~bash
+# Here we use a filter based on the custom user defined interface we made previously. Do not forget the '--format'
+
+docker container inspect --format '{{ .NetworkSettings.Networks.custom_net.IPAddress }}' srv1
+
+docker container inspect --format '{{ .NetworkSettings.Networks.custom_net.IPAddress }}' srv2
+~~~
+
+Which returns the next results in the case of the containers running in my PC:
+
+![docker_load_balance_ips](/ma01_docker_and_ros/resources/docker_load_balance_ips.png)
+
+Now, it is time to run another container, which is going to be transient and will allow us to understand the service discovery:
+
+~~~bash
+# In this case, we make the try with alpine and try to make ping to the given container by providing the name
+docker container run --rm --net custom_net alpine ping -c1 srv1
+~~~
+
+![docker_load_balance_ip_ping](/ma01_docker_and_ros/resources/docker_load_balance_name_ping.png)
+
+As you can see, it is possible to communicate only with the container's names, which can be used for orchestration. Also, you can even, ping the network alias you created previously, the result is that all the containers in this network configuration will interact with the ping call:
+
+~~~bash
+# Run this command multiple times
+docker container run -rm --net custom_net ping -c1 common_alias
+~~~
+
+![docker_net_load_balance_alias](/ma01_docker_and_ros/resources/docker_net_load_balance_alias.png)
+
 
 ## Working with a Dockerfile:
 
