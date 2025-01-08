@@ -945,6 +945,86 @@ docker container run -rm --net custom_net ping -c1 common_alias
 
 ![docker_net_load_balance_alias](/ma01_docker_and_ros/resources/docker_net_load_balance_alias.png)
 
+For more information, check:
+
+- [docker netowrk commands | Docker Docs](https://docs.docker.com/reference/cli/docker/network/)
+- [Dig Command in Linux | Geeks for Geeks](https://www.geeksforgeeks.org/dig-command-in-linux-with-examples/)
+
+
+### Persisting data with volumes:
+
+Until this point, we have mostly depend on a read-write layer that is temporary (once we remove the container it is destroyed), so you may be wondering how to persist data as you may need it beyond the life of a container. It can be achieved with volumes or bind mounts, which aims to persist data outside the container's filesystem.
+
+For now, let's talk about volumes. They are a special directory in the Docker host that are created and managed by Docker, they can be anonymous (randomly generated) or named (specified).
+
+It is simple to create a volume, you can run:
+
+~~~bash
+# docker volume create <name>
+docker volume create backup
+~~~
+
+To check if it was created, you can list the available volumes:
+
+~~~bash
+# docker volume ls
+docker volume ls
+~~~
+
+Now you can use the volume with a container, for the specification you will need to pair the volume with a dir in the container:
+
+~~~bash
+# docker container run -v <volume>:<pair_location> <image>
+docker container run -it --rm -v backup:/for_backup ubuntu
+~~~
+
+Then, you can add files and explore the filesystem:
+
+~~~bash
+mkdir /for_backup/my_dir
+echo "In the backup" > /for_backup/my_dir/saved.txt
+~~~
+
+Close the container, and run another, search for the file that we created, it should be right there.
+
+~~~bash
+# docker container run -v <volume>:<pair_location> <image>
+docker container run -it --rm -v backup:/for_backup ubuntu
+
+# From inside the container run
+ls /for_backup
+~~~
+
+Keep in mind that the volumes (in the case of Unix system) tend to be located under the **/var/lib/docker/volumes/** (Try to use **tree** command to see your workflow or file flow in a better perspective). If you want to inspect a volume, you can use the command:
+
+~~~bash
+docker volume inspect backup
+~~~
+
+![docker_volume_inspect](/ma01_docker_and_ros/resources/docker_volume_inspect.png)
+
+Notice that you can use a volume with multiple containers, therefore you can exchange data in a effective way between containers.
+
+For more information, you can check:
+
+- [Volumes | Docker Docs](https://docs.docker.com/engine/admin/volumes/volumes/)
+- [Volume creation | Docker Docs](https://docs.docker.com/engine/reference/commandline/volume_create/)
+- [Volume ls | Docker Docs](https://docs.docker.com/engine/reference/commandline/volume_ls/)
+- [Volume inspect | Docker Docs](https://docs.docker.com/engine/reference/commandline/volume_inspect/)
+
+### Sharing data between the machine and the containers:
+
+Another option to persist data is to use bind mountings, which is to mount a docker host directory to a container and then share the data using a mount point.
+
+To showcase this, you need a workspace you are require to share:
+
+~~~bash
+mkdir $HOME/to_share
+echo "Share this text" > $HOME/to_share/sharing.txt
+~~~
+
+
+
 
 ## Working with a Dockerfile:
 
