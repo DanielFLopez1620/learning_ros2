@@ -1023,8 +1023,25 @@ mkdir $HOME/to_share
 echo "Share this text" > $HOME/to_share/sharing.txt
 ~~~
 
+Now, run a container with a bind mount to the file, you can use a command to display the content of the file:
 
+~~~bash
+# docker container run -v [path_to_mount]:[pair_to_mount]
+docker container run --rm -v $HOME/to_share:/info ubuntu cat /info/sharing.txt
+~~~
 
+![docker_bind_mount_ex](/ma01_docker_and_ros/resources/docker_bind_mount_ex.png)
+
+If you only need a file, you can do it if you provide the proper path to it and a valid pair map to the container. Just keep in mind that they are passed in read-write mode, then to prevent modifications you can use the flag **ro** (read only), for example:
+
+~~~bash
+# docker container run -v [path_to_mount]:[pair_to_mount]
+docker container run --rm -v $HOME/to_share/sharing.txt:/info/sharing.txt:ro ubuntu cat /info/sharing.txt
+~~~
+
+For more information, you can check:
+
+- [Volumes | Docker Docs](https://docs.docker.com/engine/admin/volumes/volumes/)
 
 ## Working with a Dockerfile:
 
@@ -1232,7 +1249,7 @@ This example was simple but validates the idea that we can use ROS 2 with Docker
 
 # Integrating DevContainers... 
 
-(For later...)
+TODO: Add devcontainers... info
 
 ~~~Dockerfile
 # Our footprint the Open Source Robotics Foundation image for ROS 2 humble
@@ -1298,3 +1315,16 @@ For more information I encourage you to check the projects of [JuanCSUCoder]() w
 - [Flatboat](https://github.com/JuanCSUCoder/FlatBoatProject) : A tool for integrating Docker, Kubernetes and DevContainers into the ROS / ROS 2 workflow.
 
 - [RobotEn](https://github.com/JuanCSUCoder/RobotEn) : Docker and devcontainer environments for your ROS / ROS 2 projects.
+
+# More usage cases of Docker:
+
+We have presented different ideas on Docker with Cli tools and Dockerfile, now it is time to present some usage cases of them, they can be:
+
+- **Prototyping:** Set up a container to test a service or idea we want to implement.
+- **Collaboration and distribution:** You can share your images with others to develop on the same terms and avoid dependencies issues or the "do not work on my machine" problem.
+- **Continious Integration ([CI](https://aws.amazon.com/devops/continuous-integration/)):** Merging changes into a central repository where tests are running automatically (automated builds) in order to check the quality and security of the code.
+- **Continious Delivery ([CD](https://continuousdelivery.com/)):** To introduce changes (new feaures, configuration and changes) into production safely and quickly in a sustainable way.
+- **Platform-as-a-Service ([PaaS](https://cloud.google.com/learn/what-is-paas?hl=es)):** For example, with tools like [OpenShift](https://www.redhat.com/es/technologies/cloud-computing/openshift), [CoreOs(https://www.redhat.com/es/technologies/cloud-computing/openshift/what-was-coreos)], [Atomic.io](https://atomic.io/) or [OKD](https://okd.io/).
+
+## Testing with Docker:
+
