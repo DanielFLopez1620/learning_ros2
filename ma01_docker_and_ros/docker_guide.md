@@ -1328,3 +1328,44 @@ We have presented different ideas on Docker with Cli tools and Dockerfile, now i
 
 ## Testing with Docker:
 
+Imagine you are working on a Python Project and you got into the test phase, but you have been working with Python 3.9 and the tests must be implemented in Python 3.10. However, when you install Python 3.10 you got issues and problems, now what? 
+
+Well, you can create your own Docker Container for this tests, for example, with a Dockerfile that comes from a **python** in the **3.10** tag. This example is covered on the [06_testing_python](/ma01_docker_and_ros/docker_examples/06_testing_python), where we have a simple addition/substraction codes with brief (and simple) tests to be run with **pytests**, if you check the Dockerfile it will look like this:
+
+~~~Dockerfile
+FROM python:3.10
+RUN pip install pytest
+ADD scripts /scripts
+WORKDIR /scripts
+CMD ["/usr/local/bin/pytest"]
+~~~
+
+To build this image, go to the proper directory and run:
+
+~~~bash
+# Move to the directory
+cd /path/to/06_testing_python
+
+# Build
+docker image build -t python_test -f Dockerfile .
+~~~
+
+Then, run the container, do not forget to use the command for the test:
+
+~~~bash
+docker container run python_test pytest simple_excersize.py
+~~~
+
+In conclussion, you do not need to have all set up in your machine, as you can build images and run containers that uses different versions of the programming languages that are installed in your machine.
+
+# Additional links and information:
+
+- [Docker Engine API 1.47| Docker Docs](https://docs.docker.com/reference/api/engine/version/v1.47/)
+
+- [Docker SDK for Python | Docker Py](https://docker-py.readthedocs.io/en/stable/)
+
+- [Docker daemon Socket | Docker Docs](https://docs.docker.com/reference/cli/dockerd/#daemon-socket-option)
+
+- [Protect the Docker daemon socket | Docker Docs](https://docs.docker.com/engine/security/protect-access/)
+
+- [Swagger Editor | Swagger](https://editor.swagger.io/)
