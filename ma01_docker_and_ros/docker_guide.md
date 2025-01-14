@@ -1247,6 +1247,24 @@ ros2 topic echo /num_flt64
 
 This example was simple but validates the idea that we can use ROS 2 with Docker and we can manage and connect them over the network.
 
+# Docker considerations:
+
+## Performance:
+
+When using containers, we do not only aim for ease of use because performance is also another important aspect. Some of the factors that may be present are:
+
+- **Volumes:** Depending on how are you managing your data, the write/read/copy processes may be different, for example, you should aboid using the primary/root filesystem to store data, rather you should use the facility to attach/mount external storage through volumes (*volume* and *volumes-from* options).
+
+- **Storage drives:** They have different priorities if nothing is chose, so do not forget to give it a check, for instance, at the writing moment the priority is considered to be *overlay2* (Linux union file system that allows multiple layers to be combined, where only the last and new layer is writable, the rest is read-only), *fuse-overlayfs* (user-space filesystem instaed of using kernel space), *btrfs* (B tree file system, that integrates compression, snapshots and roolbacks for  highly scalable and fault-tolerant system), *zfs* (Zettabyte File System, similar to brtfs but more oriented to data integrity and advanced management features) and *vfs* (Virtual File System, abstraction lyer that allows the kernel to interface with different type of file systems).
+
+- **--net=host:** Docker creates a bridge and associates IPs from it to the contaienrs as a default. However, when using this options it exposes the host networking stack to the contaier which can give a better performance to the defualt bridge (just do not forget to consider the ports constraints).
+
+- **cgroups:** Which are exposed by the defaul execution driver, they can be used to fine-tune performance in the container for example, with **CPU shares** (*-c* or *--cpu-shares* flag options), **CPU sets** (*--cpuset* flag) and **memory limits** (*-m* flag).
+
+- **Sysctl and ulimit settings:** ...
+
+
+
 # Integrating DevContainers... 
 
 TODO: Add devcontainers... info
