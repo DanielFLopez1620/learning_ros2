@@ -1261,9 +1261,42 @@ When using containers, we do not only aim for ease of use because performance is
 
 - **cgroups:** Which are exposed by the defaul execution driver, they can be used to fine-tune performance in the container for example, with **CPU shares** (*-c* or *--cpu-shares* flag options), **CPU sets** (*--cpuset* flag) and **memory limits** (*-m* flag).
 
-- **Sysctl and ulimit settings:** ...
+- **Sysctl and ulimit settings:** The first one deals with the kernel and system parameters, and the second one deals with user-level resource limits. Then, some changes in these can affect the containers workflow, for example, the number of open files. They can be set up with the option **--ulimit** and the proper suboption (for example, **data=**, **nofile**, **nproc**, **core**). Additionally, you can modify the */etc/docker/daemon.json* file for easy modifications with containers.
 
+For instance, to check the optimization and performance you have to implement benchmarks in order to run a similar workload on a different environment with different performance stats and parameters. 
 
+### Benchmarking CPU performance:
+
+You can compare two systems, one bare-metal (your machine) and then a container to chekcc the differences, for this we will use the [RedHad Performance Test](https://github.com/redhat-performance/docker-performance.git):
+
+~~~bash
+git clone https://github.com/redhat-performance/docker-performance.git
+cd docker-performance/Dockerfiles
+docker image build -t c7perf --rm .
+docker image ls
+~~~
+
+Then we are going to use the **sysbench** script that is available, follow the next steps:
+
+1. Outside the Git Repository, create a results directory.
+
+~~~bash
+sudo mkdir /results
+~~~
+
+2. Install sysbench in your system:
+
+~~~bash
+sudo apt-get install sysbench
+~~~
+
+3. Run the benchmark after setting the container **env**, in this case *cp7perf*
+
+~~~bash
+cd docker-performance/bench/sysbench
+export container=no
+sh ./run-sysbench.sh cpu tests1
+~~~
 
 # Integrating DevContainers... 
 
