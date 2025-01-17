@@ -1267,36 +1267,50 @@ For instance, to check the optimization and performance you have to implement be
 
 ### Benchmarking CPU performance:
 
-You can compare two systems, one bare-metal (your machine) and then a container to chekcc the differences, for this we will use the [RedHad Performance Test](https://github.com/redhat-performance/docker-performance.git):
+You can compare two systems, one bare-metal (your machine) and then a container to chekcc the differences, for this we will use a Ubuntu container and compare our machine with it. Let's follow the next steps:
+
+1. Install **sysbench** in your system.
 
 ~~~bash
-git clone https://github.com/redhat-performance/docker-performance.git
-cd docker-performance/Dockerfiles
-docker image build -t c7perf --rm .
-docker image ls
+sudo apt update
+sudo apt install sysbench
 ~~~
 
-Then we are going to use the **sysbench** script that is available, follow the next steps:
-
-1. Outside the Git Repository, create a results directory.
+2. Run the test in your machine (bare-metal), consider the next arguments: ```--threads``` to specify how many threads you want to use (you can set it according the number of CPU cores available), ```--test=cpu``` relates to the test specification and ```--cpu-max-prime=<n>``` set the maximum prime number to calculate (complexity of the workload).
 
 ~~~bash
-sudo mkdir /results
+sysbench --test=cpu --cpu-max-prime=20000 --threads=4 run
 ~~~
 
-2. Install sysbench in your system:
+![cpu_benchmark_bare_metal](/ma01_docker_and_ros/resources/cpu_benchmark_bare_metal.png)
+
+3. Set up the container to test, in this case we are running *Ubuntu 22.04* on bare metal, and we will run *Ubuntu 22.04* too on the container, adapt this to the version you want to compare.
 
 ~~~bash
-sudo apt-get install sysbench
+docker run -it --rm ubuntu:22.04 /bin/bash
 ~~~
 
-3. Run the benchmark after setting the container **env**, in this case *cp7perf*
+4. Install sysbench in the container (do not forget to also update the system):
 
 ~~~bash
-cd docker-performance/bench/sysbench
-export container=no
-sh ./run-sysbench.sh cpu tests1
+# Inside the container
+apt update
+apt install sysbench
 ~~~
+
+5. Run the same test inside the container:
+
+~~~bash
+sysbench --test=cpu --cpu-max-prime=20000 --threads=4 run
+~~~
+
+![cpu_benchmark_container](/ma01_docker_and_ros/resources/cpu_benchmark_container.png)
+
+6. Compare the results, prepare actions to adjuts the resources according your conclussions and test again. Remember that you can allocate or limit resources to a container with the flags ```--cpus``` and ```--cpu-shares```.
+
+### Benchmarking Disk Performance:
+
+This can help you to understand the overhead and potential differences in disk I/O performance between two setups, in this case bare-metal (your OS in your machine) and containerized environments (your Docker container). Some of the aspects to consider are read/write speeds, latency and trhoughput. This can be achieved with **FIO** tool (comes from Flexible I/O tester)
 
 # Integrating DevContainers... 
 
