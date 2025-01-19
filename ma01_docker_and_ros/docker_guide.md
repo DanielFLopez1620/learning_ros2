@@ -1310,7 +1310,48 @@ sysbench --test=cpu --cpu-max-prime=20000 --threads=4 run
 
 ### Benchmarking Disk Performance:
 
-This can help you to understand the overhead and potential differences in disk I/O performance between two setups, in this case bare-metal (your OS in your machine) and containerized environments (your Docker container). Some of the aspects to consider are read/write speeds, latency and trhoughput. This can be achieved with **FIO** tool (comes from Flexible I/O tester)
+This can help you to understand the overhead and potential differences in disk I/O performance between two setups, in this case bare-metal (your OS in your machine) and containerized environments (your Docker container). Some of the aspects to consider are read/write speeds, latency and trhoughput. This can be achieved with **[FIO](https://github.com/axboe/fio)** tool (comes from Flexible I/O tester)
+
+1. Let's begin with installing **FIO** in the machine:
+
+~~~bash
+sudo apt-get install fio
+~~~
+
+2. Then, run the *bare-metal* benchmark, here we are goint to perform a simple sequential read/write so we will consider the next arguments: ```--ioengine=sync``` for I/O engine to use (sync refers to basic block I/O), ```--rw=read``` stands for type of operation, ```--base=4k``` refers to the size block of each operation, ```--numbjobs=1``` relates the number of threads, ```--size=1G``` specifies the sieze of the data to be read or written, ```--runtime=5m``` set up the time of the test and ```--direct=1``` refers to a direct I/O bypassing the  filesystem cache.
+
+~~~bash
+fio --name=benchmark --ioengine=sync --rw=read --bs=4k --numjobs=1 --size=1G --runtime=5m --time_based --direct=1 --name=fio_benchmark
+~~~
+
+
+3. Start up the container, in this case we will use a Ubuntu 22.04 image to correlate the results.
+
+~~~bash
+docker run -it --rm ubuntu:22.04 /bin/bash
+~~~
+
+4. Inside the container, install **FIO**.
+
+~~~bash
+apt update
+apt install fio
+~~~
+
+5. Run the same benchmark for the container, then compare the results:
+
+~~~bash
+fio --name=benchmark --ioengine=sync --rw=read --bs=4k --numjobs=1 --size=1G --runtime=5m --time_based --direct=1 --name=fio_benchmark
+~~~
+
+After this tests you may compare them, and later change the I/O patterns used to check also for differences. Your attention in the results should consider the **lops** (I/O operations per second, the higher it is better), the **bandhwidth** (bw, rate of data transfer, bit rate or throughput) and **latency** (time between kernel submission and signal of I/O completed).
+
+The results obtained for bare-metal and container are shown (respectively) below:
+
+![disk_performance_bare_metal](/ma01_docker_and_ros/resources/disk_benchmark_bare_metal.png)
+![disk_performance_container](/ma01_docker_and_ros/resources/disk_benchmark_container.png)
+
+### Benchmarking network performance:
 
 # Integrating DevContainers... 
 
