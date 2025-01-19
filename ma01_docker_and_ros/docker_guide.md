@@ -1353,6 +1353,65 @@ The results obtained for bare-metal and container are shown (respectively) below
 
 ### Benchmarking network performance:
 
+There are also tools to measure netowrk performance, in this case we are going to use **iperf3** that is a common tool to test TCP, UDP bandwidth performance.
+
+Consider the next steps to do it:
+
+1. Install **iperf3** on your machine:
+
+~~~bash
+sudo apt update
+sudo apt install iperf3
+~~~
+
+2. Perform the benchmark in bare-metal, the ```-s``` allows the server mode option:
+
+~~~bash
+iperf3 -s
+~~~
+
+3. Start your Docker contaier, we will be still using an Ubuntu image:
+
+~~~bash
+docker run -it --rm ubuntu:22.04 /bin/bash
+~~~
+
+4. Install **perf3** inside the container:
+
+~~~bash
+apt update
+apt install iperf3
+~~~
+
+5. You can now make connection test between the machine and the container, we will use the ```-c``` option to act as the client:
+
+~~~bash
+# Inside the container
+iperf3 -c <machine_ip>
+~~~
+
+The results are shown below:
+
+![network_benchmark](/ma01_docker_and_ros/resources/network_benchmark_ex.png)
+
+### Checking resource usage:
+
+Docker provides the ```docker stats``` command to chekc the resource used by a container. run a container, consider its name or ID and execute:
+
+~~~bash
+# docker stats [option] <container> [containers]
+docker container <your_docker_name>
+~~~
+
+In my case, when having a ubuntu container running, it displayed the next information:
+
+![docker_resources_usage](/ma01_docker_and_ros/resources/docker_resource_usage.png)
+
+For more information you can check:
+
+- [Stats | Docker Docs](https://docs.docker.com/engine/reference/commandline/stats/)
+
+
 # Integrating DevContainers... 
 
 TODO: Add devcontainers... info
