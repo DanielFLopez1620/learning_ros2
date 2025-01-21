@@ -1411,6 +1411,68 @@ For more information you can check:
 
 - [Stats | Docker Docs](https://docs.docker.com/engine/reference/commandline/stats/)
 
+### Monitoring:
+
+There are options available to check and monitor container performance like [cAdvisor](https://github.com/google/cadvisor) and [Prometheus](https://prometheus.io/). For now, let's focus on **cAdvisor**.
+
+It can be run using a Docker Container, like follows:
+
+~~~bash
+sudo docker container run \
+    --volume=/:/rootfs:ro \
+    --volume=/var/run:/var/run:rw \
+    --volume=/sys:/sys:ro \
+    --volume=/var/lib/docker/:/var/lib/docker:ro \
+    --publish=8080:8080 \
+    --detach=true \
+    --name=cadvisor \
+    google/cadvisor:latest
+~~~
+
+This may not work in all system for the next reason you should keep in mind:
+
+- Access problems to the specified volumes.
+- Firewall and protections on port 8080.
+- Restrictions imposed by AppArmor/SELinux.
+
+You can get more information by considering:
+
+~~~bash
+sudo docker logs cadvisor
+~~~
+
+Be careful with what do you diable in terms of secutity when trying to run this, as you may expose yourself to risks.
+
+For more information check:
+
+- [Run Metrics | Docker Docs](https://docs.docker.com/config/containers/runmetrics/)
+
+# Docker Orchestration and Hosting:
+
+Not all the time you will be in a development environment just running with a single host. Then you may need to spawn multiple containers in different hosts and then orchestrate them. There are differnt tool for this:
+
+- [Docker Compose](https://docs.docker.com/compose): Create apps based on multiple containers.
+- [Docker Swarm](https://docs.docker.com/compose): Cluster multiple Docker hosts.
+- [Kubernetes](https://kubernetes.io/): Development, scheduling, updating, maintenance and scaling containers.
+
+And there are more, but we will focus on the presented above during the nexts subsections.
+
+## Running app with Docker Compose:
+
+It is a native tool that allows to run interdependent containers to create an application.
+
+To install it you have to run:
+
+~~~bash
+pip install docker-compose
+~~~
+
+To make it word you have to create and add content to a *.yaml* file where you will set up the Docker containers to consider and in what way to do it. The structure is presented below:
+
+~~~yaml
+~~~
+
+
 
 # Integrating DevContainers... 
 
