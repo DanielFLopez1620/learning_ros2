@@ -1470,9 +1470,104 @@ pip install docker-compose
 To make it word you have to create and add content to a *.yaml* file where you will set up the Docker containers to consider and in what way to do it. The structure is presented below:
 
 ~~~yaml
+# This is a yaml file, identation matters.
+version: '<version_used>'
+service: # To specify which containers to include
+    <srv_1_name>: # Name of the first service
+        image: <image_name> # Image to consider, if it is a Dockerfile you must provide a path to the file
+        restart: <option> # If you want it to restart always or never
+        ports: # Specify the port conecctivity between the container and the host
+            - <in_port>:<map_port>  # Pair specification
+        environment: # Specific set ups for your container
+            <env>:<value>
+        command: <cmd> # You can run commands (according the image) here
+        network_mode: <mode> # It can be 'host' or a user-defined one.
+        volumes: # Add volumes for interaction or data exchange (extend)
+            - <host>:<container> # Provide the path pair to consider
+        deploy: # Deployment options
+            resources: # For managing the resources of the containers in deployment
+                limits: # Set limits
+                    memory: <num>M # Set MB of max memory to use
+                reservation: # Save space for processes
+                    memory: <num>M # Set MB of memory to reserve
+    <srv_2_name>:
+        ...
 ~~~
 
+Then you can run it by using:
 
+~~~bash
+docker-compose up
+~~~
+
+Let's check an example with two ROS 2 images and a communication example, we have the
+next *docker-compose.yml* file (as presented in [example 7](/ma01_docker_and_ros/docker_examples/07_docker_cmp_ros2/)):
+
+~~~yaml
+version: '3.8'
+
+services:
+  ros2_node_1:
+    image: osrf/ros:jazzy-desktop-full
+    container_name: ros2_node_1
+    command: ros2 run demo_nodes_cpp talker
+    network_mode: host
+    environment:
+      - ROS_DOMAIN_ID=16
+    volumes:
+      - /dev:/dev 
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+
+  ros2_node_2:
+    image: osrf/ros:humble-desktop-full
+    container_name: ros2_node_2
+    command: ros2 run demo_nodes_cpp listener
+    network_mode: host
+    environment:
+      - ROS_DOMAIN_ID=16
+    volumes:
+      - /dev:/dev
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+
+~~~
+
+Then, you can execute it:
+
+~~~bash
+docker-compose up
+~~~
+
+![compose_example_hum_jazz](/ma01_docker_and_ros/resources/compose_example_hum_jaz.png)
+
+If you want to bring down the stack you use ```docker-compose down```, you can only build the containers with ```docker-compose build```, you can execute a command in a certain service by using ```docker-compose exec <srv> <cmd>```, and you can list the containenrs in the stack with ```docker-compose ps```
+
+An additional node, is that if you are using **VS Code** with the **Docker Extension**, when having a Docker Compose yaml, it may give you hints (for example, when pulling images by completing the name) and also allow you the execution from the IDE of the complete compose file or sections of it.
+
+![compose_vs_code_help](/ma01_docker_and_ros/resources/compose_vs_code_help.png)
+
+For more information you can check:
+
+- [Docker Compose | Docker Docs](https://docs.docker.com/compose/)
+
+- [Docker Compose Yaml | Docker Docs](https://docs.docker.com/compose/compose-file/)
+
+- [Docker Compose CLI | Docker Docs](https://docs.docker.com/compose/compose-file/)
+
+- [Docker Compose Github | Github](https://docs.docker.com/compose/compose-file/)
+
+## Using clusters with Docker Swarm
+
+...
 
 # Integrating DevContainers... 
 
