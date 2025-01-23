@@ -1567,7 +1567,86 @@ For more information you can check:
 
 ## Using clusters with Docker Swarm
 
-...
+It is a native tool for clustering which means it groups multiple Docker hosts into a single pool in which you can launch containers. So let's ilustrate its usage with a simple web demo:
+
+1. Initialize Docker Swarm:
+
+~~~bash
+sudo docker swarm init
+~~~
+
+As a result it should displaye you a command to run your nodes like this:
+
+```
+docker swarm join --token <token_id> <ip>:2377
+```
+
+2. Create a simple web:
+
+~~~Python
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route('/')
+def hello_world():
+    return "Hello from a Docker Swarm"
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
+~~~
+
+3. Create a Dockerfile for your web application
+
+~~~Dockerfile
+# Use the official Python image
+FROM python:3.9-slim
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the app code into the container
+COPY . /app
+
+# Install dependencies
+RUN pip install Flask
+
+# Expose the port the app will run on
+EXPOSE 5000
+
+# Run the application
+CMD ["python", "app.py"]
+~~~
+
+4. Build the Docker image:
+
+~~~bash
+sudo docker build -t flask-app .
+~~~
+
+5. Deploy the app on Docker Swarm:
+
+~~~bash
+sudo docker service create --name flask-app --replicas 3 -p 5000:5000 flask-app
+~~~
+
+6. Check the deployment of the application with the CLI terminal commands listed belows, and also on your port *5000* like ```http://<YOUR_UBUNTU_IP>:5000```:
+
+~~~bash
+# List:
+sudo docker service ls
+
+# Check service's tasks
+sudo docker service ps flask-app
+~~~
+
+You should see something like this when you are done:
+
+![docker_swarm_example](/ma01_docker_and_ros/resources/docker_swarm_example.png)
+
+For more information, you can check:
+
+- [Docker Swarm | Docker Docs](https://docs.docker.com/engine/swarm/)
 
 # Integrating DevContainers... 
 
