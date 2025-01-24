@@ -1644,9 +1644,158 @@ You should see something like this when you are done:
 
 ![docker_swarm_example](/ma01_docker_and_ros/resources/docker_swarm_example.png)
 
+After this practice do not forget to stop and remove what you have implemented, you can do the next:
+
+~~~bash
+# Stop the services
+sudo docker service rm flask-app
+
+# Scale down the replicas
+sudo docker service scale flask-app=0
+
+# Leave Docker Swarm
+sudo docker swarm leave --force
+~~~
+
 For more information, you can check:
 
 - [Docker Swarm | Docker Docs](https://docs.docker.com/engine/swarm/)
+
+## Secrets with Docker Swarm:
+
+There would be cases where you need to control what information is visible to the applications, for example, a password may be required to start a process but it wouldn't be wise to add it in a plain text, then you can use **Docker Secrets** to prevent this, follow the example [09_ros2_with_secret](/ma01_docker_and_ros/docker_examples/09_ros2_with_secret).
+
+1. Let's create a Docker Secrete, in this case a password (make sure do not use any of your password for an example), do not forget to init a swarm before:
+
+~~~bash
+# Locate yourself in a directory to safe the desired information
+echo "no_my_password" > password.txt
+
+# Create the docker secret
+# sudo docker scret create <name> [elements]
+sudo docker secret create ros2_pw password.txt
+
+~~~
+
+2. Set up your image and consider the secret inside it:
+
+~~~Dockerfile
+FROM osrf/ros:jazzy-desktop-full
+
+RUN mkdir -p /ros2_ws/src
+WORKDIR /ros2_ws
+
+RUN /bin/bash -c "source /opt/ros/jazzy/setup.bash && colcon build"
+
+COPY entrypoint.sh /ros2_ws/entrypoint.sh
+RUN chmod +x /ros2_ws/entrypoint.sh
+
+ENTRYPOINT ["/ros2_ws/entrypoint.sh"]
+~~~
+
+3. Set up the entrypoint to read the Docker Secret
+
+~~~bash
+#!/bin/bash
+
+export ROS2_SECRET=$(cat /run/secrets/ros2_pw)
+
+echo "ROS 2 Secret: $ROS2_SECRET"
+
+source /opt/ros/jazzy/setup.bash
+ros2 run demo_nodes_cpp talker
+~~~
+
+4. Go to the location of the Dockerfile and the entrypoint to build the image:
+
+~~~bash
+sudo docker build -t ros2_wt_secret .
+~~~
+
+5. Create a docker compose file (docker-compose.yml) to define the service and add the secret:
+
+~~~yaml
+version: "3.8"
+
+services:
+  ros2_talker:
+    image: ros2_wt_secret
+    deploy:
+      replicas: 1
+    secrets:
+      - ros2_pw
+    environment:
+      - ROS2_SECRET_PATH=/run/secrets/ros2_pw
+
+secrets:
+  ros2_pw:
+    external: true
+~~~
+
+6. Then, deploy the application by using the *Docker Stack*:
+
+~~~bash
+sudo docker stack deploy -c docker-compose.yml ros2_stack
+~~~
+
+7. Verifiy the deployment:
+
+~~~bash
+# List
+sudo docker stack services ros2_stack
+
+# View 
+sudo docker service logs ros2_stack_ros2_talker
+~~~
+
+You should see something like this:
+
+![docker_secrets_with_ros](/ma01_docker_and_ros/resources/docker_secret_with_ros.png)
+
+Before we finish this topic, there another commands you should know:
+
+- You can inspect a secret:
+
+~~~bash
+# docker secret inspect <name>
+docker secret inspect ros2_pw
+~~~
+
+- You can list all the secrets available with:
+
+~~~bash
+docker secret ls
+~~~
+
+- To delete a secret you can use:
+
+~~~bash
+# docker secret rm <name>
+docker secret rm ros2_pw
+~~~
+
+- To update a service to remove a secrete you use:
+
+~~~bash
+docker service update --secret-rm <secrete_name> <secret_service>
+~~~
+
+Finally, to stop and remove what you created you can run:
+
+~~~bash
+# Delete stack
+sudo docker stack rm ros2_stack
+
+# Delete secret
+sudo docker secret rm ros2_pw
+
+# Leave swarm
+sudo coker warm leave --force
+~~~
+
+For more information, you can check:
+
+- [Docker Secrets | Docker Docs](https://docs.docker.com/engine/swarm/secrets/)
 
 # Integrating DevContainers... 
 

@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  ros2_talker:
+    # Make sure you have build the image previously
+    image: ros2_wt_secret
+    # Deployment configuration
+    deploy:
+      replicas: 1
+    # Add secrets to consider
+    secrets:
+      - ros2_pw
+    # Specify path to secret with ENV
+    environment:
+      - ROS2_SECRET_PATH=/run/secrets/ros2_pw
+
+# consider secrets and make it available
+secrets:
+  ros2_pw:
+    external: true
