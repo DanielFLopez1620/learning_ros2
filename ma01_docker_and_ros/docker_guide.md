@@ -1797,6 +1797,114 @@ For more information, you can check:
 
 - [Docker Secrets | Docker Docs](https://docs.docker.com/engine/swarm/secrets/)
 
+## Setting up a Kubernetes clustering
+
+[Kubernetes](https://kubernetes.io/) is an open source container orchestration tool that was started by Google. It allos deplyment, scheduling, updaing, maintenance and scaling process of nodes, all defined by the user by using YAML or JSON files.
+
+Some key concepts to have in mind are:
+
+- **Pods:** It is the deployment unit that can consist of multiple containers, where each container shares a different namespaces with others in the same pod.
+
+- **Node:** Is a worker node in the Kubernetes cluster and is managed through the master. Pods are deployed on a node, which includes service to run them:
+
+  - *Docker:* Running containers.
+  - *Kubelet:* Interacion with the master.
+  - *Proxy / Kube-Proxy:* Connection between service and pod.
+
+- **Master:** Host cluster-level control services:
+
+  - *API Server:* RESTful API for interaction with master and nodes.
+  - *Scheduler:* For jobs in the cluster, like creation of nodes.
+  - *ReplicaSet:* Ensuring certain number of replicas at a given time.
+  - *etcd:* The master communicates with it to store configuration inofrmation.
+
+- **Services:** Each pod receives a unique and own IP adress but it can be problematic due to controller configuration. However, an abstraction in the term of services was created to label these in order to define a logical set for managing purposes.
+
+- **Labels:** Key-value pairs attached to objects.
+
+- **Volumes:** A directory that is accesible to the containers in a pods, they aren't the same as Docker Volumes.
+
+For the installation, consider using **curl** as follows:
+
+~~~bash
+curl -LO "https://dl.k8s.io/release/v1.24.0/bin/linux/amd64/kubectl"
+sudo mv kubectl /usr/local/bin/
+sudo chmod +x /usr/local/bin/kubectl
+~~~
+
+Now, let's set up the cluster for a simple ROS 2 application.
+
+1. Create an image, in our case, with a Dockerfile looks like this:
+
+~~~Dockerfile
+FROM osrf/ros:humble-desktop-full
+
+RUN mkdir -p /ros2_ws/src
+WORKDIR /ros2_ws
+
+RUN /bin/bash -c "source /opt/ros/jazzy/setup.bash && colcon build"
+
+CMD ros2 run demo_nodes_cpp talker
+~~~
+
+2. Build the image:
+
+~~~bash
+docker build -t ros_humble_test .
+~~~
+
+3. Define *Kubernetes* results:
+
+~~~yaml
+apiVersion: app/v1
+kind: Deployment
+metadata:
+  name: ros2_humble_deployment
+spec:
+  replicas: 3
+  selector:
+    mathcLabels:
+      app: ros_humble_test
+  template:
+    metadata:
+      labels:
+        app: ros_humble_test
+    spec:
+      containers:
+      - name: ros_humble_test
+        image: ros2_humble_test
+        command: ["/bin/bash", "-c", "/opt/ros/humble/setup.bash && ros2 run demo_nodes_cpp listener "]
+        resources:
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ros_humble_service
+spec:
+  selector:
+    app: ros_humble_test
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+~~~
+
+4. Deply to Kubernetes:
+
+~~~bash
+kubectl apply -f ros_deployment.yaml
+~~~
+
+5. Verify the deployment:
+
+~~~bash
+kubectl get pods
+kubectl logs <pod-name>
+~~~
+
 # Integrating DevContainers... 
 
 TODO: Add devcontainers... info
