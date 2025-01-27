@@ -1824,12 +1824,20 @@ Some key concepts to have in mind are:
 
 - **Volumes:** A directory that is accesible to the containers in a pods, they aren't the same as Docker Volumes.
 
-For the installation, consider using **curl** as follows:
+For the installation we will need **kubectl**, consider using **curl** as follows:
 
 ~~~bash
 curl -LO "https://dl.k8s.io/release/v1.24.0/bin/linux/amd64/kubectl"
 sudo mv kubectl /usr/local/bin/
 sudo chmod +x /usr/local/bin/kubectl
+~~~
+
+Also, we will need to install Minikube, you can install it with:
+
+~~~bash
+curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+sudo install minikube-linux-amd64 /usr/local/bin/minikube
+minikube version
 ~~~
 
 Now, let's set up the cluster for a simple ROS 2 application.
@@ -1842,9 +1850,9 @@ FROM osrf/ros:humble-desktop-full
 RUN mkdir -p /ros2_ws/src
 WORKDIR /ros2_ws
 
-RUN /bin/bash -c "source /opt/ros/jazzy/setup.bash && colcon build"
+RUN ["/bin/bash", "-c",  "source /opt/ros/humble/setup.bash && colcon build"]
 
-CMD ros2 run demo_nodes_cpp talker
+CMD ["ros2 run demo_nodes_cpp talker"]
 ~~~
 
 2. Build the image:
@@ -1892,13 +1900,19 @@ spec:
       targetPort: 8080
 ~~~
 
-4. Deply to Kubernetes:
+4. Start Minikube:
+
+~~~bash
+minikube start
+~~~
+
+5. Deply to Kubernetes:
 
 ~~~bash
 kubectl apply -f ros_deployment.yaml
 ~~~
 
-5. Verify the deployment:
+6. Verify the deployment:
 
 ~~~bash
 kubectl get pods

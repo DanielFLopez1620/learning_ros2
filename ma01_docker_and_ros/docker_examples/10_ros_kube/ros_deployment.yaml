@@ -1,0 +1,34 @@
+apiVersion: app/v1
+kind: Deployment
+metadata:
+  name: ros2_humble_deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ros_humble_test
+  template:
+    metadata:
+      labels:
+        app: ros_humble_test
+    spec:
+      containers:
+      - name: ros_humble_test
+        image: ros2_humble_test
+        command: ["/bin/bash", "-c", "/opt/ros/humble/setup.bash && ros2 run demo_nodes_cpp listener "]
+        resources:
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ros_humble_service
+spec:
+  selector:
+    app: ros_humble_test
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
