@@ -1447,6 +1447,24 @@ For more information check:
 
 - [Run Metrics | Docker Docs](https://docs.docker.com/config/containers/runmetrics/)
 
+## Security:
+
+Even when it is just a container, you should consider it as a running service/process in the host system and put all the security measures inside of it as you may do in the host system.
+
+Docker already uses namespaces for isolation, which are the processes, netowrk, mount, hostname, shared memory and user. However, there are other parts used who aren't isolated, for example, SELinux, Cgroups, Devices (**/dev** for *mem* or *sd*), Kernel Modules and filesystems like **/sys**, **/proc/sys**, **proc/sysrq-trigger**, **/proc/riq** and **proc/bus** (but this are mounted on read only). Then, you require some special measuraments:
+
+- Search for official images (by docker, vendor or someone else recognized in the area) as they are the base of the building block system. For example, when using ```docker search``` check for the **OFFICIAL** column.
+
+~~~bash
+docker search alpine
+# Review the official and not official options.
+~~~
+
+For more information, check the next resources:
+
+- [Official Images | Docker Docs](https://github.com/docker-library/official-images)
+
+
 # Docker Orchestration and Hosting:
 
 Not all the time you will be in a development environment just running with a single host. Then you may need to spawn multiple containers in different hosts and then orchestrate them. There are differnt tool for this:
@@ -1864,22 +1882,22 @@ docker build -t ros_humble_test .
 3. Define *Kubernetes* results:
 
 ~~~yaml
-apiVersion: app/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ros2_humble_deployment
+  name: ros2-humble-deployment
 spec:
   replicas: 3
   selector:
-    mathcLabels:
-      app: ros_humble_test
+    matchLabels:
+      app: ros-humble-test
   template:
     metadata:
       labels:
-        app: ros_humble_test
+        app: ros-humble-test
     spec:
       containers:
-      - name: ros_humble_test
+      - name: ros-humble-test
         image: ros2_humble_test
         command: ["/bin/bash", "-c", "/opt/ros/humble/setup.bash && ros2 run demo_nodes_cpp listener "]
         resources:
@@ -1890,10 +1908,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: ros_humble_service
+  name: ros-humble-service
 spec:
   selector:
-    app: ros_humble_test
+    app: ros-humble-test
   ports:
     - protocol: TCP
       port: 8080
@@ -1917,6 +1935,19 @@ kubectl apply -f ros_deployment.yaml
 ~~~bash
 kubectl get pods
 kubectl logs <pod-name>
+~~~
+
+In my case, it looks like this:
+
+![kubernetes_get_first_pods](/ma01_docker_and_ros/resources/kubernetes_get_first_pods.png)
+
+The image is getting and error, and we will cover that topic later.
+
+In case you want to stop the process, you can do the next steps:
+
+~~~bash
+minikube stop
+minikube delete
 ~~~
 
 # Integrating DevContainers... 
