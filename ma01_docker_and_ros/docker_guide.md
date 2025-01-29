@@ -1460,10 +1460,91 @@ docker search alpine
 # Review the official and not official options.
 ~~~
 
+- Prefer to set up the Docker Deaemon access with TCp to secure a Docker remote API.
+
+- Consider turning off the default inter-container communication over the network with ```--icc=false``` on the Docker host when it is possible.
+
+- Set Cgroups resources restriction to prevent **DoS** (Denial of Services) attacks.
+
+- Any device node pre-create on a image cannot interact (talk) with the kernel if the **nodev** options is present.
+
+Other guidelines you can consider are:
+
+- Do not run services as root and treat the root in the container with caution.
+
+- Avoid using images that you can find with the ```-insecure-registry=[]``` option.
+
+- Do not run random containers from images of doubtful precedence or from a Docker registry you do not know.
+
+- Have your kernel and system up to date.
+
+- Avoid using ```--priviledged``` and drop the container privileges quickly when developing.
+
+- Configure **Mandatory Access Control** through SELinux or AppArmor.
+
+- Collect and check logs, even four auditing, then do regular auditing.
+
+- Run containers on hosts which are specially designed for this purpose.
+
+- Prefer mounting devices with ```--device``` rather than ```--privileged```
+
+- Prohibit **SUID** and **SGID** inside the container.
+
 For more information, check the next resources:
 
 - [Official Images | Docker Docs](https://github.com/docker-library/official-images)
 
+- [Security | Docker Docs](https://docs.docker.com/engine/security/)
+
+### Checking SELinux and AppArmor in your host:
+
+If you do not have a configuration of these tools, someone connected to a Docker container running in your host may gain additional access and expose your security, for example, if **SELinux** is disabled and a user is created (also, added to the Docker group to run **sudo** commands) you may have the power to shutdown the host.
+
+As we will set up some Docker Security practices, let's first make sure we have **SELinux** and **AppArmor** active in our Ubuntu:
+
+- Checking  **AppArmor**:
+
+~~~bash
+# Checking service
+sudo systemctl status apparmor # or apparmor.service
+
+# Checking loading profiles
+sudo apparmor_status
+~~~
+
+- If the status of **AppArmor** is disable, run the next commands:
+
+~~~bash
+sudo systemctl enable apparmor
+sudo systemctl start apparmor
+~~~
+
+- Checking **SELinux**:
+
+~~~bash
+sestatus
+~~~
+
+- If **SELinux** isn't installed, you can run:
+
+~~~bash
+sudo apt update
+sudo apt install selinux-utils selinux-policy-default
+~~~
+
+- If **SELinux** is disabled, you have to do the next:
+
+~~~bash
+# Open the SELinux file:
+sudo nano /etc/selinux/config
+
+# Change the SELinux to enforcing inside the file
+SELINUX=enforcing
+
+# Exit the file and reboot
+~~~
+
+### Setting Mandatory Access Control (MAC) with SELinux:
 
 # Docker Orchestration and Hosting:
 
