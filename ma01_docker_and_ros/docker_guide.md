@@ -1544,7 +1544,69 @@ SELINUX=enforcing
 # Exit the file and reboot
 ~~~
 
+In the puntual case of Ubuntu, you can also do the next:
+
+~~~bash
+# Install SELinux
+sudo apt install policycoreutils selinux-utils selinux-basics
+
+# Activate SELinux
+sudo selinux-activate
+
+# Set up enforcing mode
+sudo selinux-config-enforcing
+
+# Reboot
+sudo reboot
+~~~
+
+After the installation, you can check SELinux with:
+
+~~~bash
+estatus 
+~~~
+
 ### Setting Mandatory Access Control (MAC) with SELinux:
+
+After you make sure you have **SELinux** on the enforcing mode, let's dive into it.
+
+SELinux is a labeling system, then it labels every process, file, directory and system object. It also provides policy rules control access between labeled processes and objects, where the kernel will also enforce the rule.
+
+In the case of the Docker containers, two measuraments appear:
+
+- **Type enforcement:** The container processes are labeled with ```svirt_lxc_net_t``` and the container files with ```svirt_sandbox_file_t```, then containers processes can only access/write container files by respecting the rule.
+
+- **Multi category Security Enforcement (MCSE):** By adding categories, you can protect a container from another container by still having labels.
+
+The MCSE is based on Multi Level Security (MLS), then when a container is launches, it picks a random MCS label and saves it with the container metadata. so, the Docker daemon tells the kernel to apply the correct MCS when a process container start.
+
+Again, to check SELinux is in enforcing mode, you can check:
+
+~~~bash
+sudo setenforce 1
+getenforce
+
+# You can check /etc/selinux/config file too.
+~~~
+
+Also, check that Docker has the ```--selinux-enabled``` option, it can be found on the */etc/docker/daemon.json
+
+~~~bash
+cat /etc/docker/daemon.json
+~~~
+
+
+
+
+### Allow writting to volumes mounted with SELinux ON
+
+1. Create a volume with ```-z``` or ```-Z``` option:
+
+~~~bash
+docker container run -it -v /tmp:/tmp/host:z ubuntu /bin/bash
+~~~
+
+2. 
 
 # Docker Orchestration and Hosting:
 
