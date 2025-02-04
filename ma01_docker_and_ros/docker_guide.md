@@ -1589,24 +1589,78 @@ getenforce
 # You can check /etc/selinux/config file too.
 ~~~
 
+Otherwise, make sure to enable it again, you can also try:
+
+~~~bash
+sudo selinux-activate
+sudo reboot
+~~~
+
 Also, check that Docker has the ```--selinux-enabled``` option, it can be found on the */etc/docker/daemon.json
 
 ~~~bash
 cat /etc/docker/daemon.json
 ~~~
 
+If the option is not visible, you may have to modify the Docker service to use **SELinux**, so create a new dir on the service and add a *selinux.conf* file.
 
+~~~bash
+sudo mkdir -p /etc/systemd/system/docker.service.d
+sudo nano /etc/systemd/system/docker.service.d/selinux.conf
+~~~
 
+Inside the file, make sure to add the following content:
 
-### Allow writting to volumes mounted with SELinux ON
+~~~conf
+[Service]
+ExecStart=
+ExecStart=/usr/bin/dockerd --selinux-enabled
+~~~
 
-1. Create a volume with ```-z``` or ```-Z``` option:
+Then, reload the *systemd* and *Docker* service:
+
+~~~bash
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+~~~
+
+Now, you should be ready to launch a Docker container with SELinux support, for this you have the next options:
+
+- Run with default labels:
+
+~~~bash
+docker run --rm --security-opt label=type:container_t ubuntu /bin/bash
+~~~
+
+- Run with custom label:
+
+~~~bash
+docker run --rm --security-opt label=role:object_r --security-opt label=type:unconfined_t ubuntu /bin/bash
+~~~
+
+- Run without confinement:
+
+~~~bash
+docker run --rm --security-opt label=disable ubuntu /bin/bash
+~~~
+
+For more information you can check on:
+
+- [What is SELinux? | DevOps School](https://www.devopsschool.com/blog/what-is-selinux-and-how-its-selinux-used-in-docker/)
+
+- [Security | Docker Docs](https://docs.docker.com/engine/security/)
+
+### Allow writting to volumes mounted with SELinux ON:
+
+Sometimes we will need access to files that are located due to security. However, when SELinux, we can access in a proper and secure way, to this consider the next command.
+
+- Create a volume with ```-z``` or ```-Z``` option:
 
 ~~~bash
 docker container run -it -v /tmp:/tmp/host:z ubuntu /bin/bash
 ~~~
 
-2. 
+### Removing capabilities in order to prevent power downs:
 
 # Docker Orchestration and Hosting:
 
