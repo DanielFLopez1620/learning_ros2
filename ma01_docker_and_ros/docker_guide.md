@@ -1662,6 +1662,46 @@ docker container run -it -v /tmp:/tmp/host:z ubuntu /bin/bash
 
 ### Removing capabilities in order to prevent power downs:
 
+AS you may know, for some actions inside your machine you require priviledged access. But how can I differ between a priviledged and a unpriviledged process? Well, in this case with the requirement of the user ID (**UID**). If it is 0, then you are a superuse or root; but if it is non-zero, it is unpriviledged. 
+
+Why is this concerning? Because a priviledged process can bupass all kernel permission check. Then, when you are unpriviledged, you pass for a full permission checkin (the credentials inlcude effective UID, effective GID (Group ID) and supplementary group list).
+
+Docker allow us to control, add and remove capabilities for a container, for example, with:
+
+- **chown**: Change Ownership of files or directories
+- **dac_override**: Discretionary Access Control Override, then it allows process to bypass file permission checks
+- **fowner** : File Owner Override, allow to perform actios on files one doesn't own.
+- **kill** : Terminate process.
+- **setgid** : Set Group ID for a file or process.
+- **setuid** : Set User ID for a file or process.
+- **setpcap** : Set capabilities, it allows a process to modify its capability sets.
+- **net_bin_service** : Bind to Low Numbered Ports, for prots below 1024 which are privileged.
+- **net_raw** : Raw Socket Access, allows communication by using raw sockets.
+- **sys_chroot** : Change Root Directory.
+- **mknod** : Make device nodes, creation of device nodes like */dev/sda*.
+- **setfcap** : Set File Capabilities.
+- **audit_write** : Write to Audit log, allow writing to the Linux audit logs.
+
+The capabilities you should keep in mind are:
+
+- **CAP_SETPCAP:** This modifies process capabilities.
+- **CAP_SYS_MODULE:** This inserts/removes kernel modules.
+- **CAP_SYS_RAWIO:** This modifies Kernel Memory.
+- **CAP_SYS_PACCT:** This configures process accounting.
+- **CAP_SYS_NICE:** This modifies the priority of processes.
+- **CAP_SYS_RESOURCE:** This overrides Resource Limits.
+- **CAP_SYS_TIME:** This modifies system clock.
+- **CAP_SYS_TTY_CONFIG:** This configures tty devices.
+- **CAP_AUDIT_WRITE:** This writes the audit log.
+- **CAP_AUDIT_CONTROL:** This configures audit subsystem.
+- **CAP_MAC_OVERRIDE:** This ignores kernel MAC Policy.
+- **CAP_MAC_ADMIN:** This configures MAC Configuration.
+- **CAP_SYSLOG:** This modifies kernel printk behavior.
+- **CAP_NET_ADMIN:** This configures network.
+- **CAP_SYS_ADMIN:** This helps you catch all containers.
+
+In the case of Docker Cli tools, you can use ```--cap-add``` or ```--cap-drop``` options respectively.
+
 # Docker Orchestration and Hosting:
 
 Not all the time you will be in a development environment just running with a single host. Then you may need to spawn multiple containers in different hosts and then orchestrate them. There are differnt tool for this:
