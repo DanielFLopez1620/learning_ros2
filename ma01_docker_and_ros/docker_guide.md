@@ -1700,7 +1700,32 @@ The capabilities you should keep in mind are:
 - **CAP_NET_ADMIN:** This configures network.
 - **CAP_SYS_ADMIN:** This helps you catch all containers.
 
-In the case of Docker Cli tools, you can use ```--cap-add``` or ```--cap-drop``` options respectively.
+In the case of Docker Cli tools, you can use ```--cap-add``` or ```--cap-drop``` options respectively:
+
+~~~bash
+# docker container run --cap-drop <capability> <image> [command]
+# docker container run --cap-add <capability> <image> [command]
+
+# Drop Setting IDS
+docker container run -it --rm --cap-drop setuid --cap-drop setgid ubuntu /bin/bash
+
+# Activate all, except sys_admin
+docker container run -it --rm --cap
+~~~
+
+For more information, you can check:
+
+- [Options | Docker Docs](https://docs.docker.com/engine/reference/commandline/run/#options)
+
+### Sharing namespaces between the host and the container
+
+Docker creates six different namespaces (Process, Network, Mount, Hostname, Shared Memory and User) for each container it starts. However, there would be cases, like with Kubernetes, when we want that all the containers in a pod share the same network namespace.
+
+This can be achieved with the ```host``` value for args like ```--net```, ```--pid``` and so on, like the following example:
+
+~~~bash
+docker container run -it --rm --net=host --pid=host --ipc=host ubuntu /bin/bash
+~~~
 
 # Docker Orchestration and Hosting:
 
@@ -2297,6 +2322,38 @@ docker container run python_test pytest simple_excersize.py
 ~~~
 
 In conclussion, you do not need to have all set up in your machine, as you can build images and run containers that uses different versions of the programming languages that are installed in your machine.
+
+# Docker Tips and Tricks:
+
+## Using debug mode
+
+Let's be honest, sometimes you need logs so... why don't you try debugging?
+
+To make this possible you need to reconfigure the Docker Daemon:
+
+~~~bash
+# You can do it with the daemon command
+dockerd -D
+
+# Or by chaning the json file
+cat /etc/docker/daemon.json
+# { "debug": true}
+~~~
+
+For example, if I run a **Ubuntu** container, I will receive the next:
+
+~~~bash
+docker container run --rm ubuntu echo "hello from Ubuntu"
+
+# Then checking the logs...
+journalctl -u docker.service
+~~~
+
+![docker_debug_example](/ma01_docker_and_ros/resources/docker_debug_example.png)
+
+For more information, you can check:
+
+- [Docker Daemon | Docker Docs](https://docs.docker.com/config/daemon/)
 
 # Additional links and information:
 
