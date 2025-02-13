@@ -2355,6 +2355,65 @@ For more information, you can check:
 
 - [Docker Daemon | Docker Docs](https://docs.docker.com/config/daemon/)
 
+## Building iamges without using cached layers
+
+Cached layers take less time to build. However, if for reasons of the destiny you need to build from scratch it is still possible to make it.
+
+For this example, we have the case for example [11_no_cached_alpine](/ma01_docker_and_ros/docker_examples/11_no_cached_alpine/), where we will build a simple Dockerfile:
+
+~~~Dockerfile
+FROM alpine:3.8
+RUN apk add --update nginx && mkdir /tmp/nginx && rm -rf /var/cache/apk/*
+EXPOSE 80 443
+CMD ["nginx", "-g", "daemon off;"]
+~~~
+
+To build it without cache, you just have to include the ```--no-cache``` option.
+
+~~~bash
+cd docker_examples/11_no_cached_alpine
+docker image build -t -test --no-cache - < Dockerfile
+~~~
+
+## Building your own bridge:
+
+When the Docker daemon starts, it creates the **docker0** bridge and all the containers will get the iP from it. However, if it exist a case when you want to use a different bridge, you can do it.
+
+
+~~~bash
+# docker network create <name> --subnet <net>
+docker network create nodocker0 --subnet 192.168.2.1/24
+~~~
+
+It is just as easy as that, then you can confirm the creation with:
+
+~~~bash
+docker network ls
+# And search for the implementation you just created
+~~~
+
+However, you need to specify the network configuration for the containers in order to use the custom one. Otherwise, it will be still **docker0**
+
+~~~bash
+docker container run -d --network nodocker0 --name demo -it --rm ubuntu
+~~~
+
+After the creation, in another terminal, check the network configuration for the specified port:
+
+~~~bash
+docker container inspect demo
+~~~
+
+When you are done with the network configuration you just created, you can delete it with:
+
+~~~bash
+docker network rm nodocker0
+~~~
+
+For more information you can check:
+
+- [Network | Docker Docs](https://docs.docker.com/network/)
+
 # Additional links and information:
 
 - [Docker Engine API 1.47| Docker Docs](https://docs.docker.com/reference/api/engine/version/v1.47/)
