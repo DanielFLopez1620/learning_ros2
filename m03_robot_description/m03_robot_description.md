@@ -470,6 +470,7 @@ You may be wondering why to have two launches that look almost the same, and you
 ### Quaternion Fundamentals
 
 ros2 param set /rpy_to_quaternion_publisher pitch 0.3
+ros2 param set /quaternion_publisher qy 0.5
 
 ### Message Filter
 

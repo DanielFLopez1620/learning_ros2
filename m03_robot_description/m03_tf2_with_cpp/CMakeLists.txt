@@ -14,6 +14,7 @@ find_package(tf2 REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(turtlesim REQUIRED)
+find_package(rcl_interfaces REQUIRED)
 
 add_executable(static_broadcaster src/static_broadcaster.cpp)
 ament_target_dependencies(
@@ -108,6 +109,13 @@ ament_target_dependencies(
     tf2_ros
 )
 
+add_executable(rpy_param_checker src/rpy_param_change_list.cpp)
+ament_target_dependencies(
+    rpy_param_checker
+    rcl_interfaces
+    rclcpp
+)
+
 
 install(TARGETS
   static_broadcaster
@@ -119,12 +127,14 @@ install(TARGETS
   turtle_time_travel
   turtle_listen_debug
   quaternion_guide_for_viz
+  rpy_guide_for_viz
+  rpy_param_checker
   DESTINATION lib/${PROJECT_NAME}  
 )
 
 # Launch files
 install(DIRECTORY
-  launch
+  launch rviz
   DESTINATION share/${PROJECT_NAME}
 )
 

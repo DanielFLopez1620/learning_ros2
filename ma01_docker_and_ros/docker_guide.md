@@ -2414,6 +2414,20 @@ For more information you can check:
 
 - [Network | Docker Docs](https://docs.docker.com/network/)
 
+## Changing the OCI defualt runtime
+
+The Docker daemon relies on an OCI (Open Container Initiative) compliant runtime for interaction with the kernel. It is mainly runC, but you can use other if you want to.
+
+In this case, we can do the test with the Intel Clear Containers, which are now called kata-containers. So, let's do this:
+
+1. Install Kata containers
+
+~~~bash
+sudo apt update
+sudo apt install kata-runtime
+~~~
+
+
 # Additional links and information:
 
 - [Docker Engine API 1.47| Docker Docs](https://docs.docker.com/reference/api/engine/version/v1.47/)
