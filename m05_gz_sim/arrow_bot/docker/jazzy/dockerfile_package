@@ -1,0 +1,74 @@
+# syntax=docker/dockerfile:1.4
+ARG ROS_DISTRO_ARG=jazzy
+ARG ROS_DISTRO_ASSEMBLY_ARG=desktop
+FROM ros2:${ROS_DISTRO_ARG}_${ROS_DISTRO_ASSEMBLY_ARG}_basic
+
+ARG PATH_TO_WS_RELATIVE_TO_USER=ros2/ws
+ARG REL_PATH_FROM_WS_TO_GIT=src/arrow_bot
+ARG REL_PATH_FROM_GIT_TO_MODULES=modules
+ARG REL_PATH_FROM_MODULES_TO_NOT_ROS_PACKAGES=not_ros_packages
+
+ENV REL_PATH_FROM_GIT_TO_MODULES=$REL_PATH_FROM_GIT_TO_MODULES
+ENV REL_PATH_FROM_MODULES_TO_NOT_ROS_PACKAGES=$REL_PATH_FROM_MODULES_TO_NOT_ROS_PACKAGES
+
+### Make paths
+ENV PATH_TO_WS=/home/${USER}/${PATH_TO_WS_RELATIVE_TO_USER}
+ENV PATH_TO_GIT=${PATH_TO_WS}/${REL_PATH_FROM_WS_TO_GIT}
+ENV PATH_TO_GIT_SUBMODULES=${PATH_TO_GIT}/${REL_PATH_FROM_GIT_TO_MODULES}
+ENV PATH_TO_GIT_SUBMODULES_NOT_ROS_PACKAGES=${PATH_TO_GIT_SUBMODULES}/${REL_PATH_FROM_MODULES_TO_NOT_ROS_PACKAGES}
+
+RUN echo 'PATH_TO_WS: '$PATH_TO_WS
+RUN echo 'PATH_TO_WS_RELATIVE_TO_USER: '$PATH_TO_WS_RELATIVE_TO_USER
+### End make paths
+
+
+#bash needed for ros distro setup.bash builtin (command in script)
+SHELL ["/bin/bash", "-c"]
+
+
+WORKDIR $PATH_TO_WS
+
+
+### Copy project to image
+RUN mkdir -p $PATH_TO_GIT
+WORKDIR $PATH_TO_GIT
+COPY --link --from=git_root --chown=$USER:$USER . .
+COPY --link entrypoint_basic.bash /entrypoint_basic.bash
+### END copy project to image
+
+
+### Install ROS deps
+WORKDIR $PATH_TO_WS
+RUN echo '$PATH_TO_WS: '$PATH_TO_WS
+RUN echo '$ROS_DISTRO: '$ROS_DISTRO
+RUN echo 'Install ROS dependencies...'
+RUN sudo -H apt-get update && rosdep update && \
+    sudo rosdep install -y -r -q --from-paths src --ignore-src --rosdistro ${ROS_DISTRO} && \
+    sudo apt-get autoclean -y && \
+    sudo apt-get autoremove -y && \
+    sudo rm -rf /var/lib/apt/lists/*
+### End Install ROS deps
+
+
+### Build ROS packages
+WORKDIR $PATH_TO_WS
+RUN echo 'Build ROS packages...'
+RUN . /opt/ros/${ROS_DISTRO}/setup.bash && colcon build --symlink-install
+RUN echo ". /opt/ros/${ROS_DISTRO}/setup.bash" >> ${HOME}/.profile
+RUN echo ". ${PATH_TO_WS}/install/local_setup.bash" >> ${HOME}/.profile
+### Build ROS packages
+
+# # It start leads to "libEGL fatal: did not find extension DRI_Mesa version 1"
+# # Upgrade OS
+# RUN echo 'Upgrade OS'
+# RUN sudo apt-get update -q && \
+#     DEBIAN_FRONTEND=noninteractive sudo apt-get upgrade -y && \
+#     sudo apt-get autoclean -y && \
+#     sudo apt-get autoremove -y && \
+#     sudo rm -rf /var/lib/apt/lists/*
+# # End Upgrade OS
+
+
+RUN sudo chmod +x /entrypoint_basic.bash
+ENTRYPOINT ["/entrypoint_basic.bash"]
+CMD ["bash"]

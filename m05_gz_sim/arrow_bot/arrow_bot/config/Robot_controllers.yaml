@@ -1,0 +1,74 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 250
+    diff_drive_controller:
+      type: diff_drive_controller/DiffDriveController
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+diff_drive_controller:
+  ros__parameters:
+    angular.z.has_acceleration_limits: true
+    angular.z.has_jerk_limits: true
+    angular.z.has_velocity_limits: true
+    angular.z.max_acceleration: .nan
+    angular.z.max_acceleration_reverse: .nan
+    angular.z.max_deceleration: .nan
+    angular.z.max_deceleration_reverse: .nan
+    angular.z.max_jerk: .nan
+    angular.z.max_velocity: .nan
+    angular.z.min_acceleration: .nan
+    angular.z.min_jerk: .nan
+    angular.z.min_velocity: .nan
+    base_frame_id: l_base
+    cmd_vel_timeout: 0.5
+    enable_odom_tf: true
+    left_wheel_names:
+    - l_base__to__l_wheel1
+    left_wheel_radius_multiplier: 1.0
+    linear.x.has_acceleration_limits: true
+    linear.x.has_jerk_limits: true
+    linear.x.has_velocity_limits: true
+    linear.x.max_acceleration: .nan
+    linear.x.max_acceleration_reverse: .nan
+    linear.x.max_deceleration: .nan
+    linear.x.max_deceleration_reverse: .nan
+    linear.x.max_jerk: .nan
+    linear.x.max_velocity: .nan
+    linear.x.min_acceleration: .nan
+    linear.x.min_jerk: .nan
+    linear.x.min_velocity: .nan
+    odom_frame_id: odom
+    open_loop: true
+    pose_covariance_diagonal:
+    - 0.0001
+    - 0.0001
+    - 0.0001
+    - 0.0001
+    - 0.0001
+    - 0.0001
+    position_feedback: false
+    publish_limited_velocity: false
+    publish_rate: 50.0
+    right_wheel_names:
+    - l_base__to__l_wheel2
+    right_wheel_radius_multiplier: 1.0
+    tf_frame_prefix: ''
+    tf_frame_prefix_enable: true
+    twist_covariance_diagonal:
+    - 0.0001
+    - 0.0001
+    - 0.0001
+    - 0.0001
+    - 0.0001
+    - 0.0001
+    velocity_rolling_window_size: 10
+    wheel_radius: 0.015
+    wheel_separation: 0.1
+    wheel_separation_multiplier: 1.0
+joint_state_broadcaster:
+  ros__parameters:
+    map_interface_to_joint_state.effort: effort
+    map_interface_to_joint_state.position: position
+    map_interface_to_joint_state.velocity: velocity
+    use_local_topics: false
+    use_urdf_to_filter: true

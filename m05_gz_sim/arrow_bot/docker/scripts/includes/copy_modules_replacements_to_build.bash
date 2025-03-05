@@ -1,0 +1,2 @@
+    echo "Copy $path_to_ws/src/$package_name/modules_replacements/$not_ros_packages_folder_name/. to $build_data_path/$not_ros_packages_folder_name"
+    cp -r $path_to_ws/src/$package_name/modules_replacements/$not_ros_packages_folder_name/. $build_data_path/$not_ros_packages_folder_name

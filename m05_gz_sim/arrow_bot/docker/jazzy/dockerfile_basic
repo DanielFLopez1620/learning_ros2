@@ -1,0 +1,108 @@
+# syntax=docker/dockerfile:1.4
+ARG ROS_DISTRO_ARG=jazzy
+ARG ROS_DISTRO_ASSEMBLY_ARG=desktop
+FROM osrf/ros:${ROS_DISTRO_ARG}-${ROS_DISTRO_ASSEMBLY_ARG}
+
+# Must redeclare so that value is available after FROM statement.
+ARG ROS_DISTRO_ARG
+ARG GZ_VERSION_ARG=harmonic
+
+ARG USER=$USER
+ARG UID=$(id -u)
+ARG GROUP=$USER
+ARG GID=$(id -g)
+ARG PASSWD=ubuntu
+
+ENV USER=$USER
+ENV UID=$UID
+ENV PASSWD=$PASSWD
+ENV GROUP=$GROUP
+ENV GID=$GID
+
+ENV GZ_VERSION=$GZ_VERSION_ARG
+ENV ROS_DISTRO=$ROS_DISTRO_ARG
+
+# fix - error: externally-managed-environment
+ENV PIP_BREAK_SYSTEM_PACKAGES 1
+
+
+#bash needed for ros distro setup.bash builtin (command in script)
+SHELL ["/bin/bash", "-c"]
+
+
+# setup timezone
+RUN unlink /etc/localtime || true && \
+    ln -s /usr/share/zoneinfo/Europe/Moscow /etc/localtime && \
+    apt-get update && \
+    apt-get install -q -y --no-install-recommends tzdata && \
+    apt-get autoclean -y && \
+    apt-get autoremove -y && \
+    rm -rf /var/lib/apt/lists/*
+
+
+# Upgrade OS
+RUN echo 'Upgrade OS'
+RUN apt-get update -q && \
+    DEBIAN_FRONTEND=noninteractive apt-get upgrade -y && \
+    apt-get autoclean -y && \
+    apt-get autoremove -y && \
+    rm -rf /var/lib/apt/lists/*
+# End Upgrade OS
+
+
+### Install system packages
+RUN echo 'Install system packages'
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y \
+        supervisor wget curl git sudo python3-pip \
+        iputils-ping \
+        build-essential lsb-release locales \
+        bash-completion tzdata bash-builtins \ 
+        g++ \
+        gcc \
+        lsb-release \
+        libgflags-dev \
+        python3-colcon-common-extensions \
+        sudo && \
+    apt-get autoclean && \
+    apt-get autoremove && \
+    rm -rf /var/lib/apt/lists/*
+    # libgflags-dev # needed for gz_sim package
+### End Install system packages
+
+
+### Install Gazebo
+RUN echo "Install Gazebo $GZ_VERSION"
+RUN sudo apt-get update && \
+    sudo apt-get install -y lsb-release wget gnupg && \
+    sudo wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null && \
+    sudo apt-get update && \
+    sudo apt-get install gz-${GZ_VERSION} -y && \
+    apt-get autoclean && \
+    apt-get autoremove && \
+    rm -rf /var/lib/apt/lists/*
+### End install Gazebo
+
+### Delete user if present with same UID as local
+RUN deluser --remove-home $(id -un $UID); exit 0
+### End delete user if present with same UID as local
+
+### Create user
+RUN echo "* enable custom user: $USER"
+RUN groupadd -g 110 render
+RUN getent group $GROUP || groupadd --force -g $GID $GROUP
+RUN useradd --create-home --shell /bin/bash --groups adm,sudo,video,render --uid $UID --gid $GID $USER
+RUN echo "$USER ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+ENV HOME=/home/$USER
+RUN echo "$USER:$PASSWD" | /usr/sbin/chpasswd 2> /dev/null || echo ""
+RUN if [[ -d "/dev/snd" ]] ; then chgrp -R adm /dev/snd ; fi
+RUN export UBUNTU_USER_ID=$UID \
+    && mkdir -p -m 0700 /run/user/"${UBUNTU_USER_ID}" \
+    && chown $USER:$GROUP /run/user/"${UBUNTU_USER_ID}" \
+    && echo "export XDG_RUNTIME_DIR=/run/user/${UBUNTU_USER_ID}" >> ${HOME}/.profile 
+### End create user
+
+USER $USER
+
+CMD ["bash"]
