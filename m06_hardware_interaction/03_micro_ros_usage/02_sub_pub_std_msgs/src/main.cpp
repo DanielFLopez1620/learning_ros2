@@ -12,6 +12,7 @@
 
 // ------------------------ Required messages ---------------------------------
 #include <std_msgs/msg/int32.h>
+#include <std_msgs/msg/float32.h>
 
 // //////////////////////// GLOBAL DEFINITIONS ////////////////////////////////
 // --------------------------- Definitions ------------------------------------
@@ -23,8 +24,12 @@
 // Define publisher
 rcl_publisher_t publisher;
 
+// Define subscriber
+rcl_subscription_t subscriber;
+
 // Define message
-std_msgs__msg__Int32 msg;
+std_msgs__msg__Int32 num_msg;
+std_msgs__msg__Float32 dec_msg;
 
 // Define executor
 rclc_executor_t executor;
@@ -58,25 +63,15 @@ void error_loop()
 		delay(100);
 	}
 }
-
-/**
- * Function that will be linked to the timer in order to publish
- * the message data.
- */
-void timer_callback(rcl_timer_t * timer, int64_t last_call_time) 
+void subCallback(const void *msgin)
 {
-	RCLC_UNUSED(last_call_time);
-	if (timer != NULL) 
-	{
-		RCSOFTCHECK(rcl_publish(&publisher, &msg, NULL));
-		msg.data++;
-	}
+    dec_msg.data = (float) num_msg.data / 2;
+	RCSOFTCHECK(rcl_publish(&publisher, &dec_msg, NULL));
 }
-
-// ///////////////////// SINGLE SET UP FUNCTION ///////////////////////////////
+// //////////////////////////// SINGLE SET UP FUNCTION ///////////////////////
 void setup() 
 {
-	// Configure serial transport
+	// Configure Serial
 	Serial.begin(115200);
 	set_microros_serial_transports(Serial);
 	delay(2000);
@@ -84,37 +79,41 @@ void setup()
 	// Initialize allocator
 	allocator = rcl_get_default_allocator();
 
-	// Create init_options
+	// Create init options
 	RCCHECK(rclc_support_init(&support, 0, NULL, &allocator));
 
 	// Create node
-	RCCHECK(rclc_node_init_default(&node, "micro_ros_platformio_node", "", 
+	RCCHECK(rclc_node_init_default(&node, "micro_ros_pub_sub_std_node", "",
 		&support));
 
 	// Create publisher
 	RCCHECK(rclc_publisher_init_default(
 		&publisher,
 		&node,
+		ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Float32),
+		"micro_ros_platformio_node_float_pub"));
+	
+	// Create subscriber
+	RCCHECK(rclc_subscription_init_default(
+		&subscriber,
+		&node,
 		ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
-		"micro_ros_platformio_node_publisher"));
+		"micro_ros_platformio_node_int_sub"));
 
-	// Create timer,
-	const unsigned int timer_timeout = 1000;
-	RCCHECK(rclc_timer_init_default(
-		&timer,
-		&support,
-		RCL_MS_TO_NS(timer_timeout),
-		timer_callback));
+	RCCHECK(rclc_executor_init(
+		&executor,
+		&support.context, 
+		1, 
+		&allocator));
 
-	// Create executor
-	RCCHECK(rclc_executor_init(&executor, &support.context, 1, &allocator));
-	RCCHECK(rclc_executor_add_timer(&executor, &timer));
-
-	// Initialize data
-	msg.data = 0;
+	RCCHECK(rclc_executor_add_subscription(
+		&executor,
+		&subscriber,
+		&num_msg,
+		&subCallback,
+		ON_NEW_DATA));
 }
 
-// /////////////////////////// LOOP IMPLEMENTATION ///////////////////////////
 void loop() 
 {
 	// Delay required to avoid over-heating ESP32
