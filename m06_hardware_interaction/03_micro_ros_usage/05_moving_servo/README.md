@@ -1,4 +1,4 @@
-# Hello World on Micro ROS
+# Using servo motor MG996r with µ-ros
 
 ## Purpose
 
@@ -54,11 +54,6 @@ ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyUSB0 # Change the 
 
 ~~~bash
 ros2 topic list
-# Check for tht existence of /micro_ros_platformio_node_publisher
-ros2 topic echo /micro_ros_platformio_node_publisher
+# Check for tht existence of /micro_ros_platformio_servo
+ros2 topic pub /micro_ros_platformio_servo std_msgs/msg/Float32 "data: 180.0" --once
 ~~~
-
-## Additional resources
-
-- [Micro-ROS robot using PlatformIO for esp32 for ROS2 | Muhammad Luqman](https://www.youtube.com/watch?v=Nf7HP9y6Ovo&t=714s)
-- [talker_c | riot-ros2 @ Github](https://github.com/astralien3000/riot-ros2/blob/3d0779b920996f4e701830b8248573cd0e23204d/examples/talker_c/main.c#L32)

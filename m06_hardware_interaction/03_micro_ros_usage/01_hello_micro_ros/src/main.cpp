@@ -11,7 +11,7 @@
 #include <rclc/executor.h>
 
 // ------------------------ Required messages ---------------------------------
-#include <std_msgs/msg/int32.h>
+#include <std_msgs/msg/string.h>
 
 // //////////////////////// GLOBAL DEFINITIONS ////////////////////////////////
 // --------------------------- Definitions ------------------------------------
@@ -24,7 +24,7 @@
 rcl_publisher_t publisher;
 
 // Define message
-std_msgs__msg__Int32 msg;
+std_msgs__msg__String msg;
 
 // Define executor
 rclc_executor_t executor;
@@ -47,6 +47,9 @@ rcl_timer_t timer;
 // Define a soft ROS 2 Checker
 #define RCSOFTCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){}}
 
+// Global counter
+int counter = 0;
+
 // ///////////////////////////// FUNTION DEFINTIONS ///////////////////////////
 /**
  * Loop to handle errors
@@ -68,8 +71,13 @@ void timer_callback(rcl_timer_t * timer, int64_t last_call_time)
 	RCLC_UNUSED(last_call_time);
 	if (timer != NULL) 
 	{
+		char buff[64] = {0};
+		msg.data.data = buff;
+		msg.data.capacity = sizeof(buff);
+		msg.data.size = 0;
+		msg.data.size = snprintf(msg.data.data, msg.data.capacity, 
+			"Hello World: %i", counter++);
 		RCSOFTCHECK(rcl_publish(&publisher, &msg, NULL));
-		msg.data++;
 	}
 }
 
@@ -95,7 +103,7 @@ void setup()
 	RCCHECK(rclc_publisher_init_default(
 		&publisher,
 		&node,
-		ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
+		ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, String),
 		"micro_ros_platformio_node_publisher"));
 
 	// Create timer,
@@ -110,8 +118,6 @@ void setup()
 	RCCHECK(rclc_executor_init(&executor, &support.context, 1, &allocator));
 	RCCHECK(rclc_executor_add_timer(&executor, &timer));
 
-	// Initialize data
-	msg.data = 0;
 }
 
 // /////////////////////////// LOOP IMPLEMENTATION ///////////////////////////

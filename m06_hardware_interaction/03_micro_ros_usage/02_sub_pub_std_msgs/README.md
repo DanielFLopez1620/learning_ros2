@@ -1,4 +1,4 @@
-# Hello World on Micro ROS
+# Simple pub and sub with std_msgs
 
 ## Purpose
 
@@ -8,7 +8,7 @@ Simple demo for learning about **µ-micro** as the first steps with a Hello Worl
 
 1. Make sure your PlatformIO installation is ready, do not forget to follow the [official instructions](https://github.com/micro-ROS/micro_ros_platformio) on Github. Also, do not forget to set up your **Micro-ROS** setup as present in this [micros-ros-tutorial](https://micro.ros.org/docs/tutorials/core/first_application_rtos/freertos/)
 
-2. Open the project [01_hello_micro_ros](/m06_hardware_interaction/03_micro_ros_usage/01_hello_micro_ros/) by using PlatformIO VS Code extension.
+2. Open the project [02_sub_pub_std_msgs](/m06_hardware_interaction/03_micro_ros_usage/02_sub_pub_std_msgs) by using PlatformIO VS Code extension.
 
 3. Connect the ESP32 to your computer and give the proper permissions, for example:
 
@@ -54,8 +54,18 @@ ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyUSB0 # Change the 
 
 ~~~bash
 ros2 topic list
-# Check for tht existence of /micro_ros_platformio_node_publisher
-ros2 topic echo /micro_ros_platformio_node_publisher
+# Check for tht existence of micro_ros_platformio_node_int_sub and /micro_ros_platformio_node_float_pub
+~~~
+Then, let's play with the communication:
+
+~~~bash
+# Terminal 1
+ros2 topic echo /micro_ros_platformio_node_float_pub
+
+# Terminal 2
+ros2 topic pub /micro_ros_platformio_node_int_sub std_msgs/msg/Int32 "data: 10"
+
+# The topic echo should display the half of the value entered
 ~~~
 
 ## Additional resources

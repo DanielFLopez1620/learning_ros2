@@ -1,7 +1,7 @@
 // ////////////////////// DEPENDENCIES AND LIBRARIES //////////////////////////
 // ---------------------- Required Arduino Libraries --------------------------
 #include <Arduino.h>
-#include <stdio.h>
+#include <ESP32Servo.h>
 
 // ---------------------- Platformio Libraries --------------------------------
 #include <micro_ros_platformio.h>
@@ -12,7 +12,6 @@
 #include <rclc/executor.h>
 
 // ------------------------ Required messages ---------------------------------
-#include <std_msgs/msg/int32.h>
 #include <std_msgs/msg/float32.h>
 
 // //////////////////////// GLOBAL DEFINITIONS ////////////////////////////////
@@ -29,8 +28,7 @@ rcl_publisher_t publisher;
 rcl_subscription_t subscriber;
 
 // Define message
-std_msgs__msg__Int32 num_msg;
-std_msgs__msg__Float32 dec_msg;
+std_msgs__msg__Float32 servo_msg;
 
 // Define executor
 rclc_executor_t executor;
@@ -53,6 +51,10 @@ rcl_timer_t timer;
 // Define a soft ROS 2 Checker
 #define RCSOFTCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){}}
 
+// .............................. Servo definitions ...........................
+static const int servoPin = 13;
+Servo my_servo;
+
 // ///////////////////////////// FUNTION DEFINTIONS ///////////////////////////
 /**
  * Loop to handle errors
@@ -64,10 +66,10 @@ void error_loop()
 		delay(100);
 	}
 }
-void subCallback(const void *msgin)
+void servoCallback(const void *msgin)
 {
-    dec_msg.data = (float) num_msg.data / 2;
-	RCSOFTCHECK(rcl_publish(&publisher, &dec_msg, NULL));
+    my_servo.write(servo_msg.data);
+	delay(20);
 }
 // //////////////////////////// SINGLE SET UP FUNCTION ///////////////////////
 void setup() 
@@ -86,20 +88,13 @@ void setup()
 	// Create node
 	RCCHECK(rclc_node_init_default(&node, "micro_ros_pub_sub_std_node", "",
 		&support));
-
-	// Create publisher
-	RCCHECK(rclc_publisher_init_default(
-		&publisher,
-		&node,
-		ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Float32),
-		"micro_ros_platformio_node_float_pub"));
 	
 	// Create subscriber
 	RCCHECK(rclc_subscription_init_default(
 		&subscriber,
 		&node,
-		ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
-		"micro_ros_platformio_node_int_sub"));
+		ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Float32),
+		"micro_ros_platformio_servo"));
 
 	RCCHECK(rclc_executor_init(
 		&executor,
@@ -110,9 +105,12 @@ void setup()
 	RCCHECK(rclc_executor_add_subscription(
 		&executor,
 		&subscriber,
-		&num_msg,
-		&subCallback,
+		&servo_msg,
+		&servoCallback,
 		ON_NEW_DATA));
+
+	// Attach pin
+	my_servo.attach(servoPin);
 }
 
 void loop() 
