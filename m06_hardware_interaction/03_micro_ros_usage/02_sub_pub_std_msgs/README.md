@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Simple demo for learning about **µ-micro** as the first steps with a Hello World.
+Simple demo for learning about publishers and subscribers with standard message by using **µ-micro**-
 
 ## Guide step by step
 
@@ -70,5 +70,6 @@ ros2 topic pub /micro_ros_platformio_node_int_sub std_msgs/msg/Int32 "data: 10"
 
 ## Additional resources
 
+- [micro-ros_publisher example | micro-ROS @ Github](https://github.com/micro-ROS/micro_ros_platformio/tree/main/examples/micro-ros_publisher)
 - [Micro-ROS robot using PlatformIO for esp32 for ROS2 | Muhammad Luqman](https://www.youtube.com/watch?v=Nf7HP9y6Ovo&t=714s)
 - [talker_c | riot-ros2 @ Github](https://github.com/astralien3000/riot-ros2/blob/3d0779b920996f4e701830b8248573cd0e23204d/examples/talker_c/main.c#L32)

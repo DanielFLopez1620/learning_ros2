@@ -29,6 +29,7 @@ rcl_subscription_t subscriber;
 
 // Define message
 std_msgs__msg__Float32 servo_msg;
+std_msgs__msg__Float32 feedback_msg;
 
 // Define executor
 rclc_executor_t executor;
@@ -66,10 +67,20 @@ void error_loop()
 		delay(100);
 	}
 }
+
+/**
+ * Callback to write the servo position based on the message received, and give
+ * the proper feedback.
+ */
 void servoCallback(const void *msgin)
 {
-    my_servo.write(servo_msg.data);
+    // Write servo position
+	my_servo.write(servo_msg.data);
 	delay(20);
+
+	// Send feedback of servo position
+	feedback_msg.data = my_servo.read();
+	RCSOFTCHECK(rcl_publish(&publisher, &feedback_msg, NULL));
 }
 // //////////////////////////// SINGLE SET UP FUNCTION ///////////////////////
 void setup() 
@@ -94,14 +105,22 @@ void setup()
 		&subscriber,
 		&node,
 		ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Float32),
-		"micro_ros_platformio_servo"));
+		"micro_ros_platformio_servo_control"));
 
+	RCCHECK(rclc_publisher_init_default(
+		&publisher,
+		&node,
+		ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Float32),
+		"micro_ros_platformio_servo_feedback"));
+	
+	// Consider executor
 	RCCHECK(rclc_executor_init(
 		&executor,
 		&support.context, 
 		1, 
 		&allocator));
 
+	// Add subscription with the proper callback
 	RCCHECK(rclc_executor_add_subscription(
 		&executor,
 		&subscriber,

@@ -2,7 +2,17 @@
 
 ## Purpose
 
-Simple demo for learning about **µ-micro** as the first steps with a Hello World.
+Simple demo for learning about topics, publisher and subscribers with **µ-micro** by using the servo MG996r.
+
+For this case, we are using the ESP32 W-ROOM 30 pins, and the pinout is listed below:
+
+- **Servo Voltage +** (Red) --> **Esp32 Vin**
+- **Servo Signal** (Yellow/Orange) --> **Esp32 GPIO 13**
+- **Servo Voltage -** (Black) --> **Esp32 Ground**
+
+For a graphical guide consider the resources listed at the end of the file. 
+
+**NOTE:** Servos and motors may need to drag additional current, and depending on the system it is better to implement and external source to power up the motors.
 
 ## Guide step by step
 
@@ -54,6 +64,18 @@ ros2 run micro_ros_agent micro_ros_agent serial --dev /dev/ttyUSB0 # Change the 
 
 ~~~bash
 ros2 topic list
-# Check for tht existence of /micro_ros_platformio_servo
-ros2 topic pub /micro_ros_platformio_servo std_msgs/msg/Float32 "data: 180.0" --once
+
+# Check for tht existence of /micro_ros_platformio_servo_control to move the servo
+ros2 topic pub /micro_ros_platformio_servo_control std_msgs/msg/Float32 "data: 180.0" --once
+
+# Check for the positon on /micro_ros_platformio_servo_feedback to review the process in another terminal
+ros2 topic echo /micro_ros_platformio_servo_feedback
 ~~~
+
+
+
+## Additional resources:
+
+- [Example micro-ros_publisher | micro-ROS @ Github](https://github.com/micro-ROS/micro_ros_platformio/tree/main/examples/micro-ros_publisher)
+- [ESP32 Servo Library | madhephaestus @ Github](https://github.com/madhephaestus/ESP32Servo)
+- [ESP32 with MG996r | ESP32io](https://esp32io.com/tutorials/esp32-mg996r)
