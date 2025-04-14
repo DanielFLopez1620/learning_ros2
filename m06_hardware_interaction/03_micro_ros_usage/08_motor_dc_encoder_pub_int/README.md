@@ -1,14 +1,14 @@
-# Accel and Gyro with µ-ros
+# Motor DC encoder count publisher with µ-ROS
 
 ## Purpose
 
-Simple demo for learning about **µ-micro** by using the MPU6050 and GY521 module to publish angular and linear accelerations.
+A demo on using the JGA25-371 DC Motor with encoder of two channel (A-B) to determinate the speed (displaying encoder count as long long int) and direction, by considering an interrupt at encoder A channel changing state to compare with B channel value.
 
 ## Guide step by step
 
 1. Make sure your PlatformIO installation is ready, do not forget to follow the [official instructions](https://github.com/micro-ROS/micro_ros_platformio) on Github. Also, do not forget to set up your **Micro-ROS** setup as present in this [micros-ros-tutorial](https://micro.ros.org/docs/tutorials/core/first_application_rtos/freertos/)
 
-2. Open the project [01_hello_micro_ros](/m06_hardware_interaction/03_micro_ros_usage/06_accel_gyro_pub/) by using PlatformIO VS Code extension.
+2. Open the project [01_hello_micro_ros](/m06_hardware_interaction/03_micro_ros_usage/08_motor_dc_encoder_pub_int) by using PlatformIO VS Code extension.
 
 3. Connect the ESP32 to your computer and give the proper permissions, for example:
 
@@ -54,14 +54,16 @@ Simple demo for learning about **µ-micro** by using the MPU6050 and GY521 modul
 
     ~~~bash
     ros2 topic list
-    # Check for tht existence of /micro_ros_platformio_imu_publisher
-    ros2 topic echo /micro_ros_platformio_imu_publisher
+    # Check for tht existence of /micro_ros_platformio_encoder_publisher
+    ros2 topic echo /micro_ros_platformio_encoder_publisher
     ~~~
 
-12. Now interact with the accelerometer (move it along in many directions), and check the subscription (echo). It will display the components of linear and angular velocities, but the orientation isn't shared.
+12. Now, proceed to move the motor manually or by connecting it to a battery, and watch the encoder lectures in real time.
 
 ## Additional resources
 
-- [micro-ros_publisher example | micro-ROS @ Github](https://github.com/micro-ROS/micro_ros_platformio/tree/main/examples/micro-ros_publisher)
+- [Tutorial on Encoders with Arduino (Hall Efect encoder with DC Motor) | Aleksandar Haber PHD](https://www.youtube.com/watch?v=1PJOzrXAlcg)
 
-- [MPU6050 with ESP32 | RandomNerdTutorials](https://randomnerdtutorials.com/esp32-mpu-6050-accelerometer-gyroscope-arduino/)
+- [ESP32 with DC Motor and L298N Motor Driver – Control Speed and Direction | Random Nerd Tutorials](https://randomnerdtutorials.com/esp32-dc-motor-l298n-motor-driver-control-speed-direction/)
+
+- [talker_c | riot-ros2 @ Github](https://github.com/astralien3000/riot-ros2/blob/3d0779b920996f4e701830b8248573cd0e23204d/examples/talker_c/main.c#L32)

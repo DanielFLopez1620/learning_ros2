@@ -18,7 +18,7 @@ For a graphical guide consider the resources listed at the end of the file.
 
 1. Make sure your PlatformIO installation is ready, do not forget to follow the [official instructions](https://github.com/micro-ROS/micro_ros_platformio) on Github. Also, do not forget to set up your **Micro-ROS** setup as present in this [micros-ros-tutorial](https://micro.ros.org/docs/tutorials/core/first_application_rtos/freertos/)
 
-2. Open the project [01_hello_micro_ros](/m06_hardware_interaction/03_micro_ros_usage/01_hello_micro_ros/) by using PlatformIO VS Code extension.
+2. Open the project [01_hello_micro_ros](/m06_hardware_interaction/03_micro_ros_usage/05_moving_servo/) by using PlatformIO VS Code extension.
 
 3. Connect the ESP32 to your computer and give the proper permissions, for example:
 
