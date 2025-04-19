@@ -12,12 +12,12 @@
 #include <Arduino.h>
 
 // -------------------------- GLOBAL DEFINITIONS -------------------------------
-// Motor Left
+// Motor Right
 int motor1Pin1 = 19; 
 int motor1Pin2 = 18; 
 int enable1Pin = 16; 
 
-// Motor Right
+// Motor Left
 int motor2Pin1 = 21;
 int motor2Pin2 = 22;
 int enable2Pin = 17;
@@ -98,6 +98,34 @@ void loop()
     Serial.println("Gyro Left");
     digitalWrite(motor1Pin1, LOW);
     digitalWrite(motor1Pin2, HIGH); 
+    digitalWrite(motor2Pin1, LOW);
+    digitalWrite(motor2Pin2, HIGH); 
+    delay(1000);
+
+    Serial.println("Stop");
+    digitalWrite(motor1Pin1, LOW);
+    digitalWrite(motor1Pin2, LOW); 
+    digitalWrite(motor2Pin1, LOW);
+    digitalWrite(motor2Pin2, LOW); 
+    delay(1000);
+
+    Serial.println("The one");
+    digitalWrite(motor1Pin1, LOW);
+    digitalWrite(motor1Pin2, HIGH); 
+    digitalWrite(motor2Pin1, LOW);
+    digitalWrite(motor2Pin2, LOW); 
+    delay(1000);
+
+    Serial.println("Stop");
+    digitalWrite(motor1Pin1, LOW);
+    digitalWrite(motor1Pin2, LOW); 
+    digitalWrite(motor2Pin1, LOW);
+    digitalWrite(motor2Pin2, LOW); 
+    delay(1000);
+
+    Serial.println("The other one");
+    digitalWrite(motor1Pin1, LOW);
+    digitalWrite(motor1Pin2, LOW); 
     digitalWrite(motor2Pin1, LOW);
     digitalWrite(motor2Pin2, HIGH); 
     delay(1000);
