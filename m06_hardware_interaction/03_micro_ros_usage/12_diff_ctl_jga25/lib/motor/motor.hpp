@@ -16,7 +16,7 @@ namespace diff
         {}
 
         void begin();
-        void set_speed(const int& speed);
+        void set_speed(int speed);
     };
 }
 

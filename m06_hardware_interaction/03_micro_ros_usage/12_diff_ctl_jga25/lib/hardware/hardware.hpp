@@ -21,9 +21,9 @@ namespace diff
         // ------------------- Motor RIGHT --------------------------
         
         // Encoder Channel A
-        static const unsigned int MR_ENCA = 34;
+        static const unsigned int MR_ENCA = 35;
         // Encoder Channel B
-        static const unsigned int MR_ENCB = 35;
+        static const unsigned int MR_ENCB = 34;
         // Driver Forward Pin
         static const unsigned int MR_FORW = 18;
         // Driver Backward Pin

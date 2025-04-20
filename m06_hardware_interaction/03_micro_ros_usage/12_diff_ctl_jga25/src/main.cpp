@@ -193,18 +193,25 @@ void set_motor_speed(int left_speed, int right_speed)
     const int motor_left_sp = left_speed;
     const int motor_right_sp = right_speed;
 
-    if(motor_left_sp == 0 && motor_right_sp == 0)
+    if(motor_left_sp == 0)
     {
         motor_left.set_speed(0);
-        motor_right.set_speed(0);
         pid_left.reset(enc_left.read());
-        pid_right.reset(enc_right.read());
-        pid_left.disabled();
-        pid_right.disabled();
+        pid_left.disable();
     }
     else
     {
         pid_left.enable();
+    }
+    
+    if(motor_right_sp == 0)
+    {
+        motor_right.set_speed(0);
+        pid_right.reset(enc_right.read());
+        pid_right.disable();
+    }
+    else
+    {
         pid_right.enable();
     }
 

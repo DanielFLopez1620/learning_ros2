@@ -11,25 +11,32 @@ namespace diff
         pinMode(this->back_pin_, OUTPUT);
     }
 
-    void MotorDriver::set_speed(const int& speed)
+    void MotorDriver::set_speed(int speed)
     {
-        unsigned int abs_speed = abs(speed);
+        int abs_speed = abs(speed);
         if(abs_speed > this->MAX_SPEED)
         {
             abs_speed = this->MAX_SPEED;
         }
+
+        analogWrite(this->enable_pin_, abs_speed);
 
         if(speed < 0)
         {
             digitalWrite(this->forw_pin_, HIGH);
             digitalWrite(this->back_pin_, LOW);
         }
-        else
+        else if(speed > 0)
         {
             digitalWrite(this->forw_pin_, LOW);
             digitalWrite(this->back_pin_, HIGH);
         }
+        else
+        {
+            digitalWrite(this->forw_pin_, LOW);
+            digitalWrite(this->back_pin_, LOW);
+            analogWrite(this->enable_pin_, 0);
+        }
 
-        analogWrite(this->enable_pin_, abs_speed);
     }
 }

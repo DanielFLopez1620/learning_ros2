@@ -12,7 +12,7 @@ namespace diff
         static const int PID_KI {0};
         static const int PID_KO {50};
         static const int PWM_MAX {255};
-        static const int PWM_MIN {0};
+        static const int PWM_MIN {-255};
     };
 }
 

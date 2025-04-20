@@ -4,7 +4,7 @@ namespace diff
 {
     void ControlPID::compute(int enc_count, int& computed_output)
     {
-        if(this->enabled_)
+        if(!this->enabled_)
         {
             if(this->last_input_ != 0)
             {
@@ -19,13 +19,13 @@ namespace diff
         long output = (this->kp_ * err - this->kd_ * (input - this->last_input_)
             + this->integral_term_) / this->ko_;
         
-        output += this->last_ouput_;
+        output += this->last_output_;
 
-        if(output >= this->pwm_max_)
+        if(output > this->pwm_max_)
         {
             output = this->pwm_max_;
         }
-        else if (output <= this->pwm_min_)
+        else if (output < this->pwm_min_)
         {
             output = this->pwm_min_;
         }
@@ -38,10 +38,10 @@ namespace diff
 
         this->last_enc_count_ = enc_count;
         this->last_input_ = input;
-        this->last_ouput_ = output;
+        this->last_output_ = output;
     }
         
-    void ControlPID::disabled()
+    void ControlPID::disable()
     {
         this->enabled_ = false;
     }
@@ -62,7 +62,7 @@ namespace diff
         this->integral_term_ = 0;
         this->last_enc_count_ = enc_count;
         this->last_input_ = 0;
-        this->last_ouput_ = 0;
+        this->last_output_ = 0;
     }
 
     void ControlPID::setSetpoint(int setpoint)
